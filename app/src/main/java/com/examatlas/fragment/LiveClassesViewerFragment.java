@@ -91,7 +91,7 @@ public class LiveClassesViewerFragment extends Fragment {
             mActivity = (Activity) context;
             // get meeting object from MeetingActivity
             meeting = ((JoinLiveClassActivity) mActivity).getMeeting();
-            Log.d("LiveClassesViewerFragment", "Meeting ID: " + (meeting != null ? meeting.getMeetingId() : "Meeting is null"));
+//            Log.d("LiveClassesViewerFragment", "Meeting ID: " + (meeting != null ? meeting.getMeetingId() : "Meeting is null"));
         }
     }
 
