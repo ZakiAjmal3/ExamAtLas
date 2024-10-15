@@ -25,6 +25,7 @@ public class SecondActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(SecondActivity.this, LoginActivity.class));
+                finish();
             }
         });
 
@@ -32,6 +33,7 @@ public class SecondActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(SecondActivity.this, SignUpActivity.class));
+                finish();
             }
         });
 

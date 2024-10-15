@@ -51,8 +51,8 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
         if (currentAffairsModelArrayList.get(position).getCfImage() != null) {
             Glide.with(context)
                     .load(currentAffairsModelArrayList.get(position).getCfImage())
-                    .placeholder(R.drawable.noimage)
-                    .error(R.drawable.noimage)
+                    .placeholder(R.drawable.image1)
+                    .error(R.drawable.image1)
                     .into(holder.cfImage);
         } else {
             Glide.with(context)

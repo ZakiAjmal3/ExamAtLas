@@ -20,7 +20,7 @@ import live.videosdk.rtc.android.listeners.MeetingEventListener;
 public class JoinLiveClassActivity extends AppCompatActivity {
     String meetingID;
     private Meeting meeting;
-    String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIyMjU1NDRiYy0wMjc0LTQ5MTgtODlhNy0wODFkMDFiYzA0ZmIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcyNzI1MjY5NiwiZXhwIjoxNzI3ODU3NDk2fQ.r52Y0TIm1wePSw0dfJ2nhiLr7Ztf3u9Wxq72diIOtI8";
+    String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIyMjU1NDRiYy0wMjc0LTQ5MTgtODlhNy0wODFkMDFiYzA0ZmIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcyODg5NDA5MCwiZXhwIjoxNzMxNDg2MDkwfQ.zN1n9xxI6PQ8F97dYoGAKvniMvQEYBmrF21y0M6WrAE";
     private static final int PERMISSION_REQ_ID = 22;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,7 @@ public class JoinLiveClassActivity extends AppCompatActivity {
 
         if (getIntent().getStringExtra("meetingID") != null){
 //            meetingID = getIntent().getStringExtra("meetingID");
-            meetingID = "4edd-ct67-yb4j";
+            meetingID = "lbef-rnrf-et27";
         }
         checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID);
         checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID);

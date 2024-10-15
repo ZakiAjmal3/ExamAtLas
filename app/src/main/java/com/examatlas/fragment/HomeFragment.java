@@ -56,7 +56,7 @@ public class HomeFragment extends Fragment {
     private final String blogURL = Constant.BASE_URL + "blog/getAllBlogs";
     private final String liveClassURL = Constant.BASE_URL + "liveclass/getAllLiveClass";
     private final String currentAffairsURL = Constant.BASE_URL + "currentAffair/getAllCA";
-
+    String token;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -101,6 +101,8 @@ public class HomeFragment extends Fragment {
 ////                ((DashboardActivity) getActivity()).loadCourse();
 //            }
 //        });
+        token = sessionManager.getUserData().get("authToken");
+
         return view;
     }
 
@@ -157,18 +159,24 @@ public class HomeFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("classes"); // Change to the correct key
+                                JSONArray jsonArray = response.getJSONArray("classes");
                                 liveClassesModelArrayList.clear();
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String classID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
-//                                    String meetingID = jsonObject2.getString("meetingId");
                                     String meetingID = "ax7m-hd4z-0zcs";
                                     String description = jsonObject2.getString("description");
                                     String teacherName = jsonObject2.getString("teacher");
-                                    String keyWord = jsonObject2.getString("keyword");
+
+                                    // Handle keyword extraction
+                                    String keyWord;
+                                    if (jsonObject2.has("keyword") && !jsonObject2.isNull("keyword")) {
+                                        keyWord = jsonObject2.getString("keyword");
+                                    } else {
+                                        keyWord = "No Value"; // Default value
+                                    }
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -211,13 +219,13 @@ public class HomeFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
         getBlogList();
     }
-
 
     private void getBlogList() {
         // Create a JsonObjectRequest for the GET request
@@ -287,14 +295,13 @@ public class HomeFragment extends Fragment {
 //                        e.printStackTrace();
 //                    }
 //                }
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
-//                Log.e("BlogFetchError", errorMessage);
-            }
+                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();}
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };
@@ -381,6 +388,7 @@ public class HomeFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };
@@ -388,33 +396,4 @@ public class HomeFragment extends Fragment {
         // Use the MySingleton instance to add the request to the queue
         MySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
     }
-
 }
-
-//    private void getTestimonialList() {
-//        testimonialList.clear();
-//        homeProgress.setVisibility(View.VISIBLE);
-//        ServiceApi api = ApiClient.getClient().create(ServiceApi.class);
-//        Call<TestimonialRequest> call = api.getTestimonials();
-//        call.enqueue(new Callback<TestimonialRequest>() {
-//            @Override
-//            public void onResponse(Call<TestimonialRequest> call, Response<TestimonialRequest> response) {
-//                homeProgress.setVisibility(View.GONE);
-//                if (response.body() != null) {
-//                    if (response.body().getStatus()) {
-//                        testimonialList.addAll(response.body().getTestimonials());
-//                        testimonialAdapter = new TestimonialAdapter(HomeFragment.this, testimonialList);
-//                        testimonialRecycler.setAdapter(testimonialAdapter);
-//                    }
-//                } else {
-//                    Log.e("BODY", "Body is null");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<TestimonialRequest> call, Throwable t) {
-//                homeProgress.setVisibility(View.GONE);
-//                Log.e("EXCEPTION", t.getLocalizedMessage());
-//            }
-//        });
-//    }

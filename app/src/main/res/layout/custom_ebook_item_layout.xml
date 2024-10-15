@@ -26,24 +26,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/noimage" />
+            android:src="@drawable/image1" />
 
     </com.google.android.material.card.MaterialCardView>
 
-    <TextView
-        android:id="@+id/txtBookTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/poppins"
-        android:text="EBook Name"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        />
+        <TextView
+            android:id="@+id/txtBookTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/poppins"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="EBook Name"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
     <TextView
         android:id="@+id/txtAuthor"

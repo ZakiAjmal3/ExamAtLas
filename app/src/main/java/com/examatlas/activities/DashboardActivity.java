@@ -151,7 +151,7 @@ public class DashboardActivity extends AppCompatActivity {
 //    }
 
     Dialog drawerDialog;
-    LinearLayout transLayer, layoutHome, layoutBlogs, layoutSubscription, layoutLiveClasses,
+    LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks, layoutLiveClasses,
             layoutEbook, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy,
             layoutTerms, layoutRefund, layoutFaq, layoutServices;
     TextView txtUsername, txtUserEmail;
@@ -167,7 +167,7 @@ public class DashboardActivity extends AppCompatActivity {
         layoutHome = drawerDialog.findViewById(R.id.layoutHome);
         layoutLiveClasses = drawerDialog.findViewById(R.id.layoutLiveClasses);
         layoutBlogs = drawerDialog.findViewById(R.id.layoutBlogs);
-//        layoutSubscription = drawerDialog.findViewById(R.id.layoutSubscription);
+        layoutPurchaseBooks = drawerDialog.findViewById(R.id.layoutPurchaseBooks);
         layoutEbook = drawerDialog.findViewById(R.id.layoutEbook);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
@@ -211,13 +211,13 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-//        layoutSubscription.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                startActivity(new Intent(DashboardActivity.this, SubscriptionActivity.class));
-//            }
-//        });
+        layoutPurchaseBooks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerDialog.dismiss();
+                startActivity(new Intent(DashboardActivity.this, HardBookECommPurchaseActivity.class));
+            }
+        });
 
         layoutLiveClasses.setOnClickListener(new View.OnClickListener() {
             @Override

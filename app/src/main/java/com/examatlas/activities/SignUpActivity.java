@@ -159,14 +159,7 @@ public class SignUpActivity extends AppCompatActivity {
                             if (status.equals("true")) {
                                 String message = response.getString("message");
                                 Toast.makeText(SignUpActivity.this, message, Toast.LENGTH_SHORT).show();
-                                JSONObject userDataJson = response.getJSONObject("data");
-                                String name = userDataJson.getString("name");
-                                String mobile = userDataJson.getString("mobile");
-                                String email = userDataJson.getString("email");
-                                String user_id = userDataJson.getString("_id");
-                                String role = userDataJson.getString("role");
-                                sessionManager.saveLoginDetails(user_id,name,email,mobile,role);
-                                Intent intent = new Intent(SignUpActivity.this, DashboardActivity.class);
+                                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finish();
                             }

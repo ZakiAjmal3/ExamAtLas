@@ -22,6 +22,7 @@ import com.examatlas.adapter.EbookAdapter;
 import com.examatlas.models.EbookModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
+import com.examatlas.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +40,8 @@ public class EbookActivity extends AppCompatActivity {
     ProgressBar progressBar;
     private final String ebookURL = Constant.BASE_URL + "book/getAllBooks";
     RelativeLayout noDataLayout;
+    String token;
+    SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +65,10 @@ public class EbookActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        sessionManager = new SessionManager(EbookActivity.this);
+
+        token = sessionManager.getUserData().get("authToken");
 
         getEbooks();
 
@@ -149,6 +156,7 @@ public class EbookActivity extends AppCompatActivity {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };

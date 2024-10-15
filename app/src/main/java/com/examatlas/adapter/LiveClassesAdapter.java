@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.denzcoskun.imageslider.interfaces.ItemClickListener;
 import com.examatlas.R;
 import com.examatlas.activities.JoinLiveClassActivity;
@@ -40,6 +42,12 @@ public class LiveClassesAdapter extends RecyclerView.Adapter<LiveClassesAdapter.
         holder.description.setText(liveClassesModelArrayList.get(position).getDescription());
         holder.tags.setText(liveClassesModelArrayList.get(position).getTags());
         holder.teacherName.setText(liveClassesModelArrayList.get(position).getTeacherName());
+        Glide.with(context)
+                .load(R.drawable.image1) // Load the image URL from the model
+                .placeholder(R.drawable.image1) // Optional: add a placeholder image
+                .error(R.drawable.image1) // Optional: add an error image
+                .into(holder.cfImage);
+
     }
 
     @Override
@@ -49,11 +57,11 @@ public class LiveClassesAdapter extends RecyclerView.Adapter<LiveClassesAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title, description, tags, teacherName;
-//        ImageView cfImage;
+        ImageView cfImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-//            cfImage = itemView.findViewById(R.id.imgAffair);
+            cfImage = itemView.findViewById(R.id.imgLiveCourse);
             title = itemView.findViewById(R.id.txtFullName);
             description = itemView.findViewById(R.id.txtDesc);
             tags = itemView.findViewById(R.id.txtTag);

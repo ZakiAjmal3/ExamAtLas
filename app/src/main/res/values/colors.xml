@@ -68,4 +68,5 @@
     <color name="md_theme_dark_scrim">#000000</color>
     <color name="dark_grey">#776F6F</color>
     <color name="mat_yellow">#F1B501</color>
+    <color name="red_orange">#FF4500</color>
 </resources>

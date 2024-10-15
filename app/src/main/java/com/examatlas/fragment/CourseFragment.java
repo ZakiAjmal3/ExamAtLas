@@ -23,6 +23,7 @@ import com.examatlas.adapter.CourseAdapter;
 import com.examatlas.models.CourseModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
+import com.examatlas.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +40,8 @@ public class CourseFragment extends Fragment {
     ArrayList<CourseModel> courseModelArrayList;
     CourseAdapter courseAdapter;
     private final String courseURL = Constant.BASE_URL + "course/getAllCourse";
-
+    String token;
+    SessionManager sessionManager;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,6 +56,10 @@ public class CourseFragment extends Fragment {
         courseRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         getCourseList();
+
+        sessionManager = new SessionManager(getContext());
+
+        token = sessionManager.getUserData().get("authToken");
 
         return view;
     }
@@ -127,6 +133,7 @@ public class CourseFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };

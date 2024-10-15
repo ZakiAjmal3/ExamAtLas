@@ -23,6 +23,7 @@ import com.examatlas.adapter.BlogAdapter;
 import com.examatlas.models.BlogModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
+import com.examatlas.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +42,8 @@ public class BlogFragment extends Fragment {
     BlogAdapter blogAdapter;
     private final String blogURL = Constant.BASE_URL + "blog/getAllBlogs";
 //    private final String blogURL = Constant.BASE_URL2 + "course/getAllCourse";
+    String token;
+    SessionManager sessionManager;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,6 +57,10 @@ public class BlogFragment extends Fragment {
         blogRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
         getBlogList();
         blogModelArrayList = new ArrayList<>();
+
+        sessionManager = new SessionManager(getContext());
+
+        token = sessionManager.getUserData().get("authToken");
 
         return view;
     }
@@ -138,6 +145,7 @@ public class BlogFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };

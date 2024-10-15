@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     MaterialButton btnLogin;
     private ImageView eyePassword;
     private boolean isPasswordVisible = false;
-    private final String serverUrl = Constant.BASE_URL + "user/loginUser";
+    private final String serverUrl = Constant.BASE_URL + "auth/loginUser";
     SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,13 +120,16 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
 
                                     if (status.equals("true")) {
+                                        String user_id = response.getString("userId");
+                                        String authToken = response.getString("token");
                                         JSONObject userDataJson = response.getJSONObject("data");
                                         String name = userDataJson.getString("name");
                                         String mobile = userDataJson.getString("mobile");
                                         String email = userDataJson.getString("email");
-                                        String user_id = userDataJson.getString("_id");
                                         String role = userDataJson.getString("role");
-                                        sessionManager.saveLoginDetails(user_id,name,email,mobile,role);
+                                        String createdAt = userDataJson.getString("createdAt");
+                                        String updatedAt = userDataJson.getString("updatedAt");
+                                        sessionManager.saveLoginDetails(user_id,name,email,mobile,role,authToken,createdAt,updatedAt);
                                         Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
                                         startActivity(intent);
                                         finish();

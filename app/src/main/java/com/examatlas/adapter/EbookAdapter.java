@@ -4,11 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.models.EbookModel;
 
@@ -38,7 +40,14 @@ public class EbookAdapter extends RecyclerView.Adapter<EbookAdapter.ViewHolder> 
         holder.title.setText(ebookModelArrayList.get(position).getTitle());
         holder.content.setText(ebookModelArrayList.get(position).getContent());
         holder.tags.setText(ebookModelArrayList.get(position).getTags());
-        holder.author.setText(ebookModelArrayList.get(position).getAuthor());
+        holder.author.setText("By: " + ebookModelArrayList.get(position).getAuthor());
+
+        Glide.with(context)
+                .load(R.drawable.image1) // Load the image URL from the model
+                .placeholder(R.drawable.image1) // Optional: add a placeholder image
+                .error(R.drawable.image1) // Optional: add an error image
+                .into(holder.ebookImage);
+
     }
 
     @Override
@@ -47,7 +56,8 @@ public class EbookAdapter extends RecyclerView.Adapter<EbookAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, content, tags, author;
+        TextView title, content, tags, author,price;
+        ImageView ebookImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -56,7 +66,7 @@ public class EbookAdapter extends RecyclerView.Adapter<EbookAdapter.ViewHolder> 
             content = itemView.findViewById(R.id.txtContent);
             tags = itemView.findViewById(R.id.txtTags);
             author = itemView.findViewById(R.id.txtAuthor);
-
+            ebookImage = itemView.findViewById(R.id.imgBook);
         }
     }
 }

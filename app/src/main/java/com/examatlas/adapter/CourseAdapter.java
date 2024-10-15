@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.fragment.CourseFragment;
 import com.examatlas.models.CourseModel;
@@ -42,6 +43,12 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
 
         String price = "₹ " + courseModelArrayList.get(position).getPrice();
         holder.price.setText(price);
+
+        Glide.with(context)
+                .load(R.drawable.image1) // Load the image URL from the model
+                .placeholder(R.drawable.image1) // Optional: add a placeholder image
+                .error(R.drawable.image1) // Optional: add an error image
+                .into(holder.courseImage);
 
     }
 

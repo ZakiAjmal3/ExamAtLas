@@ -2,80 +2,75 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.EbookActivity">
-
-    <RelativeLayout
-        android:id="@+id/topBar"
+    tools:context=".activities.HardBookECommPurchaseActivity"
+    android:background="@color/white">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/hardbook_ecomm_purchase_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        >
-
-        <com.google.android.material.card.MaterialCardView
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="15dp">
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cardBackgroundColor="?attr/colorPrimary"
-            app:cardCornerRadius="0dp"
-            app:strokeColor="@color/md_theme_dark_onSurface"
-            app:strokeWidth="1dp"
-            />
-
-        <ImageView
-            android:id="@+id/imgBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
+            android:layout_height="match_parent">
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_icon"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
             android:clickable="true"
-            android:contentDescription="Back Image"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"
-            android:src="@drawable/ic_back" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
-            android:layout_toEndOf="@+id/imgBack"
-            android:fontFamily="@font/poppins"
-            android:text="EBooks"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-    </RelativeLayout>
-
-    <LinearLayout
+            android:layout_toLeftOf="@id/cartBtn"
+            android:background="@drawable/rounded_corner_for_searchview"
+            />
+        <ImageView
+            android:id="@+id/cartBtn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_cart"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/slider_cardView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/topBar"
-        android:padding="10dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:fontFamily="@font/poppins"
-            android:text="Trending Books"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/eBookRecycler"
+        android:layout_height="140dp"
+        app:cardBackgroundColor="@color/white"
+        app:strokeWidth="0dp"
+        android:layout_below="@id/hardbook_ecomm_purchase_toolbar"
+        >
+        <com.denzcoskun.imageslider.ImageSlider
+            android:id="@+id/slider"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <ProgressBar
-            android:id="@+id/ebookProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_margin="15dp"
+            app:iss_auto_cycle="true"
+            app:iss_period="1000"
+            app:iss_delay="0" />
 
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/booksRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/slider_cardView"
+        android:visibility="gone"/>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="visible"/>
     <RelativeLayout
         android:id="@+id/noDataLayout"
         android:layout_width="wrap_content"
