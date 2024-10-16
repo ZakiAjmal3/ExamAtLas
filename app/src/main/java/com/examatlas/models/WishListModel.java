@@ -1,9 +1,9 @@
 package com.examatlas.models;
 
-public class HardBookECommPurchaseModel {
+public class WishListModel {
     String id,title,keyword,content,price,sellPrice,tags,author,category,createdAt,updatedAt,itemId = null;
 
-    public HardBookECommPurchaseModel(String id, String title, String keyword, String content, String price, String sellPrice, String tags, String author, String category, String createdAt, String updatedAt) {
+    public WishListModel(String id, String title, String keyword, String content, String price, String sellPrice, String tags, String author, String category, String createdAt, String updatedAt, String itemId) {
         this.id = id;
         this.title = title;
         this.keyword = keyword;
@@ -15,13 +15,6 @@ public class HardBookECommPurchaseModel {
         this.category = category;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-    }
-
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(String itemId) {
         this.itemId = itemId;
     }
 
@@ -111,5 +104,13 @@ public class HardBookECommPurchaseModel {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 }

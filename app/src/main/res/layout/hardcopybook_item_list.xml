@@ -43,6 +43,15 @@
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
                     android:layout_margin="5dp" />
+                <ImageView
+                    android:id="@+id/heartIconToggle"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_margin="5dp"
+                    android:src="@drawable/ic_heart_white" />
+
 
             </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>

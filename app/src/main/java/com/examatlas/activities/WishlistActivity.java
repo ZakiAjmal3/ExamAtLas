@@ -2,7 +2,6 @@ package com.examatlas.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -24,12 +23,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.denzcoskun.imageslider.ImageSlider;
-import com.denzcoskun.imageslider.constants.ScaleTypes;
-import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
 import com.examatlas.adapter.HardBookECommPurchaseAdapter;
+import com.examatlas.adapter.WishListAdapter;
 import com.examatlas.models.HardBookECommPurchaseModel;
+import com.examatlas.models.WishListModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -42,75 +40,55 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HardBookECommPurchaseActivity extends AppCompatActivity {
+public class WishlistActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private ImageSlider slider;
-    private RecyclerView booksRecyclerView;
-    private HardBookECommPurchaseAdapter hardBookECommPurchaseAdapter;
-    private ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList;
+    private RecyclerView wishlistRecyclerView;
+    private WishListAdapter wishListAdapter;
+    private ArrayList<WishListModel> wishListModelArrayList;
     private ProgressBar progressBar;
     private SessionManager sessionManager;
     private String token;
     private RelativeLayout noDataLayout;
     private SearchView searchView;
-    private final String bookURl = Constant.BASE_URL + "book/getAllBooks";
-    ImageView cartIcon,wishlistIcon;
+    private String wishListUrl = Constant.BASE_URL + "wishlist/getWishlist/";
+    ImageView cartIcon;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hard_book_ecomm_purchase);
+        setContentView(R.layout.activity_wishlist);
 
         initializeViews();
         setupToolbar();
-        setupImageSlider();
         setupRecyclerView();
         setupSearchView();
-        getAllBooks();
-        setClickingListeners();
-    }
+        getAllWishlistItems();
 
+    }
 
 
     private void initializeViews() {
-        toolbar = findViewById(R.id.hardbook_ecomm_purchase_toolbar);
-        slider = findViewById(R.id.slider);
+        toolbar = findViewById(R.id.hardbook_ecomm_wishlist_toolbar);
         progressBar = findViewById(R.id.progressBar);
-        booksRecyclerView = findViewById(R.id.booksRecycler);
+        wishlistRecyclerView = findViewById(R.id.wishListRecycler);
         noDataLayout = findViewById(R.id.noDataLayout);
         searchView = findViewById(R.id.search_icon);
         cartIcon = findViewById(R.id.cartBtn);
-        wishlistIcon = findViewById(R.id.wishListBtn);
-        hardBookECommPurchaseModelArrayList = new ArrayList<>();
+        wishListModelArrayList = new ArrayList<>();
         sessionManager = new SessionManager(this);
         token = sessionManager.getUserData().get("authToken");
+        wishListUrl = wishListUrl + sessionManager.getUserData().get("user_id");
+        progressBar.setVisibility(View.VISIBLE);
+        wishlistRecyclerView.setVisibility(View.GONE);
+        noDataLayout.setVisibility(View.GONE);
     }
-    private void setClickingListeners() {
-        wishlistIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(HardBookECommPurchaseActivity.this, WishlistActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
     private void setupToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
     }
-
-    private void setupImageSlider() {
-        ArrayList<SlideModel> sliderArrayList = new ArrayList<>();
-        sliderArrayList.add(new SlideModel(R.drawable.image1, ScaleTypes.CENTER_CROP));
-        sliderArrayList.add(new SlideModel(R.drawable.image2, ScaleTypes.CENTER_CROP));
-        sliderArrayList.add(new SlideModel(R.drawable.image3, ScaleTypes.CENTER_CROP));
-        slider.setImageList(sliderArrayList);
-    }
-
     private void setupRecyclerView() {
-        booksRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        wishlistRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -124,8 +102,8 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (hardBookECommPurchaseAdapter != null) {
-                    hardBookECommPurchaseAdapter.filter(newText);
+                if (wishListAdapter != null) {
+                    wishListAdapter.filter(newText);
                 }
                 return true;
             }
@@ -140,75 +118,76 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
             imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT);
         }
     }
-
-    private void getAllBooks() {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, bookURl, null,
+    private void getAllWishlistItems() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, wishListUrl, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            booksRecyclerView.setVisibility(View.VISIBLE);
+                            wishlistRecyclerView.setVisibility(View.VISIBLE);
                             progressBar.setVisibility(View.GONE);
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("books");
-                                hardBookECommPurchaseModelArrayList.clear();
+                                JSONArray jsonArray = response.getJSONArray("wishlistItems");
+                                wishListModelArrayList.clear();
 
-                                // Parse books directly here
+                                // Parse wishlist items
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    HardBookECommPurchaseModel model = new HardBookECommPurchaseModel(
+                                    JSONObject bookObject = jsonObject2.getJSONObject("bookId");
+
+                                    WishListModel wishListModel = new WishListModel(
                                             jsonObject2.getString("_id"),
-                                            jsonObject2.getString("title"),
-                                            jsonObject2.getString("keyword"),
-                                            jsonObject2.getString("content"),
-                                            jsonObject2.getString("price"),
-                                            jsonObject2.getString("sellPrice"),
-                                            parseTags(jsonObject2.getJSONArray("tags")),
-                                            jsonObject2.getString("author"),
-                                            jsonObject2.getString("category"),
-                                            jsonObject2.getString("createdAt"),
-                                            jsonObject2.getString("updatedAt")
+                                            bookObject.getString("title"),
+                                            bookObject.getString("keyword"),
+                                            bookObject.getString("content"),
+                                            bookObject.getString("price"),
+                                            bookObject.getString("sellPrice"),
+                                            parseTags(bookObject.getJSONArray("tags")),
+                                            bookObject.getString("author"),
+                                            bookObject.getString("category"),
+                                            bookObject.getString("createdAt"),
+                                            bookObject.getString("updatedAt"),
+                                            jsonObject2.getString("_id") // Use the correct field for item ID
                                     );
-                                    hardBookECommPurchaseModelArrayList.add(model);
+                                    wishListModelArrayList.add(wishListModel);
                                 }
 
-                                if (hardBookECommPurchaseModelArrayList.isEmpty()) {
+                                if (wishListModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
                                 } else {
-                                    if (hardBookECommPurchaseAdapter == null) {
-                                        hardBookECommPurchaseAdapter = new HardBookECommPurchaseAdapter(HardBookECommPurchaseActivity.this, hardBookECommPurchaseModelArrayList);
-                                        booksRecyclerView.setAdapter(hardBookECommPurchaseAdapter);
+                                    if (wishListAdapter == null) {
+                                        wishListAdapter = new WishListAdapter(WishlistActivity.this, wishListModelArrayList);
+                                        wishlistRecyclerView.setAdapter(wishListAdapter);
                                     } else {
-                                        hardBookECommPurchaseAdapter.notifyDataSetChanged();
+                                        wishListAdapter.notifyDataSetChanged();
                                     }
                                 }
                             } else {
-                                Toast.makeText(HardBookECommPurchaseActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(WishlistActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
-                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                            Toast.makeText(WishlistActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                            Log.e("JSON_ERROR", "Error parsing JSON response: " + e.getMessage());
                         }
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMessage = "Error: " + error.toString();
-                        if (error.networkResponse != null) {
-                            try {
-                                String responseData = new String(error.networkResponse.data, "UTF-8");
-                                errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                                errorMessage += "\nResponse Data: " + responseData;
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        Toast.makeText(HardBookECommPurchaseActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                        Log.e("BlogFetchError", errorMessage);
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        String responseData = new String(error.networkResponse.data, "UTF-8");
+                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                        errorMessage += "\nResponse Data: " + responseData;
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                }) {
+                }
+                Toast.makeText(WishlistActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+            }
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -231,7 +210,6 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
         }
         return tags.toString();
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

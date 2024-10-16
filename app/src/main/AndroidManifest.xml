@@ -24,6 +24,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".activities.WishlistActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.HardBookECommPurchaseActivity"
             android:exported="false" />
         <activity
