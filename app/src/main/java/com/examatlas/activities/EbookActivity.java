@@ -8,8 +8,10 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -38,10 +40,14 @@ public class EbookActivity extends AppCompatActivity {
     EbookAdapter ebookAdapter;
     ArrayList<EbookModel> ebookModelArrayList;
     ProgressBar progressBar;
-    private final String ebookURL = Constant.BASE_URL + "book/getAllBooks";
+    private final String ebookURL = "https://examatlas-backend.onrender.com/api/book/getAllBooks?type=book&page=1&per_page=10";
     RelativeLayout noDataLayout;
     String token;
     SessionManager sessionManager;
+    private int currentPage = 1;
+    private boolean isLoading = false; // Flag to prevent multiple requests
+    private int totalPages = 1; // Total number of pages, update this based on response
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +60,7 @@ public class EbookActivity extends AppCompatActivity {
 
         ebookModelArrayList = new ArrayList<>();
 
-        ebookRecyclerview.setLayoutManager(new GridLayoutManager(getApplicationContext(),2));
+        ebookRecyclerview.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
 
         ebookRecyclerview.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
@@ -75,6 +81,10 @@ public class EbookActivity extends AppCompatActivity {
     }
 
     private void getEbooks() {
+        if (isLoading || currentPage > totalPages) return; // Prevent multiple requests
+        isLoading = true; // Set loading flag
+
+        String ebookURL = "https://examatlas-backend.onrender.com/api/book/getAllBooks?type=book&page=" + currentPage + "&per_page=10";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, ebookURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -86,7 +96,7 @@ public class EbookActivity extends AppCompatActivity {
 
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("books");
-                                ebookModelArrayList.clear(); // Clear the list before adding new items
+                                totalPages = response.getJSONObject("pagination").getInt("totalPages"); // Get total pages
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
@@ -111,21 +121,20 @@ public class EbookActivity extends AppCompatActivity {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    EbookModel ebookModel = new EbookModel(ebookID, title, keyword, price, content, author,category,tags.toString(),createdDate);
+                                    EbookModel ebookModel = new EbookModel(ebookID, title, keyword, price, content, author, category, tags.toString(), createdDate);
                                     ebookModelArrayList.add(ebookModel);
                                 }
+
                                 // If you have already created the adapter, just notify the change
-                                if (ebookModelArrayList.isEmpty()) {
-                                    noDataLayout.setVisibility(View.VISIBLE);
-                                    progressBar.setVisibility(View.GONE);
+                                if (ebookAdapter == null) {
+                                    ebookAdapter = new EbookAdapter(ebookModelArrayList, EbookActivity.this);
+                                    ebookRecyclerview.setAdapter(ebookAdapter);
                                 } else {
-                                    if (ebookAdapter == null) {
-                                        ebookAdapter = new EbookAdapter(ebookModelArrayList, EbookActivity.this);
-                                        ebookRecyclerview.setAdapter(ebookAdapter);
-                                    } else {
-                                        ebookAdapter.notifyDataSetChanged();
-                                    }
+                                    ebookAdapter.notifyDataSetChanged();
                                 }
+
+                                // Increment the current page after successful fetch
+                                currentPage++;
                             } else {
                                 // Handle the case where status is false
                                 String message = response.getString("message");
@@ -133,6 +142,8 @@ public class EbookActivity extends AppCompatActivity {
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                        } finally {
+                            isLoading = false; // Reset loading flag
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -150,6 +161,7 @@ public class EbookActivity extends AppCompatActivity {
                 }
                 Toast.makeText(EbookActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 Log.e("BlogFetchError", errorMessage);
+                isLoading = false; // Reset loading flag on error
             }
         }) {
             @Override
@@ -160,6 +172,22 @@ public class EbookActivity extends AppCompatActivity {
                 return headers;
             }
         };
+
         MySingleton.getInstance(EbookActivity.this).addToRequestQueue(jsonObjectRequest);
+    }
+
+    // Call this method to set the scroll listener on your RecyclerView
+    private void setupScrollListener() {
+        ebookRecyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == ebookModelArrayList.size() - 1) {
+                    // Load more items when reaching the end
+                    getEbooks();
+                }
+            }
+        });
     }
 }

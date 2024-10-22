@@ -30,6 +30,7 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
 import com.examatlas.adapter.HardBookECommPurchaseAdapter;
 import com.examatlas.models.HardBookECommPurchaseModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -92,6 +93,13 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        cartIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HardBookECommPurchaseActivity.this, CartViewActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -140,7 +148,6 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
             imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT);
         }
     }
-
     private void getAllBooks() {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, bookURl, null,
                 new Response.Listener<JSONObject>() {
@@ -158,24 +165,48 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                                 // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
+                                    ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
+                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("images");
+
+                                    for (int j = 0; j < jsonArray1.length(); j++) {
+                                        JSONObject jsonObject3 = jsonArray1.getJSONObject(j);
+                                        BookImageModels bookImageModels = new BookImageModels(
+                                                jsonObject3.getString("url"),
+                                                jsonObject3.getString("filename"),
+                                                jsonObject3.getString("contentType"),
+                                                jsonObject3.getString("size"), // Assuming size is an integer
+                                                jsonObject3.getString("uploadDate"),
+                                                jsonObject3.getString("_id")
+                                        );
+                                        bookImageArrayList.add(bookImageModels);
+                                    }
                                     HardBookECommPurchaseModel model = new HardBookECommPurchaseModel(
                                             jsonObject2.getString("_id"),
+                                            jsonObject2.getString("type"),
                                             jsonObject2.getString("title"),
                                             jsonObject2.getString("keyword"),
-                                            jsonObject2.getString("content"),
+                                            jsonObject2.getString("stock"), // Assuming stock is an integer
                                             jsonObject2.getString("price"),
                                             jsonObject2.getString("sellPrice"),
-                                            parseTags(jsonObject2.getJSONArray("tags")),
+                                            jsonObject2.getString("content"),
                                             jsonObject2.getString("author"),
-                                            jsonObject2.getString("category"),
+                                            jsonObject2.getString("categoryId"),
+                                            jsonObject2.getString("subCategoryId"),
+                                            jsonObject2.getString("subjectId"),
+                                            parseTags(jsonObject2.getJSONArray("tags")), // Ensure this method is implemented correctly
+                                            jsonObject2.getString("bookUrl"),
+                                            bookImageArrayList,
                                             jsonObject2.getString("createdAt"),
-                                            jsonObject2.getString("updatedAt")
+                                            jsonObject2.getString("updatedAt"),
+                                            jsonObject2.getString("isInCart")
                                     );
                                     hardBookECommPurchaseModelArrayList.add(model);
                                 }
 
                                 if (hardBookECommPurchaseModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
+                                    booksRecyclerView.setVisibility(View.GONE);
+                                    progressBar.setVisibility(View.GONE);
                                 } else {
                                     if (hardBookECommPurchaseAdapter == null) {
                                         hardBookECommPurchaseAdapter = new HardBookECommPurchaseAdapter(HardBookECommPurchaseActivity.this, hardBookECommPurchaseModelArrayList);
@@ -231,8 +262,6 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
         }
         return tags.toString();
     }
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -242,3 +271,4 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+

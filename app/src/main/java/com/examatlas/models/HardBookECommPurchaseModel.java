@@ -1,9 +1,13 @@
 package com.examatlas.models;
 
-public class HardBookECommPurchaseModel {
-    String id,title,keyword,content,price,sellPrice,tags,author,category,createdAt,updatedAt,itemId = null;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
-    public HardBookECommPurchaseModel(String id, String title, String keyword, String content, String price, String sellPrice, String tags, String author, String category, String createdAt, String updatedAt) {
+public class HardBookECommPurchaseModel {
+    String id,title,keyword,content,price,sellPrice,tags,author, categoryId,createdAt,updatedAt,itemId = null,type,stock,subCategoryId,subjectId,bookUrl,isInCart;
+    ArrayList images;
+
+    public HardBookECommPurchaseModel(String id, String type, String title, String keyword, String stock, String price, String sellPrice, String content, String author, String categoryId, String subCategoryId, String subjectId, String tags, String bookUrl, ArrayList images, String createdAt, String updatedAt, String isInCart) {
         this.id = id;
         this.title = title;
         this.keyword = keyword;
@@ -12,9 +16,72 @@ public class HardBookECommPurchaseModel {
         this.sellPrice = sellPrice;
         this.tags = tags;
         this.author = author;
-        this.category = category;
+        this.categoryId = categoryId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.stock = stock;
+        this.type = type;
+        this.subCategoryId = subCategoryId;
+        this.subjectId = subjectId;
+        this.bookUrl = bookUrl;
+        this.images = images;
+        this.isInCart = isInCart;
+    }
+
+    public String getIsInCart() {
+        return isInCart;
+    }
+
+    public void setIsInCart(String isInCart) {
+        this.isInCart = isInCart;
+    }
+
+    public ArrayList getImages() {
+        return images;
+    }
+
+    public void setImages(ArrayList images) {
+        this.images = images;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getStock() {
+        return stock;
+    }
+
+    public void setStock(String stock) {
+        this.stock = stock;
+    }
+
+    public String getSubCategoryId() {
+        return subCategoryId;
+    }
+
+    public void setSubCategoryId(String subCategoryId) {
+        this.subCategoryId = subCategoryId;
+    }
+
+    public String getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(String subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public String getBookUrl() {
+        return bookUrl;
+    }
+
+    public void setBookUrl(String bookUrl) {
+        this.bookUrl = bookUrl;
     }
 
     public String getItemId() {
@@ -89,12 +156,12 @@ public class HardBookECommPurchaseModel {
         this.author = author;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getCreatedAt() {

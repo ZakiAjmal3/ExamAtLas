@@ -2,6 +2,7 @@ package com.examatlas.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -13,12 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -27,7 +30,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
+import com.examatlas.activities.CartViewActivity;
+import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.WishListModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -54,7 +60,7 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
         this.context = context;
         this.originalHardBookECommwWishlistModelArrayList = new ArrayList<>(hardBookECommWishlistModelArrayList);
         this.hardBookECommWishlistModelArrayList = new ArrayList<>(originalHardBookECommwWishlistModelArrayList);
-        this.heartToggleStates = new ArrayList<>(Collections.nCopies(hardBookECommWishlistModelArrayList.size(), false));
+        this.heartToggleStates = new ArrayList<>(Collections.nCopies(hardBookECommWishlistModelArrayList.size(), true));
         sessionManager = new SessionManager(context);
         authToken = sessionManager.getUserData().get("authToken");
     }
@@ -97,12 +103,8 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
             holder.setHighlightedText(holder.author, currentBook.getAuthor(), currentQuery);
             holder.setHighlightedPrice(holder.price, spannableText, currentQuery);
 
-            // Load the book image
-            Glide.with(context)
-                    .load(R.drawable.book1) // Placeholder for loading image
-                    .placeholder(R.drawable.book1)
-                    .error(R.drawable.book1)
-                    .into(holder.bookImage);
+            BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getImages());
+            holder.bookImage.setAdapter(bookImageAdapter);
 
             // Set the heart icon based on the state
             holder.toggleHeartIcon.setImageResource(heartToggleStates.get(position) ? R.drawable.ic_heart_red : R.drawable.ic_heart_white);
@@ -138,11 +140,75 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
                     }
                 }
             });
+            holder.addToCartBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String userId = sessionManager.getUserData().get("user_id");
+                    String bookID = currentBook.getBookId();
+                    String addToCartUrl = Constant.BASE_URL + "cart/add";
+
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("userId", userId);
+                        jsonObject.put("bookId", bookID);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, addToCartUrl, jsonObject,
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try {
+                                        String status = response.getString("success");
+                                        String message = response.getString("message");
+                                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                                        holder.addToCartBtn.setVisibility(View.GONE);
+                                        holder.goToCartBtn.setVisibility(View.VISIBLE);
+                                    } catch (JSONException e) {
+                                        Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            String errorMessage = "Error: " + error.toString();
+                            if (error.networkResponse != null) {
+                                try {
+                                    String responseData = new String(error.networkResponse.data, "UTF-8");
+                                    errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                                    errorMessage += "\nResponse Data: " + responseData;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+                            Log.e("LoginActivity", errorMessage);
+                        }
+                    }) {
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            Map<String, String> headers = new HashMap<>();
+                            headers.put("Content-Type", "application/json");
+                            headers.put("Authorization", "Bearer " + authToken);
+                            return headers;
+                        }
+                    };
+                    MySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
+                }
+            });
+            holder.goToCartBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, CartViewActivity.class);
+                    context.startActivity(intent);
+                }
+            });
         }
         private void addToWishlist (WishListModel currentBook){
             String addBookUrl = Constant.BASE_URL + "wishlist/toggleWishlist";
             String userID = sessionManager.getUserData().get("user_id");
-            String bookID = currentBook.getId();
+            String bookID = currentBook.getBookId();
             JSONObject bookDetails = new JSONObject();
             try {
                 bookDetails.put("userId", userID);
@@ -208,6 +274,8 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
                                 if (status) {
                                     String message = response.getString("message");
                                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                                    hardBookECommWishlistModelArrayList.remove(currentBook);
+                                    notifyDataSetChanged();
                                 }
                             } catch (JSONException e) {
                                 Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
@@ -269,8 +337,9 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             TextView title, author, price;
-            ImageView bookImage, toggleHeartIcon;
-
+            ImageView toggleHeartIcon;
+            Button addToCartBtn,goToCartBtn;
+            ViewPager2 bookImage;
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.bookTitle);
@@ -278,6 +347,8 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
                 price = itemView.findViewById(R.id.bookPriceInfo);
                 bookImage = itemView.findViewById(R.id.imgBook);
                 toggleHeartIcon = itemView.findViewById(R.id.heartIconToggle);
+                addToCartBtn = itemView.findViewById(R.id.addToCartBtn);
+                goToCartBtn = itemView.findViewById(R.id.goToCartBtn);
             }
 
             public void setHighlightedText(TextView textView, String text, String query) {

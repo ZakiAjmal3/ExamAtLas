@@ -24,12 +24,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageView
+                <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/imgBook"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/noimage" />
+                    android:scaleType="fitCenter" />
 
                 <TextView
                     android:id="@+id/tvBestSeller"
@@ -90,6 +89,7 @@
                 android:padding="5dp"
                 android:layout_centerHorizontal="true"/>
             <Button
+                android:id="@+id/addToCartBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/bookPriceInfo"
@@ -99,6 +99,19 @@
                 android:layout_marginBottom="10dp"
                 android:textSize="12sp"
                 android:text="ADD TO CART"
+                />
+            <Button
+                android:id="@+id/goToCartBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bookPriceInfo"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="12sp"
+                android:text="GO TO CART"
+                android:visibility="gone"
                 />
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>

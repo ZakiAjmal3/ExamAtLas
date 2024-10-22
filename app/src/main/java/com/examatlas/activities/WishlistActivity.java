@@ -28,6 +28,7 @@ import com.examatlas.adapter.HardBookECommPurchaseAdapter;
 import com.examatlas.adapter.WishListAdapter;
 import com.examatlas.models.HardBookECommPurchaseModel;
 import com.examatlas.models.WishListModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -135,21 +136,43 @@ public class WishlistActivity extends AppCompatActivity {
                                 // Parse wishlist items
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
+                                    String itemId = jsonObject2.getString("_id");
                                     JSONObject bookObject = jsonObject2.getJSONObject("bookId");
 
+                                    ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
+                                    JSONArray jsonArray3 = bookObject.getJSONArray("images");
+                                    for (int j = 0; j < jsonArray3.length(); j++) {
+                                        JSONObject jsonObject3 = jsonArray3.getJSONObject(j);
+                                        BookImageModels bookImageModels = new BookImageModels(
+                                                jsonObject3.getString("url"),
+                                                jsonObject3.getString("filename"),
+                                                jsonObject3.getString("contentType"),
+                                                jsonObject3.getString("size"), // Assuming size is an integer
+                                                jsonObject3.getString("uploadDate"),
+                                                jsonObject3.getString("_id")
+                                        );
+                                        bookImageArrayList.add(bookImageModels);
+                                    }
+
                                     WishListModel wishListModel = new WishListModel(
-                                            jsonObject2.getString("_id"),
+                                            itemId,
+                                            bookObject.getString("_id"),
+                                            bookObject.getString("type"),
                                             bookObject.getString("title"),
                                             bookObject.getString("keyword"),
-                                            bookObject.getString("content"),
+                                            bookObject.getString("stock"),
                                             bookObject.getString("price"),
                                             bookObject.getString("sellPrice"),
-                                            parseTags(bookObject.getJSONArray("tags")),
+                                            bookObject.getString("content"),
                                             bookObject.getString("author"),
-                                            bookObject.getString("category"),
+                                            bookObject.getString("categoryId"),
+                                            bookObject.getString("subCategoryId"),
+                                            bookObject.getString("subjectId"),
+                                            parseTags(bookObject.getJSONArray("tags")),
+                                            bookObject.getString("bookUrl"),
+                                            bookImageArrayList,
                                             bookObject.getString("createdAt"),
-                                            bookObject.getString("updatedAt"),
-                                            jsonObject2.getString("_id") // Use the correct field for item ID
+                                            bookObject.getString("updatedAt")
                                     );
                                     wishListModelArrayList.add(wishListModel);
                                 }

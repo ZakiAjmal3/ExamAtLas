@@ -4,14 +4,14 @@ import com.examatlas.models.extraModels.BookImageModels;
 
 import java.util.ArrayList;
 
-public class WishListModel {
-    String bookId,type,title,keyword,stock,content,price,sellPrice,tags,bookURL,author,categoryId,subCategoryId,subjectId,createdAt,updatedAt,itemId = null;
-    ArrayList<BookImageModels> images;
-
-    public WishListModel(String itemId, String bookId, String type, String title, String keyword, String stock, String price, String sellPrice, String content, String author, String categoryId, String subCategoryId, String subjectId, String tags, String bookURL, ArrayList<BookImageModels> images, String createdAt, String updatedAt) {
+public class CartViewModel {
+    String cartId,itemId,bookId,type,title,keyword,stock,price,sellPrice,content,author, categoryId,subCategoryId,subjectId,tags,createdAt,updatedAt,quantity;
+    ArrayList<BookImageModels> bookImageArrayList;
+    public CartViewModel(String cartId, String itemId, String bookId, String type, String title, String keyword, String stock, String price, String sellPrice, String content, String author, String categoryId, String subCategoryId, String subjectId, String tags,ArrayList bookImageArrayList, String createdAt, String updatedAt, String quantity) {
+        this.cartId = cartId;
         this.itemId = itemId;
-        this.bookId = bookId;
         this.type = type;
+        this.bookId = bookId;
         this.title = title;
         this.keyword = keyword;
         this.stock = stock;
@@ -22,19 +22,19 @@ public class WishListModel {
         this.categoryId = categoryId;
         this.subCategoryId = subCategoryId;
         this.subjectId = subjectId;
+        this.bookImageArrayList = bookImageArrayList;
         this.tags = tags;
-        this.bookURL = bookURL;
-        this.images = images;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.quantity = quantity;
     }
 
-    public String getBookURL() {
-        return bookURL;
+    public String getType() {
+        return type;
     }
 
-    public void setBookURL(String bookURL) {
-        this.bookURL = bookURL;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getStock() {
@@ -43,14 +43,6 @@ public class WishListModel {
 
     public void setStock(String stock) {
         this.stock = stock;
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
     }
 
     public String getSubCategoryId() {
@@ -69,27 +61,35 @@ public class WishListModel {
         this.subjectId = subjectId;
     }
 
-    public ArrayList<BookImageModels> getImages() {
-        return images;
+    public ArrayList<BookImageModels> getBookImageArrayList() {
+        return bookImageArrayList;
     }
 
-    public void setImages(ArrayList<BookImageModels> images) {
-        this.images = images;
+    public void setBookImageArrayList(ArrayList<BookImageModels> bookImageArrayList) {
+        this.bookImageArrayList = bookImageArrayList;
     }
 
-    public String getType() {
-        return type;
+    public String getCartId() {
+        return cartId;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setCartId(String cartId) {
+        this.cartId = cartId;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
     public String getBookId() {
         return bookId;
     }
 
-    public void setBookId(String id) {
+    public void setBookId(String bookId) {
         this.bookId = bookId;
     }
 
@@ -109,14 +109,6 @@ public class WishListModel {
         this.keyword = keyword;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public String getPrice() {
         return price;
     }
@@ -133,12 +125,12 @@ public class WishListModel {
         this.sellPrice = sellPrice;
     }
 
-    public String getTags() {
-        return tags;
+    public String getContent() {
+        return content;
     }
 
-    public void setTags(String tags) {
-        this.tags = tags;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getAuthor() {
@@ -147,6 +139,22 @@ public class WishListModel {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
     public String getCreatedAt() {
@@ -165,11 +173,11 @@ public class WishListModel {
         this.updatedAt = updatedAt;
     }
 
-    public String getItemId() {
-        return itemId;
+    public String getQuantity() {
+        return quantity;
     }
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
     }
 }

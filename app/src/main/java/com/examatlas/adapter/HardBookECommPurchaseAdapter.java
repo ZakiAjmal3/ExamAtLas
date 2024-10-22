@@ -2,6 +2,7 @@ package com.examatlas.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -13,12 +14,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -27,16 +31,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
-import com.examatlas.fragment.BlogFragment;
-import com.examatlas.models.BlogModel;
+import com.examatlas.activities.CartViewActivity;
+import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.HardBookECommPurchaseModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
-import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,6 +56,7 @@ public class HardBookECommPurchaseAdapter extends RecyclerView.Adapter<HardBookE
     private String currentQuery = "";
     String authToken;
     SessionManager sessionManager;
+    ArrayList bookImageUrls;
 
     public HardBookECommPurchaseAdapter(Context context, ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList) {
         this.originalHardBookECommPurchaseModelArrayList = new ArrayList<>(hardBookECommPurchaseModelArrayList);
@@ -61,6 +65,7 @@ public class HardBookECommPurchaseAdapter extends RecyclerView.Adapter<HardBookE
         this.heartToggleStates = new ArrayList<>(Collections.nCopies(hardBookECommPurchaseModelArrayList.size(), false));
         sessionManager = new SessionManager(context);
         authToken = sessionManager.getUserData().get("authToken");
+        bookImageUrls = new ArrayList<>();
     }
 
     @NonNull
@@ -101,12 +106,13 @@ public class HardBookECommPurchaseAdapter extends RecyclerView.Adapter<HardBookE
         holder.setHighlightedText(holder.author, currentBook.getAuthor(), currentQuery);
         holder.setHighlightedPrice(holder.price, spannableText, currentQuery);
 
-        // Load the book image
-        Glide.with(context)
-                .load(R.drawable.book1) // Placeholder for loading image
-                .placeholder(R.drawable.book1)
-                .error(R.drawable.book1)
-                .into(holder.bookImage);
+        if (currentBook.getIsInCart().equals("true")){
+            holder.addToCartBtn.setVisibility(View.GONE);
+            holder.goToCartBtn.setVisibility(View.VISIBLE);
+        }
+
+        BookImageAdapter bookImageAdapter = new BookImageAdapter((ArrayList<BookImageModels>) currentBook.getImages());
+        holder.viewPager.setAdapter(bookImageAdapter);
 
         // Set the heart icon based on the state
         holder.toggleHeartIcon.setImageResource(heartToggleStates.get(position) ? R.drawable.ic_heart_red : R.drawable.ic_heart_white);
@@ -140,6 +146,71 @@ public class HardBookECommPurchaseAdapter extends RecyclerView.Adapter<HardBookE
                                 }
                             }).show();
                 }
+            }
+        });
+
+        holder.addToCartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String userId = sessionManager.getUserData().get("user_id");
+                String bookID = currentBook.getId();
+                String addToCartUrl = Constant.BASE_URL + "cart/add";
+
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("userId", userId);
+                    jsonObject.put("bookId", bookID);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, addToCartUrl, jsonObject,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    String status = response.getString("success");
+                                    String message = response.getString("message");
+                                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                                    holder.addToCartBtn.setVisibility(View.GONE);
+                                    holder.goToCartBtn.setVisibility(View.VISIBLE);
+                                } catch (JSONException e) {
+                                    Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                String responseData = new String(error.networkResponse.data, "UTF-8");
+                                errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                                errorMessage += "\nResponse Data: " + responseData;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+                        Log.e("LoginActivity", errorMessage);
+                    }
+                }) {
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put("Content-Type", "application/json");
+                        headers.put("Authorization", "Bearer " + authToken);
+                        return headers;
+                    }
+                };
+                MySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
+            }
+        });
+        holder.goToCartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, CartViewActivity.class);
+                context.startActivity(intent);
             }
         });
     }
@@ -273,15 +344,19 @@ public class HardBookECommPurchaseAdapter extends RecyclerView.Adapter<HardBookE
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, author, price;
-        ImageView bookImage, toggleHeartIcon;
+        ImageView toggleHeartIcon;
+        Button addToCartBtn,goToCartBtn;
+        ViewPager2 viewPager;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.bookTitle);
             author = itemView.findViewById(R.id.bookAuthor);
             price = itemView.findViewById(R.id.bookPriceInfo);
-            bookImage = itemView.findViewById(R.id.imgBook);
+            viewPager = itemView.findViewById(R.id.imgBook);
             toggleHeartIcon = itemView.findViewById(R.id.heartIconToggle);
+            addToCartBtn = itemView.findViewById(R.id.addToCartBtn);
+            goToCartBtn = itemView.findViewById(R.id.goToCartBtn);
         }
 
         public void setHighlightedText(TextView textView, String text, String query) {
