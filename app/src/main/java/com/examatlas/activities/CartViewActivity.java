@@ -1,6 +1,7 @@
 package com.examatlas.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,10 +47,10 @@ public class CartViewActivity extends AppCompatActivity {
     Toolbar toolbar;
     SessionManager sessionManager;
     String cartUrl,authToken;
-    RelativeLayout noDataLayout, priceDetailRelativeLayout;
+    RelativeLayout noDataLayout, priceDetailRelativeLayout,bottomStickyButtonLayout;
     ProgressBar progressBar;
-    Button goToBillingBtn;
     TextView priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
+    Button goToCheckOutBTn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,8 +60,9 @@ public class CartViewActivity extends AppCompatActivity {
         bookCartRecyclerView = findViewById(R.id.cartItemRecycler);
         noDataLayout = findViewById(R.id.noDataLayout);
         priceDetailRelativeLayout = findViewById(R.id.priceRelativeLayout);
+        bottomStickyButtonLayout = findViewById(R.id.bottomStickyRelativeLayout);
         progressBar = findViewById(R.id.cartProgress);
-        goToBillingBtn = findViewById(R.id.goToBillingBtn);
+        goToCheckOutBTn = findViewById(R.id.gotoCheckOut);
 
         priceItemsTxt = findViewById(R.id.priceAndItemstxt);
         priceOriginalTxt = findViewById(R.id.priceTxt);
@@ -77,6 +79,14 @@ public class CartViewActivity extends AppCompatActivity {
         authToken = sessionManager.getUserData().get("authToken");
         setupToolbar();
         fetchCartItems();
+
+        goToCheckOutBTn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartViewActivity.this, CreateBillingAddressActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -132,6 +142,7 @@ public class CartViewActivity extends AppCompatActivity {
                             if (status) {
                                 bookCartRecyclerView.setVisibility(View.VISIBLE);
                                 priceDetailRelativeLayout.setVisibility(View.VISIBLE);
+                                bottomStickyButtonLayout.setVisibility(View.VISIBLE);
                                 noDataLayout.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.GONE);
 
@@ -206,6 +217,7 @@ public class CartViewActivity extends AppCompatActivity {
 
                                         bookCartRecyclerView.setVisibility(View.VISIBLE);
                                         priceDetailRelativeLayout.setVisibility(View.VISIBLE);
+                                        bottomStickyButtonLayout.setVisibility(View.VISIBLE);
                                         noDataLayout.setVisibility(View.GONE);
                                         progressBar.setVisibility(View.GONE);
                                         cartViewAdapter = new CartViewAdapter(CartViewActivity.this, cartViewModelArrayList);
@@ -218,6 +230,7 @@ public class CartViewActivity extends AppCompatActivity {
                             } else {
                                 bookCartRecyclerView.setVisibility(View.GONE);
                                 priceDetailRelativeLayout.setVisibility(View.GONE);
+                                bottomStickyButtonLayout.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.GONE);
                                 noDataLayout.setVisibility(View.VISIBLE);
                                 // Handle the case where status is false
