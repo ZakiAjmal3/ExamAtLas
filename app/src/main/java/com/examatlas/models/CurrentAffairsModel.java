@@ -1,16 +1,41 @@
 package com.examatlas.models;
 
 public class CurrentAffairsModel {
-    String cfID,cfTitle,cfKeyword,cfContent,cfTags,cfImage,cfCreatedDate;
+    String cfID,cfTitle,cfKeyword,cfContent,cfTags,totalRows,totalPages,currentPage;
 
-    public CurrentAffairsModel(String cfID, String cfTitle, String cfKeyword, String cfContent, String cfTags, String cfImage, String cfCreatedDate) {
+    public CurrentAffairsModel(String cfID, String cfTitle, String cfKeyword, String cfContent, String cfTags,String totalRows,String totalPages,String currentPage) {
         this.cfID = cfID;
         this.cfTitle = cfTitle;
         this.cfKeyword = cfKeyword;
         this.cfContent = cfContent;
         this.cfTags = cfTags;
-        this.cfImage = cfImage;
-        this.cfCreatedDate = cfCreatedDate;
+        this.totalRows = totalRows;
+        this.totalPages = totalPages;
+        this.currentPage = currentPage;
+    }
+
+    public String getTotalRows() {
+        return totalRows;
+    }
+
+    public void setTotalRows(String totalRows) {
+        this.totalRows = totalRows;
+    }
+
+    public String getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(String totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public String getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(String currentPage) {
+        this.currentPage = currentPage;
     }
 
     public String getCfID() {
@@ -53,19 +78,4 @@ public class CurrentAffairsModel {
         this.cfTags = cfTags;
     }
 
-    public String getCfImage() {
-        return cfImage;
-    }
-
-    public void setCfImage(String cfImage) {
-        this.cfImage = cfImage;
-    }
-
-    public String getCfCreatedDate() {
-        return cfCreatedDate;
-    }
-
-    public void setCfCreatedDate(String cfCreatedDate) {
-        this.cfCreatedDate = cfCreatedDate;
-    }
 }

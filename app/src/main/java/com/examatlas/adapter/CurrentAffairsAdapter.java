@@ -43,24 +43,20 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
         holder.content.setText(currentAffairsModelArrayList.get(position).getCfContent());
         holder.tags.setText(currentAffairsModelArrayList.get(position).getCfTags());
 
-        // Format the created date
-        String createdDateStr = currentAffairsModelArrayList.get(position).getCfCreatedDate();
-        String formattedDate = formatDate(createdDateStr);
-        holder.createdDate.setText(formattedDate);
-
-        if (currentAffairsModelArrayList.get(position).getCfImage() != null) {
+//        if (currentAffairsModelArrayList.get(position).getCfImage() != null) {
             Glide.with(context)
-                    .load(currentAffairsModelArrayList.get(position).getCfImage())
+//                    .load(currentAffairsModelArrayList.get(position).getCfImage())
+                    .load(R.drawable.image1)
                     .placeholder(R.drawable.image1)
                     .error(R.drawable.image1)
                     .into(holder.cfImage);
-        } else {
-            Glide.with(context)
-                    .load(R.drawable.noimage)
-                    .placeholder(R.drawable.noimage)
-                    .error(R.drawable.noimage)
-                    .into(holder.cfImage);
-        }
+//        } else {
+//            Glide.with(context)
+//                    .load(R.drawable.noimage)
+//                    .placeholder(R.drawable.noimage)
+//                    .error(R.drawable.noimage)
+//                    .into(holder.cfImage);
+//        }
     }
 
     @Override
@@ -68,21 +64,21 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
         return currentAffairsModelArrayList.size();
     }
 
-    private String formatDate(String dateStr) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        Date date;
-        try {
-            date = inputFormat.parse(dateStr);
-            return outputFormat.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return dateStr; // Return original if parsing fails
-        }
-    }
+//    private String formatDate(String dateStr) {
+//        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+//        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+//        Date date;
+//        try {
+//            date = inputFormat.parse(dateStr);
+//            return outputFormat.format(date);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//            return dateStr; // Return original if parsing fails
+//        }
+//    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, content, tags, createdDate;
+        TextView title, content, tags;
         ImageView cfImage;
 
         public ViewHolder(@NonNull View itemView) {
@@ -91,7 +87,6 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
             title = itemView.findViewById(R.id.txtTitle);
             content = itemView.findViewById(R.id.txtContent);
             tags = itemView.findViewById(R.id.tagTxt);
-            createdDate = itemView.findViewById(R.id.txtDate);
         }
     }
 }

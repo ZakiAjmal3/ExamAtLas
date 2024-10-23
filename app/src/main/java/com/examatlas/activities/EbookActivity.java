@@ -21,7 +21,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.EbookAdapter;
+import com.examatlas.adapter.HardBookECommPurchaseAdapter;
 import com.examatlas.models.EbookModel;
+import com.examatlas.models.HardBookECommPurchaseModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -37,16 +40,18 @@ import java.util.Map;
 public class EbookActivity extends AppCompatActivity {
     ImageView toolbarBackBtn;
     RecyclerView ebookRecyclerview;
-    EbookAdapter ebookAdapter;
-    ArrayList<EbookModel> ebookModelArrayList;
+//    EbookAdapter ebookAdapter;
+    HardBookECommPurchaseAdapter ebookAdapter;
+//    ArrayList<EbookModel> ebookModelArrayList;
+    ArrayList<HardBookECommPurchaseModel> ebookModelArrayList;
     ProgressBar progressBar;
-    private final String ebookURL = "https://examatlas-backend.onrender.com/api/book/getAllBooks?type=book&page=1&per_page=10";
+    private final String bookURL = Constant.BASE_URL + "book/getAllBooks";
     RelativeLayout noDataLayout;
     String token;
     SessionManager sessionManager;
     private int currentPage = 1;
-    private boolean isLoading = false; // Flag to prevent multiple requests
-    private int totalPages = 1; // Total number of pages, update this based on response
+    private int totalPages = 1;
+    private final int itemsPerPage = 10; // Total number of pages, update this based on response
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +86,8 @@ public class EbookActivity extends AppCompatActivity {
     }
 
     private void getEbooks() {
-        if (isLoading || currentPage > totalPages) return; // Prevent multiple requests
-        isLoading = true; // Set loading flag
-
-        String ebookURL = "https://examatlas-backend.onrender.com/api/book/getAllBooks?type=book&page=" + currentPage + "&per_page=10";
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, ebookURL, null,
+        String paginatedURL = bookURL + "?type=book&page=" + currentPage + "&per_page=" + itemsPerPage;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -96,74 +98,95 @@ public class EbookActivity extends AppCompatActivity {
 
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("books");
-                                totalPages = response.getJSONObject("pagination").getInt("totalPages"); // Get total pages
+                                ebookModelArrayList.clear();
 
+                                // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    String ebookID = jsonObject2.getString("_id");
-                                    String title = jsonObject2.getString("title");
-                                    String keyword = jsonObject2.getString("keyword");
-                                    String price = jsonObject2.getString("price");
-                                    String content = jsonObject2.getString("content");
-                                    String author = jsonObject2.getString("author");
-                                    String category = jsonObject2.getString("category");
-                                    String createdDate = jsonObject2.getString("createdAt");
+                                    ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
+                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("images");
 
-                                    // Use StringBuilder for tags
-                                    StringBuilder tags = new StringBuilder();
-                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
+                                    JSONObject jsonObject = response.getJSONObject("pagination");
+
+                                    int totalRows = Integer.parseInt(jsonObject.getString("totalRows"));
+                                    totalPages = Integer.parseInt(jsonObject.getString("totalPages"));
+                                    currentPage = Integer.parseInt(jsonObject.getString("currentPage"));
+                                    int pageSize = Integer.parseInt(jsonObject.getString("pageSize"));
+
                                     for (int j = 0; j < jsonArray1.length(); j++) {
-                                        String singleTag = jsonArray1.getString(j);
-                                        tags.append(singleTag).append(", ");
+                                        JSONObject jsonObject3 = jsonArray1.getJSONObject(j);
+                                        BookImageModels bookImageModels = new BookImageModels(
+                                                jsonObject3.getString("url"),
+                                                jsonObject3.getString("filename"),
+                                                jsonObject3.getString("contentType"),
+                                                jsonObject3.getString("size"), // Assuming size is an integer
+                                                jsonObject3.getString("uploadDate"),
+                                                jsonObject3.getString("_id")
+                                        );
+                                        bookImageArrayList.add(bookImageModels);
                                     }
-                                    // Remove trailing comma and space if any
-                                    if (tags.length() > 0) {
-                                        tags.setLength(tags.length() - 2);
-                                    }
-
-                                    EbookModel ebookModel = new EbookModel(ebookID, title, keyword, price, content, author, category, tags.toString(), createdDate);
-                                    ebookModelArrayList.add(ebookModel);
+                                    HardBookECommPurchaseModel model = new HardBookECommPurchaseModel(
+                                            jsonObject2.getString("_id"),
+                                            jsonObject2.getString("type"),
+                                            jsonObject2.getString("title"),
+                                            jsonObject2.getString("keyword"),
+                                            jsonObject2.getString("stock"),
+                                            jsonObject2.getString("price"),
+                                            jsonObject2.getString("sellPrice"),
+                                            jsonObject2.getString("content"),
+                                            jsonObject2.getString("author"),
+                                            jsonObject2.getString("categoryId"),
+                                            jsonObject2.getString("subCategoryId"),
+                                            jsonObject2.getString("subjectId"),
+                                            parseTags(jsonObject2.getJSONArray("tags")), // Ensure this method is implemented correctly
+                                            jsonObject2.getString("bookUrl"),
+                                            bookImageArrayList,
+                                            jsonObject2.getString("createdAt"),
+                                            jsonObject2.getString("updatedAt"),
+                                            jsonObject2.getString("isInCart"),
+                                            jsonObject2.getString("isInWishList"),
+                                            totalRows,totalPages,currentPage,pageSize
+                                    );
+                                    ebookModelArrayList.add(model);
                                 }
-
-                                // If you have already created the adapter, just notify the change
-                                if (ebookAdapter == null) {
-                                    ebookAdapter = new EbookAdapter(ebookModelArrayList, EbookActivity.this);
-                                    ebookRecyclerview.setAdapter(ebookAdapter);
+                                updateUI();
+                                if (ebookModelArrayList.isEmpty()) {
+                                    noDataLayout.setVisibility(View.VISIBLE);
+                                    ebookRecyclerview.setVisibility(View.GONE);
+                                    progressBar.setVisibility(View.GONE);
                                 } else {
-                                    ebookAdapter.notifyDataSetChanged();
+                                    if (ebookAdapter == null) {
+                                        ebookAdapter = new HardBookECommPurchaseAdapter(EbookActivity.this, ebookModelArrayList);
+                                        ebookRecyclerview.setAdapter(ebookAdapter);
+                                    } else {
+                                        ebookAdapter.notifyDataSetChanged();
+                                    }
                                 }
-
-                                // Increment the current page after successful fetch
-                                currentPage++;
                             } else {
-                                // Handle the case where status is false
-                                String message = response.getString("message");
-                                Toast.makeText(EbookActivity.this, message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EbookActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
-                        } finally {
-                            isLoading = false; // Reset loading flag
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMessage = "Error: " + error.toString();
-                if (error.networkResponse != null) {
-                    try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                String responseData = new String(error.networkResponse.data, "UTF-8");
+                                errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                                errorMessage += "\nResponse Data: " + responseData;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Toast.makeText(EbookActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        Log.e("BlogFetchError", errorMessage);
                     }
-                }
-                Toast.makeText(EbookActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                Log.e("BlogFetchError", errorMessage);
-                isLoading = false; // Reset loading flag on error
-            }
-        }) {
+                }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -172,10 +195,35 @@ public class EbookActivity extends AppCompatActivity {
                 return headers;
             }
         };
-
-        MySingleton.getInstance(EbookActivity.this).addToRequestQueue(jsonObjectRequest);
+        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-
+    private void updateUI() {
+        if (ebookModelArrayList.isEmpty()) {
+            noDataLayout.setVisibility(View.VISIBLE);
+            ebookRecyclerview.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+        } else {
+            noDataLayout.setVisibility(View.GONE);
+            ebookRecyclerview.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            if (ebookAdapter == null) {
+                ebookAdapter = new HardBookECommPurchaseAdapter(this, ebookModelArrayList);
+                ebookRecyclerview.setAdapter(ebookAdapter);
+            } else {
+                ebookAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+    private String parseTags(JSONArray tagsArray) throws JSONException {
+        StringBuilder tags = new StringBuilder();
+        for (int j = 0; j < tagsArray.length(); j++) {
+            tags.append(tagsArray.getString(j)).append(", ");
+        }
+        if (tags.length() > 0) {
+            tags.setLength(tags.length() - 2); // Remove trailing comma and space
+        }
+        return tags.toString();
+    }
     // Call this method to set the scroll listener on your RecyclerView
     private void setupScrollListener() {
         ebookRecyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {

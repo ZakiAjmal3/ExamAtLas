@@ -28,6 +28,7 @@ import com.examatlas.adapter.LiveClassesAdapter;
 import com.examatlas.models.BlogModel;
 import com.examatlas.models.CurrentAffairsModel;
 import com.examatlas.models.LiveClassesModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -152,7 +153,6 @@ public class HomeFragment extends Fragment {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("LiveClassesResponse", response.toString());
                         try {
                             liveClassesRecycler.setVisibility(View.VISIBLE);
                             liveClassesProgress.setVisibility(View.GONE);
@@ -166,17 +166,8 @@ public class HomeFragment extends Fragment {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String classID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
-                                    String meetingID = "ax7m-hd4z-0zcs";
                                     String description = jsonObject2.getString("description");
                                     String teacherName = jsonObject2.getString("teacher");
-
-                                    // Handle keyword extraction
-                                    String keyWord;
-                                    if (jsonObject2.has("keyword") && !jsonObject2.isNull("keyword")) {
-                                        keyWord = jsonObject2.getString("keyword");
-                                    } else {
-                                        keyWord = "No Value"; // Default value
-                                    }
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -189,12 +180,39 @@ public class HomeFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    LiveClassesModel liveClassesModel = new LiveClassesModel(classID, title, meetingID, description, teacherName, keyWord, tags.toString());
+                                    String categoryId = jsonObject2.getString("categoryId");
+                                    String subCategoryId = jsonObject2.getString("subCategoryId");
+                                    String subjectId = jsonObject2.getString("subjectId");
+
+                                    ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
+                                    JSONArray jsonImageArray = jsonObject2.getJSONArray("images");
+                                    for (int j = 0; j<jsonImageArray.length();j++){
+                                        JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
+                                        BookImageModels bookImageModels = new BookImageModels(
+                                                jsonImageObject.getString("url"),
+                                                jsonImageObject.getString("filename"),
+                                                jsonImageObject.getString("contentType"),
+                                                jsonImageObject.getString("size"), // Assuming size is an integer
+                                                jsonImageObject.getString("uploadDate"),
+                                                jsonImageObject.getString("_id")
+                                        );
+                                        bookImageArrayList.add(bookImageModels);
+                                    }
+
+                                    String startDate = jsonObject2.getString("startDate");
+                                    String endDate = jsonObject2.getString("endDate");
+
+                                    JSONArray jsonStudentArray = jsonObject2.getJSONArray("students");
+                                    ArrayList<BookImageModels> studentsArrayList = new ArrayList<>();
+                                    for (int j = 0; j<jsonImageArray.length();j++){
+                                    }
+                                    JSONArray jsonLiveClasses = jsonObject2.getJSONArray("liveClasses");
+                                    ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
+                                    for (int j = 0; j<jsonImageArray.length();j++){
+                                    }
+                                    LiveClassesModel liveClassesModel = new LiveClassesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
                                     liveClassesModelArrayList.add(liveClassesModel);
                                 }
-
-                                Log.d("LiveClassesListSize", "Size: " + liveClassesModelArrayList.size());
-
                                 if (liveClassesAdapter == null) {
                                     liveClassesAdapter = new LiveClassesAdapter(liveClassesModelArrayList, HomeFragment.this);
                                     liveClassesRecycler.setAdapter(liveClassesAdapter);
@@ -239,8 +257,13 @@ public class HomeFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("blogs");
+                                JSONArray jsonArray = response.getJSONArray("data");
                                 blogModelArrayList.clear(); // Clear the list before adding new items
+
+                                JSONObject jsonObject = response.getJSONObject("pagination");
+                                String totalRows = jsonObject.getString("totalRows");
+                                String totalPages = jsonObject.getString("totalPages");
+                                String currentPage = jsonObject.getString("currentPage");
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
@@ -248,7 +271,6 @@ public class HomeFragment extends Fragment {
                                     String title = jsonObject2.getString("title");
                                     String keyword = jsonObject2.getString("keyword");
                                     String content = jsonObject2.getString("content");
-                                    String createdDate = jsonObject2.getString("createdAt");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -262,7 +284,7 @@ public class HomeFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    BlogModel blogModel = new BlogModel(blogID, title, keyword, content, tags.toString(), createdDate);
+                                    BlogModel blogModel = new BlogModel(blogID, title, keyword, content, tags.toString(),totalRows,totalPages,currentPage);
                                     blogModelArrayList.add(blogModel);
                                 }
 
@@ -285,17 +307,17 @@ public class HomeFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-//                String errorMessage = "Error: " + error.toString();
-//                if (error.networkResponse != null) {
-//                    try {
-//                        String responseData = new String(error.networkResponse.data, "UTF-8");
-//                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-//                        errorMessage += "\nResponse Data: " + responseData;
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();}
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        String responseData = new String(error.networkResponse.data, "UTF-8");
+                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                        errorMessage += "\nResponse Data: " + responseData;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();}
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -322,8 +344,13 @@ public class HomeFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("currentAffairs");
+                                JSONArray jsonArray = response.getJSONArray("data");
                                 currentAffairsModelArrayList.clear(); // Clear the list before adding new items
+
+                                JSONObject jsonObject2 = response.getJSONObject("pagination");
+                                String totalRows = jsonObject2.getString("totalRows");
+                                String totalPages = jsonObject2.getString("totalPages");
+                                String currentPage = jsonObject2.getString("currentPage");
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -331,8 +358,8 @@ public class HomeFragment extends Fragment {
                                     String title = jsonObject.getString("title");
                                     String keyword = jsonObject.getString("keyword");
                                     String content = jsonObject.getString("content");
-                                    String image = jsonObject.getString("image");
-                                    String createdDate = jsonObject.getString("createdAt");
+//                                    String image = jsonObject.getString("image");
+//                                    String createdDate = jsonObject.getString("createdAt");
 
 
                                     // Use StringBuilder for tags
@@ -347,7 +374,7 @@ public class HomeFragment extends Fragment {
                                         tags.setLength(tags.length() - 2); // Adjust to remove the last comma and space
                                     }
 
-                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID, title, keyword, content, tags.toString(),image, createdDate);
+                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID, title, keyword, content, tags.toString(),totalRows, totalPages,currentPage);
                                     currentAffairsModelArrayList.add(currentAffairModel);
                                 }
 

@@ -1,11 +1,16 @@
 package com.examatlas.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +27,10 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
+import com.examatlas.activities.CartViewActivity;
+import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.CartViewModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -57,11 +65,37 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CartViewAdapter.ViewHolder holder, int position) {
         CartViewModel currentBook = cartViewModelArrayList.get(position);
         holder.title.setText(currentBook.getTitle());
         holder.author.setText(currentBook.getAuthor());
-        holder.price.setText("₹" + currentBook.getPrice());
+
+        // Calculate prices and discounts if applicable
+        String purchasingPrice = currentBook.getSellPrice(); // Assuming this is the selling price
+        String originalPrice = currentBook.getPrice(); // You need to ensure you have the original price
+        int discount = Integer.parseInt(purchasingPrice) * 100 / Integer.parseInt(originalPrice);
+        discount = 100 - discount;
+
+        // Create a SpannableString for the original price with strikethrough
+        SpannableString spannableOriginalPrice = new SpannableString("₹" + originalPrice);
+        spannableOriginalPrice.setSpan(new StrikethroughSpan(), 0, spannableOriginalPrice.length(), 0);
+
+        // Create the discount text
+        String discountText = "(-" + discount + "%)";
+        SpannableStringBuilder spannableText = new SpannableStringBuilder();
+        spannableText.append("₹" + purchasingPrice + " ");
+        spannableText.append(spannableOriginalPrice);
+        spannableText.append(" " + discountText);
+
+        // Set the color for the discount percentage
+        int startIndex = spannableText.length() - discountText.length();
+        spannableText.setSpan(new ForegroundColorSpan(Color.GREEN), startIndex, spannableText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        // Set the spannable text to holder
+        holder.price.setText(spannableText);
+
+        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getBookImageArrayList());
+        holder.bookImage.setAdapter(bookImageAdapter);
 
         // Set quantity
         holder.quantityTxt.setText("Qty: " + currentBook.getQuantity());
@@ -75,6 +109,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
                 .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
                 .show());
     }
+
 
     private void showQuantityOptions(CartViewModel currentBook, ViewHolder holder) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -177,6 +212,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
 
                         if (success) {
                             holder.quantityTxt.setText(String.valueOf("Qty: " + quantity));
+                            ((CartViewActivity) context).fetchCartItems();
                         }
                     } catch (JSONException e) {
                         Toast.makeText(context, "Error processing response", Toast.LENGTH_SHORT).show();

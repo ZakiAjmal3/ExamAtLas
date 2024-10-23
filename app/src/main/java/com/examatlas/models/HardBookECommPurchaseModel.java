@@ -4,10 +4,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class HardBookECommPurchaseModel {
-    String id,title,keyword,content,price,sellPrice,tags,author, categoryId,createdAt,updatedAt,itemId = null,type,stock,subCategoryId,subjectId,bookUrl,isInCart;
+    String id,title,keyword,content,price,sellPrice,tags,author, categoryId,createdAt,updatedAt,itemId = null,type,stock,subCategoryId,subjectId,bookUrl,isInCart,isInWishList;
     ArrayList images;
+    int totalRows,totalPages,currentPage,pageSize;
 
-    public HardBookECommPurchaseModel(String id, String type, String title, String keyword, String stock, String price, String sellPrice, String content, String author, String categoryId, String subCategoryId, String subjectId, String tags, String bookUrl, ArrayList images, String createdAt, String updatedAt, String isInCart) {
+    public HardBookECommPurchaseModel(String id, String type, String title, String keyword, String stock, String price, String sellPrice, String content, String author, String categoryId, String subCategoryId, String subjectId, String tags, String bookUrl, ArrayList images, String createdAt, String updatedAt, String isInCart, String isInWishList, int totalRows, int totalPages,int currentPage,int pageSize) {
         this.id = id;
         this.title = title;
         this.keyword = keyword;
@@ -26,6 +27,51 @@ public class HardBookECommPurchaseModel {
         this.bookUrl = bookUrl;
         this.images = images;
         this.isInCart = isInCart;
+        this.isInWishList = isInWishList;
+        this.totalRows = totalRows;
+        this.totalPages = totalPages;
+        this.currentPage = currentPage;
+        this.pageSize = pageSize;
+    }
+
+    public int getTotalRows() {
+        return totalRows;
+    }
+
+    public void setTotalRows(int totalRows) {
+        this.totalRows = totalRows;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public String getIsInWishList() {
+        return isInWishList;
+    }
+
+    public void setIsInWishList(String isInWishList) {
+        this.isInWishList = isInWishList;
     }
 
     public String getIsInCart() {

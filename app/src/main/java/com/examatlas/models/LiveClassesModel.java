@@ -1,16 +1,91 @@
 package com.examatlas.models;
 
-public class LiveClassesModel {
-    String classID,title,meetingID,description,teacherName,keyword,tags;
+import com.examatlas.models.extraModels.BookImageModels;
 
-    public LiveClassesModel(String classID, String title, String meetingID, String description, String teacherName, String keyword, String tags) {
+import java.util.ArrayList;
+
+public class LiveClassesModel {
+    String classID,title,description,teacherName,tags,categoryId,subCategoryId,subjectId,startDate,endDate;
+    ArrayList studentArrayList,liveClassArrayList;
+    ArrayList<BookImageModels> imageArrayList;
+    public LiveClassesModel(String classID, String title, String description, String teacherName, String tags, String categoryId, String subCategoryId, String subjectId, String startDate, String endDate,ArrayList<BookImageModels> imageArrayList,ArrayList studentArrayList,ArrayList liveClassArrayList) {
         this.classID = classID;
         this.title = title;
-        this.meetingID = meetingID;
         this.description = description;
         this.teacherName = teacherName;
-        this.keyword = keyword;
         this.tags = tags;
+        this.categoryId = categoryId;
+        this.subCategoryId = subCategoryId;
+        this.subjectId = subjectId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.imageArrayList = imageArrayList;
+        this.studentArrayList = studentArrayList;
+        this.liveClassArrayList = liveClassArrayList;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getSubCategoryId() {
+        return subCategoryId;
+    }
+
+    public void setSubCategoryId(String subCategoryId) {
+        this.subCategoryId = subCategoryId;
+    }
+
+    public String getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(String subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public ArrayList getImageArrayList() {
+        return imageArrayList;
+    }
+
+    public void setImageArrayList(ArrayList imageArrayList) {
+        this.imageArrayList = imageArrayList;
+    }
+
+    public ArrayList getStudentArrayList() {
+        return studentArrayList;
+    }
+
+    public void setStudentArrayList(ArrayList studentArrayList) {
+        this.studentArrayList = studentArrayList;
+    }
+
+    public ArrayList getLiveClassArrayList() {
+        return liveClassArrayList;
+    }
+
+    public void setLiveClassArrayList(ArrayList liveClassArrayList) {
+        this.liveClassArrayList = liveClassArrayList;
     }
 
     public String getClassID() {
@@ -29,14 +104,6 @@ public class LiveClassesModel {
         this.title = title;
     }
 
-    public String getMeetingID() {
-        return meetingID;
-    }
-
-    public void setMeetingID(String meetingID) {
-        this.meetingID = meetingID;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -53,13 +120,6 @@ public class LiveClassesModel {
         this.teacherName = teacherName;
     }
 
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
 
     public String getTags() {
         return tags;

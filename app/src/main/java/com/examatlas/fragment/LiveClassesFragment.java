@@ -20,8 +20,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.LiveClassesAdapter;
 import com.examatlas.models.LiveClassesModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
+import com.examatlas.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +40,8 @@ public class LiveClassesFragment extends Fragment {
     RecyclerView liveClassesRecycler;
     ArrayList<LiveClassesModel> liveClassesModelArrayList = new ArrayList<>();
     private final String liveClassURL = Constant.BASE_URL + "liveclass/getAllLiveClass";
-
+    SessionManager sessionManager;
+    String authToken;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,6 +54,9 @@ public class LiveClassesFragment extends Fragment {
 
         liveClassesProgress.setVisibility(View.VISIBLE);
         liveClassesRecycler.setVisibility(View.GONE);
+
+        sessionManager = new SessionManager(getContext());
+        authToken = sessionManager.getUserData().get("authToken");
         getExamsList();
 
         return view;
@@ -67,18 +73,15 @@ public class LiveClassesFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("classes"); // Change to the correct key
+                                JSONArray jsonArray = response.getJSONArray("classes");
                                 liveClassesModelArrayList.clear();
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String classID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
-//                                    String meetingID = jsonObject2.getString("meetingId");
-                                    String meetingID = "Qwerty";
                                     String description = jsonObject2.getString("description");
                                     String teacherName = jsonObject2.getString("teacher");
-                                    String keyWord = jsonObject2.getString("keyword");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -91,12 +94,39 @@ public class LiveClassesFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    LiveClassesModel liveClassesModel = new LiveClassesModel(classID, title, meetingID, description, teacherName, keyWord, tags.toString());
+                                    String categoryId = jsonObject2.getString("categoryId");
+                                    String subCategoryId = jsonObject2.getString("subCategoryId");
+                                    String subjectId = jsonObject2.getString("subjectId");
+
+                                    ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
+                                    JSONArray jsonImageArray = jsonObject2.getJSONArray("images");
+                                    for (int j = 0; j<jsonImageArray.length();j++){
+                                        JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
+                                        BookImageModels bookImageModels = new BookImageModels(
+                                                jsonImageObject.getString("url"),
+                                                jsonImageObject.getString("filename"),
+                                                jsonImageObject.getString("contentType"),
+                                                jsonImageObject.getString("size"), // Assuming size is an integer
+                                                jsonImageObject.getString("uploadDate"),
+                                                jsonImageObject.getString("_id")
+                                        );
+                                        bookImageArrayList.add(bookImageModels);
+                                    }
+
+                                    String startDate = jsonObject2.getString("startDate");
+                                    String endDate = jsonObject2.getString("endDate");
+
+                                    JSONArray jsonStudentArray = jsonObject2.getJSONArray("students");
+                                    ArrayList<BookImageModels> studentsArrayList = new ArrayList<>();
+                                    for (int j = 0; j<jsonImageArray.length();j++){
+                                    }
+                                    JSONArray jsonLiveClasses = jsonObject2.getJSONArray("liveClasses");
+                                    ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
+                                    for (int j = 0; j<jsonImageArray.length();j++){
+                                    }
+                                    LiveClassesModel liveClassesModel = new LiveClassesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
                                     liveClassesModelArrayList.add(liveClassesModel);
                                 }
-
-                                Log.d("LiveClassesListSize", "Size: " + liveClassesModelArrayList.size());
-
                                 if (liveClassesAdapter == null) {
                                     liveClassesAdapter = new LiveClassesAdapter(liveClassesModelArrayList, LiveClassesFragment.this);
                                     liveClassesRecycler.setAdapter(liveClassesAdapter);
@@ -121,6 +151,7 @@ public class LiveClassesFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };

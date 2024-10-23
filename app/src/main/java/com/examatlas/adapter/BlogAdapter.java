@@ -46,29 +46,14 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.ViewHolder> {
         holder.content.setText(blogModelArrayList.get(position).getContent());
         holder.tags.setText(blogModelArrayList.get(position).getTags());
 
-        String createdDateStr = blogModelArrayList.get(position).getCreatedDate();
-        String formattedDate = formatDate(createdDateStr);
-        holder.createdDate.setText(formattedDate);
     }
 
     @Override
     public int getItemCount() {
         return blogModelArrayList.size();
     }
-    private String formatDate(String dateStr) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        Date date;
-        try {
-            date = inputFormat.parse(dateStr);
-            return outputFormat.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return dateStr; // return original if parsing fails
-        }
-    }
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, content,tags,createdDate;
+        TextView title, content,tags;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,7 +61,6 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.ViewHolder> {
             title = itemView.findViewById(R.id.txtBlogTitle);
             content = itemView.findViewById(R.id.content);
             tags = itemView.findViewById(R.id.tagTxt);
-            createdDate = itemView.findViewById(R.id.createdDate);
 
         }
     }

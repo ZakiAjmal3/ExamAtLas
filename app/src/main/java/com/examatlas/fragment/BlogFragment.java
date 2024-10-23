@@ -77,8 +77,13 @@ public class BlogFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("blogs");
-                                blogModelArrayList.clear(); // Clear the list before adding new items
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                blogModelArrayList.clear();// Clear the list before adding new items
+
+                                JSONObject jsonObject = response.getJSONObject("pagination");
+                                String totalRows = jsonObject.getString("totalRows");
+                                String totalPages = jsonObject.getString("totalPages");
+                                String currentPage = jsonObject.getString("currentPage");
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
@@ -86,7 +91,6 @@ public class BlogFragment extends Fragment {
                                     String title = jsonObject2.getString("title");
                                     String keyword = jsonObject2.getString("keyword");
                                     String content = jsonObject2.getString("content");
-                                    String createdDate = jsonObject2.getString("createdAt");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -100,7 +104,7 @@ public class BlogFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    BlogModel blogModel = new BlogModel(blogID, title, keyword, content, tags.toString(), createdDate);
+                                    BlogModel blogModel = new BlogModel(blogID, title, keyword, content, tags.toString(), totalRows,totalPages,currentPage);
                                     blogModelArrayList.add(blogModel);
                                 }
                                 // If you have already created the adapter, just notify the change

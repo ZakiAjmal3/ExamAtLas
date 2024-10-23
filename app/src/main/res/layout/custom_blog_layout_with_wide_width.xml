@@ -27,32 +27,21 @@
             android:orientation="vertical"
             android:padding="10dp">
             <TextView
-                android:id="@+id/createdDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:text="Tag Text"
-                android:textColor="@color/red"
-                android:textSize="8sp"
-                android:layout_marginBottom="10dp" />
-
-            <TextView
                 android:id="@+id/txtBlogTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
                 android:text="Blog Title"
                 android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_below="@id/createdDate"/>
+                android:textSize="15sp"
+                android:textStyle="bold" />
             <TextView
                 android:id="@+id/content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
                 android:text="CONTENT"
-                android:textColor="@color/black"
+                android:textColor="@color/dark_grey"
                 android:textSize="10sp"
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="10dp"

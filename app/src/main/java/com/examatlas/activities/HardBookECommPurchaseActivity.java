@@ -54,8 +54,11 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
     private String token;
     private RelativeLayout noDataLayout;
     private SearchView searchView;
-    private final String bookURl = Constant.BASE_URL + "book/getAllBooks";
+    private final String bookURL = Constant.BASE_URL + "book/getAllBooks";
     ImageView cartIcon,wishlistIcon;
+    private int currentPage = 1;
+    private int totalPages = 1;
+    private final int itemsPerPage = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +152,8 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
         }
     }
     private void getAllBooks() {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, bookURl, null,
+        String paginatedURL = bookURL + "?type=book&page=" + currentPage + "&per_page=" + itemsPerPage;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -168,6 +172,13 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                                     ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
                                     JSONArray jsonArray1 = jsonObject2.getJSONArray("images");
 
+                                    JSONObject jsonObject = response.getJSONObject("pagination");
+
+                                    int totalRows = Integer.parseInt(jsonObject.getString("totalRows"));
+                                    totalPages = Integer.parseInt(jsonObject.getString("totalPages"));
+                                    currentPage = Integer.parseInt(jsonObject.getString("currentPage"));
+                                    int pageSize = Integer.parseInt(jsonObject.getString("pageSize"));
+
                                     for (int j = 0; j < jsonArray1.length(); j++) {
                                         JSONObject jsonObject3 = jsonArray1.getJSONObject(j);
                                         BookImageModels bookImageModels = new BookImageModels(
@@ -185,7 +196,7 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                                             jsonObject2.getString("type"),
                                             jsonObject2.getString("title"),
                                             jsonObject2.getString("keyword"),
-                                            jsonObject2.getString("stock"), // Assuming stock is an integer
+                                            jsonObject2.getString("stock"),
                                             jsonObject2.getString("price"),
                                             jsonObject2.getString("sellPrice"),
                                             jsonObject2.getString("content"),
@@ -198,11 +209,13 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                                             bookImageArrayList,
                                             jsonObject2.getString("createdAt"),
                                             jsonObject2.getString("updatedAt"),
-                                            jsonObject2.getString("isInCart")
+                                            jsonObject2.getString("isInCart"),
+                                            jsonObject2.getString("isInWishList"),
+                                            totalRows,totalPages,currentPage,pageSize
                                     );
                                     hardBookECommPurchaseModelArrayList.add(model);
                                 }
-
+                                updateUI();
                                 if (hardBookECommPurchaseModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
                                     booksRecyclerView.setVisibility(View.GONE);
@@ -251,7 +264,23 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
 
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-
+    private void updateUI() {
+        if (hardBookECommPurchaseModelArrayList.isEmpty()) {
+            noDataLayout.setVisibility(View.VISIBLE);
+            booksRecyclerView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+        } else {
+            noDataLayout.setVisibility(View.GONE);
+            booksRecyclerView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            if (hardBookECommPurchaseAdapter == null) {
+                hardBookECommPurchaseAdapter = new HardBookECommPurchaseAdapter(this, hardBookECommPurchaseModelArrayList);
+                booksRecyclerView.setAdapter(hardBookECommPurchaseAdapter);
+            } else {
+                hardBookECommPurchaseAdapter.notifyDataSetChanged();
+            }
+        }
+    }
     private String parseTags(JSONArray tagsArray) throws JSONException {
         StringBuilder tags = new StringBuilder();
         for (int j = 0; j < tagsArray.length(); j++) {

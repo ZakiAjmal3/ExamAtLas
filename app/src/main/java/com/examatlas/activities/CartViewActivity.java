@@ -1,5 +1,7 @@
 package com.examatlas.activities;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -7,14 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,15 +23,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.adapter.BlogAdapter;
 import com.examatlas.adapter.CartViewAdapter;
-import com.examatlas.fragment.BlogFragment;
-import com.examatlas.models.BlogModel;
 import com.examatlas.models.CartViewModel;
 import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
-import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
 
 import org.json.JSONArray;
@@ -51,9 +46,10 @@ public class CartViewActivity extends AppCompatActivity {
     Toolbar toolbar;
     SessionManager sessionManager;
     String cartUrl,authToken;
-    RelativeLayout noDataLayout;
+    RelativeLayout noDataLayout, priceDetailRelativeLayout;
     ProgressBar progressBar;
     Button goToBillingBtn;
+    TextView priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +58,16 @@ public class CartViewActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.hardbook_ecomm_cart_toolbar);
         bookCartRecyclerView = findViewById(R.id.cartItemRecycler);
         noDataLayout = findViewById(R.id.noDataLayout);
+        priceDetailRelativeLayout = findViewById(R.id.priceRelativeLayout);
         progressBar = findViewById(R.id.cartProgress);
         goToBillingBtn = findViewById(R.id.goToBillingBtn);
+
+        priceItemsTxt = findViewById(R.id.priceAndItemstxt);
+        priceOriginalTxt = findViewById(R.id.priceTxt);
+        totalDiscountTxt = findViewById(R.id.discountTxt);
+        deliveryTxt = findViewById(R.id.deliveryTxt);
+        totalAmountTxt1 = findViewById(R.id.totalAmountPriceTxt);
+        totalAmountTxt2 = findViewById(R.id.bottomStickyAmountTxt);
 
         sessionManager = new SessionManager(this);
         cartViewModelArrayList = new ArrayList<>();
@@ -73,7 +77,41 @@ public class CartViewActivity extends AppCompatActivity {
         authToken = sessionManager.getUserData().get("authToken");
         setupToolbar();
         fetchCartItems();
+
     }
+
+    @SuppressLint("ResourceType")
+    private void setUpPriceDetails() {
+
+        int totalItems,totalOriginalPrice = 0,totalSellPrice = 0,totalDiscount = 0,totalDelivery = 0;
+
+        totalItems = cartViewModelArrayList.size();
+
+        for (int i = 0; i<cartViewModelArrayList.size(); i++){
+            int origPrice = Integer.parseInt(cartViewModelArrayList.get(i).getQuantity()) * Integer.parseInt(cartViewModelArrayList.get(i).getPrice());
+            int sellPrice = Integer.parseInt(cartViewModelArrayList.get(i).getQuantity()) * Integer.parseInt(cartViewModelArrayList.get(i).getSellPrice());
+            totalOriginalPrice = totalOriginalPrice + origPrice;
+            totalSellPrice = totalSellPrice + sellPrice;
+        }
+
+        totalDiscount = totalOriginalPrice - totalSellPrice;
+
+        priceItemsTxt.setText("Price (" + totalItems + " items)");
+        priceOriginalTxt.setText("₹ " +totalOriginalPrice);
+        totalDiscountTxt.setText("- ₹ " +totalDiscount);
+        totalDiscountTxt.setTextColor(Color.GREEN);
+        totalAmountTxt1.setText("₹ " +totalSellPrice);
+        totalAmountTxt2.setText("₹ " +totalSellPrice);
+
+        if (totalSellPrice > 1000){
+            deliveryTxt.setText("FREE DELIVERY");
+            deliveryTxt.setTextColor(Color.GREEN);
+        }else {
+            deliveryTxt.setText("₹ " +100);
+        }
+
+    }
+
     private void setupToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -81,7 +119,7 @@ public class CartViewActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
     }
-    private void fetchCartItems() {
+    public void fetchCartItems() {
         progressBar.setVisibility(View.VISIBLE);
         // Create a JsonObjectRequest for the GET request
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, cartUrl, null,
@@ -93,6 +131,7 @@ public class CartViewActivity extends AppCompatActivity {
 
                             if (status) {
                                 bookCartRecyclerView.setVisibility(View.VISIBLE);
+                                priceDetailRelativeLayout.setVisibility(View.VISIBLE);
                                 noDataLayout.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.GONE);
 
@@ -166,6 +205,7 @@ public class CartViewActivity extends AppCompatActivity {
                                     if (cartViewAdapter == null) {
 
                                         bookCartRecyclerView.setVisibility(View.VISIBLE);
+                                        priceDetailRelativeLayout.setVisibility(View.VISIBLE);
                                         noDataLayout.setVisibility(View.GONE);
                                         progressBar.setVisibility(View.GONE);
                                         cartViewAdapter = new CartViewAdapter(CartViewActivity.this, cartViewModelArrayList);
@@ -174,8 +214,10 @@ public class CartViewActivity extends AppCompatActivity {
                                         cartViewAdapter.notifyDataSetChanged();
                                     }
                                 }
+                                setUpPriceDetails();
                             } else {
                                 bookCartRecyclerView.setVisibility(View.GONE);
+                                priceDetailRelativeLayout.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.GONE);
                                 noDataLayout.setVisibility(View.VISIBLE);
                                 // Handle the case where status is false
