@@ -1,5 +1,6 @@
 package com.examatlas.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -63,7 +64,7 @@ public class LiveCourseClassesListAdapter extends RecyclerView.Adapter<LiveCours
     }
 
     @Override
-    public void onBindViewHolder(@NonNull LiveCourseClassesListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull LiveCourseClassesListAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         holder.itemView.setTag(position);
 
