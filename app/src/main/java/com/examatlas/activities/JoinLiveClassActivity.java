@@ -18,18 +18,18 @@ import live.videosdk.rtc.android.VideoSDK;
 import live.videosdk.rtc.android.listeners.MeetingEventListener;
 
 public class JoinLiveClassActivity extends AppCompatActivity {
-    String meetingID;
+    String meetingID = "";
     private Meeting meeting;
-    String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIyMjU1NDRiYy0wMjc0LTQ5MTgtODlhNy0wODFkMDFiYzA0ZmIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcyODg5NDA5MCwiZXhwIjoxNzMxNDg2MDkwfQ.zN1n9xxI6PQ8F97dYoGAKvniMvQEYBmrF21y0M6WrAE";
+    String token = "";
     private static final int PERMISSION_REQ_ID = 22;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_live_class);
 
-        if (getIntent().getStringExtra("meetingID") != null){
-//            meetingID = getIntent().getStringExtra("meetingID");
-            meetingID = "lbef-rnrf-et27";
+        if (getIntent().getStringExtra("meetingID") != null && getIntent().getStringExtra("token") != null){
+            meetingID = getIntent().getStringExtra("meetingID");
+            token = getIntent().getStringExtra("token");
         }
         checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID);
         checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID);
@@ -65,29 +65,6 @@ public class JoinLiveClassActivity extends AppCompatActivity {
 
         // join Meeting
         meeting.join();
-        // if mode is CONFERENCE than replace mainLayout with LiveClassSpeakerFragment otherwise with ViewerFragment
-//        meeting.addEventListener(new MeetingEventListener() {
-//            @Override
-//            public void onMeetingJoined() {
-////                Log.d("LiveClassesViewerFragment", "Meeting joined");
-//
-//                if (meeting != null) {
-//                    //                    if (mode.equals("CONFERENCE")) {
-////                        //pin the local participant
-//////                        meeting.getLocalParticipant().pin("SHARE_AND_CAM");
-//////                        getSupportFragmentManager()
-//////                                .beginTransaction()
-//////                                .replace(R.id.main, new LiveClassSpeakerFragment(), "MainFragment")
-//////                                .commit();
-////                    } else if (mode.equals("VIEWER")) {
-//                        getSupportFragmentManager()
-//                                .beginTransaction()
-//                                .replace(R.id.main, new LiveClassesViewerFragment(), "viewerFragment")
-//                                .commit();
-//                }
-//            }
-//        });
-//    }
         meeting.addEventListener(new MeetingEventListener() {
             @Override
             public void onMeetingJoined() {

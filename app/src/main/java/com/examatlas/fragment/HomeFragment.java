@@ -24,10 +24,10 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
 import com.examatlas.adapter.BlogAdapter;
 import com.examatlas.adapter.CurrentAffairsAdapter;
-import com.examatlas.adapter.LiveClassesAdapter;
+import com.examatlas.adapter.LiveCoursesAdapter;
 import com.examatlas.models.BlogModel;
 import com.examatlas.models.CurrentAffairsModel;
-import com.examatlas.models.LiveClassesModel;
+import com.examatlas.models.LiveCoursesModel;
 import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
@@ -50,9 +50,9 @@ public class HomeFragment extends Fragment {
     ImageSlider slider;
     ArrayList<BlogModel> blogModelArrayList;
     ArrayList<CurrentAffairsModel> currentAffairsModelArrayList;
-    ArrayList<LiveClassesModel> liveClassesModelArrayList;
+    ArrayList<LiveCoursesModel> liveCoursesModelArrayList;
     BlogAdapter blogAdapter;
-    LiveClassesAdapter liveClassesAdapter;
+    LiveCoursesAdapter liveCoursesAdapter;
     CurrentAffairsAdapter currentAffairAdapter;
     private final String blogURL = Constant.BASE_URL + "blog/getAllBlogs";
     private final String liveClassURL = Constant.BASE_URL + "liveclass/getAllLiveClass";
@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment {
         liveClassesProgress = view.findViewById(R.id.liveClassesProgress);
         ArrayList<SlideModel> sliderArrayList = new ArrayList<>();
         blogModelArrayList = new ArrayList<>();
-        liveClassesModelArrayList = new ArrayList<>();
+        liveCoursesModelArrayList = new ArrayList<>();
         currentAffairsModelArrayList = new ArrayList<>();
         sessionManager = new SessionManager(getContext());
 
@@ -160,7 +160,7 @@ public class HomeFragment extends Fragment {
 
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("classes");
-                                liveClassesModelArrayList.clear();
+                                liveCoursesModelArrayList.clear();
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
@@ -210,14 +210,14 @@ public class HomeFragment extends Fragment {
                                     ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
                                     for (int j = 0; j<jsonImageArray.length();j++){
                                     }
-                                    LiveClassesModel liveClassesModel = new LiveClassesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
-                                    liveClassesModelArrayList.add(liveClassesModel);
+                                    LiveCoursesModel liveCoursesModel = new LiveCoursesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
+                                    liveCoursesModelArrayList.add(liveCoursesModel);
                                 }
-                                if (liveClassesAdapter == null) {
-                                    liveClassesAdapter = new LiveClassesAdapter(liveClassesModelArrayList, HomeFragment.this);
-                                    liveClassesRecycler.setAdapter(liveClassesAdapter);
+                                if (liveCoursesAdapter == null) {
+                                    liveCoursesAdapter = new LiveCoursesAdapter(liveCoursesModelArrayList, HomeFragment.this);
+                                    liveClassesRecycler.setAdapter(liveCoursesAdapter);
                                 } else {
-                                    liveClassesAdapter.notifyDataSetChanged();
+                                    liveCoursesAdapter.notifyDataSetChanged();
                                 }
                             } else {
                                 String message = response.getString("message");

@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import com.examatlas.R;
 import com.examatlas.activities.DashboardActivity;
 import com.examatlas.activities.JoinLiveClassActivity;
+import com.examatlas.activities.LiveCoursesClassesListActivity;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -100,7 +101,7 @@ public class LiveClassesViewerFragment extends Fragment {
         @Override
         public void onMeetingLeft() {
             if (isAdded()) {
-                Intent intents = new Intent(mContext, DashboardActivity.class);
+                Intent intents = new Intent(mContext, LiveCoursesClassesListActivity.class);
                 intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intents);
@@ -135,23 +136,45 @@ public class LiveClassesViewerFragment extends Fragment {
         }
     };
 
+//    protected void initializePlayer() {
+//        if (player == null) {
+//            dataSourceFactory = new DefaultHttpDataSource.Factory();
+//            HlsMediaSource mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(
+//                    MediaItem.fromUri(Uri.parse(this.playbackHlsUrl)));
+//            ExoPlayer.Builder playerBuilder =
+//                    new ExoPlayer.Builder(/* context= */ mContext);
+//            player = playerBuilder.build();
+//            // auto play when player is ready
+//            player.setPlayWhenReady(startAutoPlay);
+//            player.setMediaSource(mediaSource);
+//            // if you want display setting for player then remove this line
+//            playerView.findViewById(com.google.android.exoplayer2.ui.R.id.exo_settings).setVisibility(View.GONE);
+//            playerView.setPlayer(player);
+//        }
+//        player.prepare();
+//    }
+
     protected void initializePlayer() {
         if (player == null) {
             dataSourceFactory = new DefaultHttpDataSource.Factory();
-            HlsMediaSource mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(
-                    MediaItem.fromUri(Uri.parse(this.playbackHlsUrl)));
-            ExoPlayer.Builder playerBuilder =
-                    new ExoPlayer.Builder(/* context= */ mContext);
+            HlsMediaSource mediaSource = new HlsMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(MediaItem.fromUri(Uri.parse(this.playbackHlsUrl)));
+
+            ExoPlayer.Builder playerBuilder = new ExoPlayer.Builder(mContext);
             player = playerBuilder.build();
-            // auto play when player is ready
-            player.setPlayWhenReady(startAutoPlay);
-            player.setMediaSource(mediaSource);
-            // if you want display setting for player then remove this line
-            playerView.findViewById(com.google.android.exoplayer2.ui.R.id.exo_settings).setVisibility(View.GONE);
+
+            // Set the player to the view
             playerView.setPlayer(player);
+
+            // Prepare the player
+            player.setMediaSource(mediaSource);
+            player.prepare();
+
+            // Auto play when player is ready
+            player.setPlayWhenReady(startAutoPlay);
         }
-        player.prepare();
     }
+
 
     protected void releasePlayer() {
         if (player != null) {

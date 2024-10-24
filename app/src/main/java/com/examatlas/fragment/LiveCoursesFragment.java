@@ -1,7 +1,6 @@
 package com.examatlas.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +17,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.adapter.LiveClassesAdapter;
-import com.examatlas.models.LiveClassesModel;
+import com.examatlas.adapter.LiveCoursesAdapter;
+import com.examatlas.models.LiveCoursesModel;
 import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
@@ -33,12 +32,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LiveClassesFragment extends Fragment {
+public class LiveCoursesFragment extends Fragment {
 
     ProgressBar liveClassesProgress;
-    LiveClassesAdapter liveClassesAdapter;
+    LiveCoursesAdapter liveCoursesAdapter;
     RecyclerView liveClassesRecycler;
-    ArrayList<LiveClassesModel> liveClassesModelArrayList = new ArrayList<>();
+    ArrayList<LiveCoursesModel> liveCoursesModelArrayList = new ArrayList<>();
     private final String liveClassURL = Constant.BASE_URL + "liveclass/getAllLiveClass";
     SessionManager sessionManager;
     String authToken;
@@ -57,12 +56,12 @@ public class LiveClassesFragment extends Fragment {
 
         sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
-        getExamsList();
+        getLiveClasses();
 
         return view;
     }
 
-    private void getExamsList() {
+    private void getLiveClasses() {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, liveClassURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -74,7 +73,7 @@ public class LiveClassesFragment extends Fragment {
 
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("classes");
-                                liveClassesModelArrayList.clear();
+                                liveCoursesModelArrayList.clear();
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
@@ -124,14 +123,14 @@ public class LiveClassesFragment extends Fragment {
                                     ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
                                     for (int j = 0; j<jsonImageArray.length();j++){
                                     }
-                                    LiveClassesModel liveClassesModel = new LiveClassesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
-                                    liveClassesModelArrayList.add(liveClassesModel);
+                                    LiveCoursesModel liveCoursesModel = new LiveCoursesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
+                                    liveCoursesModelArrayList.add(liveCoursesModel);
                                 }
-                                if (liveClassesAdapter == null) {
-                                    liveClassesAdapter = new LiveClassesAdapter(liveClassesModelArrayList, LiveClassesFragment.this);
-                                    liveClassesRecycler.setAdapter(liveClassesAdapter);
+                                if (liveCoursesAdapter == null) {
+                                    liveCoursesAdapter = new LiveCoursesAdapter(liveCoursesModelArrayList, LiveCoursesFragment.this);
+                                    liveClassesRecycler.setAdapter(liveCoursesAdapter);
                                 } else {
-                                    liveClassesAdapter.notifyDataSetChanged();
+                                    liveCoursesAdapter.notifyDataSetChanged();
                                 }
                             } else {
                                 String message = response.getString("message");

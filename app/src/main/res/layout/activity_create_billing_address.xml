@@ -36,6 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
             <RelativeLayout
                 android:id="@+id/deliveryAddressInput"
                 android:layout_width="wrap_content"
@@ -59,34 +60,35 @@
                     android:id="@+id/changeAddressBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add/Change"
-                    android:textSize="12sp"
+                    android:text="Edit Address"
                     android:layout_alignParentEnd="true"
                     android:textColor="@color/black"/>
 
-                <TextView
-                    android:id="@+id/addressNameTxt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Zaki Ajmal"
-                    android:layout_below="@id/changeAddressBtn"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
+                <View
+                    android:id="@+id/line5"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/dark_grey"
                     android:layout_marginTop="5dp"
-                    android:visibility="gone"/>
+                    android:layout_marginBottom="10dp"
+                    android:layout_below="@id/changeAddressBtn"/>
 
-                <TextView
-                    android:id="@+id/addressFullTxt"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/deliveryAddressRecyclerView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:layout_below="@id/addressNameTxt"
-                    android:text="HNo.1234,RoadNo.1234,StreetName"
-                    android:layout_marginTop="10dp"
-                    android:textColor="@color/dark_grey"
-                    android:layout_marginBottom="20dp"
-                    android:visibility="gone"/>
+                    android:layout_below="@id/line5"
+                    android:paddingBottom="10dp"/>
+                <Button
+                    android:id="@+id/addNewAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/deliveryAddressRecyclerView"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginRight="35dp"
+                    android:text="Add New Address + "
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="10dp"/>
             </RelativeLayout>
 
             <View
@@ -355,7 +357,7 @@
                 android:id="@+id/gotoCheckOut"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Place Order"
+                android:text="Continue"
                 android:textSize="16sp"
                 android:layout_weight="1"
                 android:textAlignment="center"

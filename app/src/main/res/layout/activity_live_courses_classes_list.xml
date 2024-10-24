@@ -1,23 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="10dp"
-    tools:context=".fragment.LiveCoursesFragment">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/courseRecycler"
+    tools:context=".activities.LiveCoursesClassesListActivity">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/liveCoursesClassesListToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="15dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Classes"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/live_noti"
+            android:layout_marginStart="10dp"
+            />
+    </androidx.appcompat.widget.Toolbar>
     <ProgressBar
-        android:id="@+id/courseProgress"
+        android:id="@+id/liveCoursesClassesListProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/liveCoursesClassesListRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/liveCoursesClassesListToolbar"
+        android:visibility="gone"
+        />
     <RelativeLayout
         android:id="@+id/noDataLayout"
         android:layout_width="wrap_content"

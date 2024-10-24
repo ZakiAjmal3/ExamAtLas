@@ -4,12 +4,12 @@ import com.examatlas.models.extraModels.BookImageModels;
 
 import java.util.ArrayList;
 
-public class LiveClassesModel {
-    String classID,title,description,teacherName,tags,categoryId,subCategoryId,subjectId,startDate,endDate;
+public class LiveCoursesModel {
+    String courseID,title,description,teacherName,tags,categoryId,subCategoryId,subjectId,startDate,endDate;
     ArrayList studentArrayList,liveClassArrayList;
     ArrayList<BookImageModels> imageArrayList;
-    public LiveClassesModel(String classID, String title, String description, String teacherName, String tags, String categoryId, String subCategoryId, String subjectId, String startDate, String endDate,ArrayList<BookImageModels> imageArrayList,ArrayList studentArrayList,ArrayList liveClassArrayList) {
-        this.classID = classID;
+    public LiveCoursesModel(String courseID, String title, String description, String teacherName, String tags, String categoryId, String subCategoryId, String subjectId, String startDate, String endDate, ArrayList<BookImageModels> imageArrayList, ArrayList studentArrayList, ArrayList liveClassArrayList) {
+        this.courseID = courseID;
         this.title = title;
         this.description = description;
         this.teacherName = teacherName;
@@ -88,12 +88,12 @@ public class LiveClassesModel {
         this.liveClassArrayList = liveClassArrayList;
     }
 
-    public String getClassID() {
-        return classID;
+    public String getCourseID() {
+        return courseID;
     }
 
-    public void setClassID(String classID) {
-        this.classID = classID;
+    public void setCourseID(String courseID) {
+        this.courseID = courseID;
     }
 
     public String getTitle() {

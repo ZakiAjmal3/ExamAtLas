@@ -2,7 +2,6 @@ package com.examatlas.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -34,7 +33,9 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.CartViewAdapter;
+import com.examatlas.adapter.DeliveryAddressAdapter;
 import com.examatlas.models.CartViewModel;
+import com.examatlas.models.DeliveryAddressModel;
 import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
@@ -49,7 +50,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateBillingAddressActivity extends AppCompatActivity {
-    RecyclerView bookCartRecyclerView;
+    RecyclerView bookCartRecyclerView,deliveryAddressRecyclerView;
+    DeliveryAddressModel deliveryAddressModel;
+    DeliveryAddressAdapter deliveryAddressAdapter;
+    ArrayList<DeliveryAddressModel> deliveryAddressModelArrayList;
     CartViewAdapter cartViewAdapter;
     CartViewModel cartViewModel;
     ArrayList<CartViewModel> cartViewModelArrayList;
@@ -58,10 +62,10 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
     String cartUrl,authToken,userId;
     RelativeLayout noDataLayout, priceDetailRelativeLayout,deliveryAddressRelativeLayout,bottomStickyButtonLayout;
     ProgressBar progressBar;
-    Button goToCheckout,changeAddressBtn;
-    TextView fullNameTxt,fullAddressTxt,priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
+    Button goToCheckout,changeAddressBtn,addNewAddress;
+    TextView priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
     String addressCombineStr = "";
-    String firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress;
+    String billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +73,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.hardbook_ecomm_cart_toolbar);
         bookCartRecyclerView = findViewById(R.id.cartItemRecycler);
+        deliveryAddressRecyclerView = findViewById(R.id.deliveryAddressRecyclerView);
         noDataLayout = findViewById(R.id.noDataLayout);
         priceDetailRelativeLayout = findViewById(R.id.priceRelativeLayout);
         deliveryAddressRelativeLayout = findViewById(R.id.deliveryAddressInput);
@@ -76,9 +81,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.cartProgress);
         goToCheckout = findViewById(R.id.gotoCheckOut);
         changeAddressBtn = findViewById(R.id.changeAddressBtn);
-
-        fullNameTxt = findViewById(R.id.addressNameTxt);
-        fullAddressTxt = findViewById(R.id.addressFullTxt);
+        addNewAddress = findViewById(R.id.addNewAddress);
 
         priceItemsTxt = findViewById(R.id.priceAndItemstxt);
         priceOriginalTxt = findViewById(R.id.priceTxt);
@@ -89,8 +92,10 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
         cartViewModelArrayList = new ArrayList<>();
+        deliveryAddressModelArrayList = new ArrayList<>();
 
         bookCartRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        deliveryAddressRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         cartUrl = Constant.BASE_URL + "cart/get/" + sessionManager.getUserData().get("user_id");
         authToken = sessionManager.getUserData().get("authToken");
         userId = sessionManager.getUserData().get("user_id");
@@ -102,11 +107,23 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
         changeAddressBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openPopUpAddAddress();
+                DeliveryAddressAdapter adapter = (DeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
+                if (adapter != null) {
+                    DeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
+                    if (selectedAddress != null) {
+                        openPopUpAddAddress(selectedAddress);
+                    } else {
+                        Toast.makeText(CreateBillingAddressActivity.this, "Please select an address to edit.", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
-
-
+        addNewAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openPopUpAddAddress(null);
+            }
+        });
     }
 
     private void getBillingAddress() {
@@ -117,26 +134,28 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
+                            deliveryAddressModelArrayList.clear();
                             for (int i = 0;i<response.length();i++){
                                 JSONObject jsonObject = response.getJSONObject(i);
-                                 firstName = jsonObject.getString("firstName");
-                                 lastName = jsonObject.getString("lastName");
-                                 houseNoOrApartmentNo = jsonObject.getString("apartment");
-                                 streetAddress = jsonObject.getString("streetAddress");
-                                 townCity = jsonObject.getString("city");
-                                 state = jsonObject.getString("state");
-                                 pinCode = jsonObject.getString("pinCode");
-                                 countryName = jsonObject.getString("country");
-                                 phone = jsonObject.getString("phone");
-                                 emailAddress = jsonObject.getString("email");
+                                billingId = jsonObject.getString("_id");
+                                firstName = jsonObject.getString("firstName");
+                                lastName = jsonObject.getString("lastName");
+                                houseNoOrApartmentNo = jsonObject.getString("apartment");
+                                streetAddress = jsonObject.getString("streetAddress");
+                                townCity = jsonObject.getString("city");
+                                state = jsonObject.getString("state");
+                                pinCode = jsonObject.getString("pinCode");
+                                countryName = jsonObject.getString("country");
+                                phone = jsonObject.getString("phone");
+                                emailAddress = jsonObject.getString("email");
+
+                                deliveryAddressModel = new DeliveryAddressModel(billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress);
+                                deliveryAddressModelArrayList.add(deliveryAddressModel);
 
                                 addressCombineStr = firstName +" " + lastName + ", " + houseNoOrApartmentNo + ", " + streetAddress + ", " + townCity + ", " + state + ", " + pinCode + ", " + countryName + ", " + phone + ", " + emailAddress;
-                                fullNameTxt.setVisibility(View.VISIBLE);
-                                fullAddressTxt.setVisibility(View.VISIBLE);
-                                fullAddressTxt.setText(addressCombineStr);
-                                fullNameTxt.setText(firstName + " " + lastName);
                             }
-
+                            deliveryAddressAdapter = new DeliveryAddressAdapter(CreateBillingAddressActivity.this,deliveryAddressModelArrayList);
+                            deliveryAddressRecyclerView.setAdapter(deliveryAddressAdapter);
                         } catch (JSONException e) {
 
                             Log.e("JSON_ERROR", e.getMessage());
@@ -173,7 +192,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
     EditText firstNameEditText,lastNameEditText,houseNoOrApartmentNoEditText,streetAddressEditText,townCityEditText,stateEditText,pinCodeEditText,countryNameEditText,phoneEditText,emailAddressEditText;
     Button saveAndContinueBtn;
     ImageView crossBtn;
-    private void openPopUpAddAddress() {
+    private void openPopUpAddAddress(DeliveryAddressModel selectedAddress) {
         Dialog billingAddressInputDialogBox = new Dialog(this);
         billingAddressInputDialogBox.setContentView(R.layout.delivery_address_input_layout);
 
@@ -191,17 +210,17 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
         saveAndContinueBtn = billingAddressInputDialogBox.findViewById(R.id.saveAndContinueBtn);
         crossBtn = billingAddressInputDialogBox.findViewById(R.id.crossBtn);
 
-        if (firstName != null && lastName != null && houseNoOrApartmentNo != null && streetAddress != null && townCity != null && state != null && pinCode != null && countryName != null && phone != null && emailAddress != null){
-            firstNameEditText.setText(firstName);
-            lastNameEditText.setText(lastName);
-            houseNoOrApartmentNoEditText.setText(houseNoOrApartmentNo);
-            streetAddressEditText.setText(streetAddress);
-            townCityEditText.setText(townCity);
-            stateEditText.setText(state);
-            pinCodeEditText.setText(pinCode);
-            countryNameEditText.setText(countryName);
-            phoneEditText.setText(phone);
-            emailAddressEditText.setText(emailAddress);
+        if (selectedAddress != null && selectedAddress.getFirstName() != null && selectedAddress.getLastName() != null && selectedAddress.getHouseNoOrApartmentNo() != null && selectedAddress.getStreetAddress() != null && selectedAddress.getTownCity() != null && selectedAddress.getState() != null && selectedAddress.getPinCode() != null && selectedAddress.getCountryName() != null && selectedAddress.getPhone() != null && selectedAddress.getEmailAddress() != null){
+            firstNameEditText.setText(selectedAddress.getFirstName());
+            lastNameEditText.setText(selectedAddress.getLastName());
+            houseNoOrApartmentNoEditText.setText(selectedAddress.getHouseNoOrApartmentNo());
+            streetAddressEditText.setText(selectedAddress.getStreetAddress());
+            townCityEditText.setText(selectedAddress.getTownCity());
+            stateEditText.setText(selectedAddress.getState());
+            pinCodeEditText.setText(selectedAddress.getPinCode());
+            countryNameEditText.setText(selectedAddress.getCountryName());
+            phoneEditText.setText(selectedAddress.getPhone());
+            emailAddressEditText.setText(selectedAddress.getEmailAddress());
             saveAndContinueBtn.setText("Update");
         }
 
@@ -215,7 +234,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
         saveAndContinueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress;
+                String firstName, lastName, houseNoOrApartmentNo, streetAddress, townCity, state, pinCode, countryName, phone, emailAddress;
 
                 firstName = firstNameEditText.getText().toString().trim();
                 lastName = lastNameEditText.getText().toString().trim();
@@ -228,7 +247,11 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                 phone = phoneEditText.getText().toString().trim();
                 emailAddress = emailAddressEditText.getText().toString().trim();
 
-                createBillingAddress(firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress,billingAddressInputDialogBox);
+                if (saveAndContinueBtn.getText().toString().equals("Update")) {
+                    updateBillingAddress(firstName, lastName, houseNoOrApartmentNo, streetAddress, townCity, state, pinCode, countryName, phone, emailAddress, billingAddressInputDialogBox,selectedAddress.getBillingId());
+                } else {
+                    createBillingAddress(firstName, lastName, houseNoOrApartmentNo, streetAddress, townCity, state, pinCode, countryName, phone, emailAddress, billingAddressInputDialogBox);
+                }
             }
         });
 
@@ -256,6 +279,76 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
         billingAddressInputDialogBox.setCancelable(false);
         billingAddressInputDialogBox.setCanceledOnTouchOutside(false);
 
+    }
+
+    private void updateBillingAddress(String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress, Dialog billingAddressInputDialogBox, String billingId) {
+
+        String createBillingURL = Constant.BASE_URL + "billing/billing/updatebilling/" + userId + "/" + billingId;
+
+        JSONObject billingDetailsObject = new JSONObject();
+        try {
+            billingDetailsObject.put("userId", userId);
+            billingDetailsObject.put("firstName", firstName);
+            billingDetailsObject.put("lastName", lastName);
+            billingDetailsObject.put("apartment", houseNoOrApartmentNo);
+            billingDetailsObject.put("streetAddress", streetAddress);
+            billingDetailsObject.put("city", townCity);
+            billingDetailsObject.put("state", state);
+            billingDetailsObject.put("pinCode", pinCode);
+            billingDetailsObject.put("country", countryName);
+            billingDetailsObject.put("phone", phone);
+            billingDetailsObject.put("email", emailAddress);
+
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, createBillingURL, billingDetailsObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String status = response.getString("status");
+                            String message = response.getString("message");
+                            Toast.makeText(CreateBillingAddressActivity.this, message, Toast.LENGTH_SHORT).show();
+
+                            if (status.equals("true")) {
+                                billingAddressInputDialogBox.dismiss();
+                                getBillingAddress();
+                            }
+                        } catch (JSONException e) {
+                            Toast.makeText(CreateBillingAddressActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                billingAddressInputDialogBox.dismiss();
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        String responseData = new String(error.networkResponse.data, "UTF-8");
+                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                        errorMessage += "\nResponse Data: " + responseData;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Toast.makeText(CreateBillingAddressActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                Log.e("LoginActivity", errorMessage);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
+                return headers;
+            }
+        };
+        MySingleton.getInstance(CreateBillingAddressActivity.this).addToRequestQueue(jsonObjectRequest);
     }
 
     private void createBillingAddress(String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress,Dialog billingAddressInputDialogBox) {

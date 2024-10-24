@@ -27,10 +27,9 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.examatlas.R;
 import com.examatlas.fragment.BlogFragment;
 import com.examatlas.fragment.CourseFragment;
-import com.examatlas.fragment.LiveClassesFragment;
+import com.examatlas.fragment.LiveCoursesFragment;
 import com.examatlas.fragment.HomeFragment;
 import com.examatlas.fragment.ProfileFragment;
-import com.examatlas.fragment.TestFragment;
 import com.examatlas.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.card.MaterialCardView;
@@ -79,7 +78,7 @@ public class DashboardActivity extends AppCompatActivity {
                 } else if (item.getItemId() == R.id.live) {
                     currentFrag = "LIVE";
                     topBar.setVisibility(View.VISIBLE);
-                    loadFragment(new LiveClassesFragment());
+                    loadFragment(new LiveCoursesFragment());
                 } else if (item.getItemId() == R.id.course) {
                     currentFrag = "COURSE";
                     topBar.setVisibility(View.VISIBLE);
@@ -225,7 +224,7 @@ public class DashboardActivity extends AppCompatActivity {
                 drawerDialog.dismiss();
                 if (!currentFrag.equals("LIVE")) {
                     currentFrag = "LIVE";
-                    loadFragment(new LiveClassesFragment());
+                    loadFragment(new LiveCoursesFragment());
                     bottom_navigation.setSelectedItemId(R.id.live);
                     bottom_navigation.setSelected(true);
                 }
