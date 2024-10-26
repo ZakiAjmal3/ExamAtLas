@@ -36,6 +36,7 @@ import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.fragment.AdminBlogCreateDeleteFragment;
 import com.examatlas.models.AdminShowAllBlogModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
+import com.examatlas.utils.SessionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONArray;
@@ -52,12 +53,16 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
     private ArrayList<AdminShowAllBlogModel> orginalAdminShowAllBlogModelArrayList;
     private Fragment context;
     private String currentQuery = "";
+    SessionManager sessionManager;
+    String authToken;
 
     public AdminShowAllBlogAdapter(ArrayList<AdminShowAllBlogModel> adminShowAllBlogModelArrayList, Fragment context) {
         this.adminShowAllBlogModelArrayList = adminShowAllBlogModelArrayList;
         this.context = context;
         this.orginalAdminShowAllBlogModelArrayList = new ArrayList<>(adminShowAllBlogModelArrayList);
         Collections.reverse(this.adminShowAllBlogModelArrayList);
+        sessionManager = new SessionManager(context.getContext());
+        authToken = sessionManager.getUserData().get("authToken");
     }
 
     @NonNull
@@ -271,6 +276,7 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };

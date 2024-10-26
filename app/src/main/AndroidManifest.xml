@@ -24,6 +24,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".activities.BookOrderPaymentActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.AdminOtpActivity"
             android:exported="false" />
         <activity
@@ -58,8 +61,8 @@
             android:exported="false" />
         <activity
             android:name=".activities.JoinLiveClassActivity"
-            android:exported="false"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize"
+            android:exported="false" />
         <activity
             android:name=".activities.WebViewActivity"
             android:exported="false" />

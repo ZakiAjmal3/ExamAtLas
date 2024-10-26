@@ -6,6 +6,7 @@
     <color name="bottom_grey">#F4F4F4</color>
     <color name="white">#FFFFFFFF</color>
     <color name="seed">#15b0fd</color>
+    <color name="green">#0C9700</color>
     <color name="md_theme_light_primary">#006493</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#CAE6FF</color>

@@ -38,6 +38,7 @@ import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.fragment.AdminEBooksCreateDeleteFragment;
 import com.examatlas.models.AdminShowAllEBooksModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
+import com.examatlas.utils.SessionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONArray;
@@ -54,12 +55,16 @@ public class AdminShowAllEBookAdapter extends RecyclerView.Adapter<AdminShowAllE
     private ArrayList<AdminShowAllEBooksModel> originalEbookModelArrayList;
     private Fragment context;
     private String currentQuery = "";
+    SessionManager sessionManager;
+    String authToken;
 
     public AdminShowAllEBookAdapter(ArrayList<AdminShowAllEBooksModel> ebookModelArrayList, Fragment context) {
         this.originalEbookModelArrayList = new ArrayList<>(ebookModelArrayList);
         this.ebookModelArrayList = new ArrayList<>(originalEbookModelArrayList);
         Collections.reverse(this.ebookModelArrayList);
         this.context = context;
+        sessionManager = new SessionManager(context.getContext());
+        authToken = sessionManager.getUserData().get("authToken");
     }
 
     @NonNull
@@ -145,6 +150,7 @@ public class AdminShowAllEBookAdapter extends RecyclerView.Adapter<AdminShowAllE
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };
@@ -307,6 +313,7 @@ public class AdminShowAllEBookAdapter extends RecyclerView.Adapter<AdminShowAllE
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };

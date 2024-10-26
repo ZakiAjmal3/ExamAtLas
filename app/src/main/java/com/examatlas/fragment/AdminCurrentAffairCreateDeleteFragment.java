@@ -43,6 +43,7 @@ import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.models.AdminShowAllCAModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
+import com.examatlas.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,6 +73,8 @@ public class AdminCurrentAffairCreateDeleteFragment extends Fragment {
     private TextView uploadImageName;
     Button uploadCADetailsBtn;
     RelativeLayout noDataLayout;
+    SessionManager sessionManager;
+    String authToken;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -87,6 +90,9 @@ public class AdminCurrentAffairCreateDeleteFragment extends Fragment {
 
         adminShowAllCAModelArrayList = new ArrayList<>();
         showAllCARecyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
+
+        sessionManager = new SessionManager(getContext());
+        authToken = sessionManager.getUserData().get("authToken");
 
         showAllCAFunction();
 
@@ -235,6 +241,7 @@ public class AdminCurrentAffairCreateDeleteFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };
@@ -385,6 +392,7 @@ public class AdminCurrentAffairCreateDeleteFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };

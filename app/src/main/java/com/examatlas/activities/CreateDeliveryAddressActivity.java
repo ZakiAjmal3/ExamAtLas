@@ -43,7 +43,6 @@ import com.examatlas.models.extraModels.BookOrderSummaryItemsDetailsRecyclerView
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
-import com.razorpay.Checkout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,7 +73,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_billing_address);
+        setContentView(R.layout.activity_create_delivery_address);
 
         toolbar = findViewById(R.id.hardbook_ecomm_cart_toolbar);
         bookCartRecyclerView = findViewById(R.id.cartItemRecycler);
@@ -137,14 +136,10 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                 if (selectedAddress == null) {
                     Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to continue.", Toast.LENGTH_SHORT).show();
                 }else {
-                    openOrderSummaryDialog();
+                    openOrderSummaryDialog(selectedAddress);
                 }
             }
         });
-
-        Checkout.preload(getApplicationContext());
-        Checkout checkout = new Checkout();
-        checkout.setKeyID("<YOUR_KEY_ID>");
 
     }
     RecyclerView itemDetailsRecyclerView;
@@ -154,7 +149,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
     TextView totalAmountTxt;
     Button proceedToPaymentBtn;
     ImageView orderSummaryCrossBtn;
-    private void openOrderSummaryDialog() {
+    private void openOrderSummaryDialog(CreateDeliveryAddressModel selectedAddress) {
         Dialog orderSummaryDialog = new Dialog(this);
         orderSummaryDialog.setContentView(R.layout.book_order_summary_before_payment_dialog_box);
 
@@ -181,7 +176,131 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                 orderSummaryDialog.dismiss();
             }
         });
+        proceedToPaymentBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String checkOutURL = Constant.BASE_URL + "payment/checkout";
 
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("userId", userId);
+                    jsonObject.put("amount", totalSellPrice);
+                    jsonObject.put("billingDetailId", selectedAddress.getBillingId());
+
+                    JSONArray cartItemsArray = new JSONArray();
+                    for (CartViewModel cartItem : cartViewModelArrayList) {
+                        JSONObject itemObject = new JSONObject();
+                        try {
+                            itemObject.put("cartId", cartItem.getCartId()); // Assuming you have a method to get cartId
+                            itemObject.put("itemId", cartItem.getItemId());
+                            itemObject.put("title", cartItem.getTitle());
+                            itemObject.put("sellPrice", cartItem.getSellPrice());
+                            itemObject.put("quantity", cartItem.getQuantity());
+                            itemObject.put("bookId", cartItem.getBookId());
+                            itemObject.put("type", cartItem.getType());
+                            itemObject.put("keyword", cartItem.getKeyword());
+                            itemObject.put("stock", cartItem.getStock());
+                            itemObject.put("price", cartItem.getPrice());
+                            itemObject.put("content", cartItem.getContent());
+                            itemObject.put("author", cartItem.getAuthor());
+                            itemObject.put("categoryId", cartItem.getCategoryId());
+                            itemObject.put("subCategoryId", cartItem.getSubCategoryId());
+                            itemObject.put("subjectId", cartItem.getSubjectId());
+                            itemObject.put("createdDate", cartItem.getCreatedAt());
+                            itemObject.put("updatedAt", cartItem.getUpdatedAt());
+
+                            // Assuming bookImageArrayList is a property in CartViewModel
+                            JSONArray bookImagesArray = new JSONArray();
+                            for (BookImageModels image : cartItem.getBookImageArrayList()) {
+                                JSONObject imageObject = new JSONObject();
+                                imageObject.put("url", image.getUrl());
+                                imageObject.put("filename", image.getFileName());
+                                imageObject.put("contentType", image.getContentType());
+                                imageObject.put("size", image.getSize());
+                                imageObject.put("uploadDate", image.getUploadDate());
+                                imageObject.put("_id", image.getId()); // Assuming you have an ID for the image
+
+                                bookImagesArray.put(imageObject);
+                            }
+                            itemObject.put("images", bookImagesArray);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace(); // Handle JSON exception
+                        }
+
+                        cartItemsArray.put(itemObject);
+                    }
+                    jsonObject.put("cartItems", cartItemsArray);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, checkOutURL, jsonObject,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                Log.e("responseData",response.toString());
+                                try {
+                                    String status = response.getString("success");
+                                    if (status.equals("true")){
+                                        JSONObject orderJsonObject = response.getJSONObject("order");
+                                        String orderId = orderJsonObject.getString("id");
+                                        String amount = orderJsonObject.getString("amount");
+                                        String currency = orderJsonObject.getString("currency");
+                                        JSONObject orderDetailsJsobObject = orderJsonObject.getJSONObject("orderDetails");
+                                        String userId = orderDetailsJsobObject.getString("userId");
+                                        String totalAmount = orderDetailsJsobObject.getString("totalAmount");
+                                        String paymentMethod = orderDetailsJsobObject.getString("paymentMethod");
+                                        String billingDetailsId = orderDetailsJsobObject.getString("billingDetailId");
+                                        String razorpay_order_id = orderDetailsJsobObject.getString("razorpay_order_id");
+                                        String orderDetailsId = orderDetailsJsobObject.getString("_id");
+
+                                        Intent intent = new Intent(CreateDeliveryAddressActivity.this,BookOrderPaymentActivity.class);
+                                        intent.putExtra("orderId",orderId);
+                                        intent.putExtra("amount",amount);
+                                        intent.putExtra("currency",currency);
+                                        intent.putExtra("userId",userId);
+                                        intent.putExtra("totalAmount",totalAmount);
+                                        intent.putExtra("paymentMethod",paymentMethod);
+                                        intent.putExtra("billingDetailId",billingDetailsId);
+                                        intent.putExtra("razorpay_order_id",razorpay_order_id);
+                                        intent.putExtra("orderDetailsId",orderDetailsId);
+                                        startActivity(intent);
+                                    }
+                                } catch (JSONException e) {
+                                    Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = error.toString();
+                        Toast.makeText(CreateDeliveryAddressActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        Log.e("onErrorResponse", errorMessage);
+                        if (error.networkResponse != null) {
+                            try {
+                                String responseData = new String(error.networkResponse.data, "UTF-8");
+                                errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                                errorMessage += "\nResponse Data: " + responseData;
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }) {
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put("Content-Type", "application/json");
+                        headers.put("Authorization", "Bearer " + authToken);
+                        return headers;
+                    }
+                };
+                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+            }
+        });
         orderSummaryDialog.show();
         WindowManager.LayoutParams params = orderSummaryDialog.getWindow().getAttributes();
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;

@@ -36,6 +36,7 @@ import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.fragment.AdminCurrentAffairCreateDeleteFragment;
 import com.examatlas.models.AdminShowAllCAModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
+import com.examatlas.utils.SessionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONArray;
@@ -52,11 +53,15 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
     private ArrayList<AdminShowAllCAModel> orginalAdminShowAllCAModelArrayList;
     private Fragment context;
     private String currentQuery = "";
+    SessionManager sessionManager;
+    String authToken;
     public AdminShowAllCAAdapter(ArrayList<AdminShowAllCAModel> adminShowAllCAModelArrayList, Fragment context) {
         this.adminShowAllCAModelArrayList = adminShowAllCAModelArrayList;
         this.context = context;
         this.orginalAdminShowAllCAModelArrayList = new ArrayList<>(adminShowAllCAModelArrayList);
         Collections.reverse(this.adminShowAllCAModelArrayList);
+        sessionManager = new SessionManager(context.getContext());
+        authToken = sessionManager.getUserData().get("authToken");
     }
 
     @NonNull
@@ -240,6 +245,7 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };
@@ -298,6 +304,7 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };

@@ -54,6 +54,7 @@ import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.models.AdminShowAllBlogModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
+import com.examatlas.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -89,6 +90,8 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
     private final String blogURL = Constant.BASE_URL + "blog/getAllBlogs";
     ProgressBar showAllBlogProgressBar;
     RelativeLayout noDataLayout;
+    SessionManager sessionManager;
+    String authToken;
 
     // ActivityResultLaunchers
     private ActivityResultLauncher<Intent> galleryLauncher;
@@ -109,6 +112,9 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
 
         adminShowAllBlogModelArrayList = new ArrayList<>();
         showAllBlogRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        sessionManager = new SessionManager(getContext());
+        authToken = sessionManager.getUserData().get("authToken");
 
         showAllBlogFunction();
 
@@ -249,6 +255,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };
@@ -486,6 +493,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };
