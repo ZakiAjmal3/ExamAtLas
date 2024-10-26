@@ -1,9 +1,9 @@
 package com.examatlas.models;
 
-public class DeliveryAddressModel {
+public class CreateDeliveryAddressModel {
     String billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress;
 
-    public DeliveryAddressModel(String billingId, String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress) {
+    public CreateDeliveryAddressModel(String billingId, String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress) {
         this.billingId = billingId;
         this.firstName = firstName;
         this.lastName = lastName;

@@ -22,6 +22,7 @@ public class JoinLiveClassActivity extends AppCompatActivity {
     private Meeting meeting;
     String token = "";
     private static final int PERMISSION_REQ_ID = 22;
+    String courseId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +31,9 @@ public class JoinLiveClassActivity extends AppCompatActivity {
         if (getIntent().getStringExtra("meetingID") != null && getIntent().getStringExtra("token") != null){
             meetingID = getIntent().getStringExtra("meetingID");
             token = getIntent().getStringExtra("token");
+        }
+        if (getIntent().getStringExtra("course_id") != null){
+            courseId = getIntent().getStringExtra("course_id");
         }
         checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID);
         checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID);
@@ -80,5 +84,8 @@ public class JoinLiveClassActivity extends AppCompatActivity {
     }
         public Meeting getMeeting() {
         return meeting;
+    }
+    public String getCourseId() {
+        return courseId;
     }
 }

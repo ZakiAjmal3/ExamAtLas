@@ -20,9 +20,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (sessionManager.IsLoggedIn()) {
-                    Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
-                    startActivity(intent);
-                    finishAffinity();
+                    if (sessionManager.getUserData().get("role").equalsIgnoreCase("user")) {
+                        Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
+                        startActivity(intent);
+                        finishAffinity();
+                    }else if (sessionManager.getUserData().get("role").equalsIgnoreCase("admin")){
+                        Intent intent = new Intent(MainActivity.this, AdminDashboardActivity.class);
+                        startActivity(intent);
+                        finishAffinity();
+                    }
                 }else {
                     Intent intent = new Intent(MainActivity.this,SecondActivity.class);
                     startActivity(intent);

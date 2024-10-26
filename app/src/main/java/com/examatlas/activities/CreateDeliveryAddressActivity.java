@@ -2,6 +2,7 @@ package com.examatlas.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -33,13 +34,16 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.CartViewAdapter;
-import com.examatlas.adapter.DeliveryAddressAdapter;
+import com.examatlas.adapter.CreateDeliveryAddressAdapter;
+import com.examatlas.adapter.extraAdapter.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
 import com.examatlas.models.CartViewModel;
-import com.examatlas.models.DeliveryAddressModel;
+import com.examatlas.models.CreateDeliveryAddressModel;
 import com.examatlas.models.extraModels.BookImageModels;
+import com.examatlas.models.extraModels.BookOrderSummaryItemsDetailsRecyclerViewModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
+import com.razorpay.Checkout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,11 +53,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateBillingAddressActivity extends AppCompatActivity {
+public class CreateDeliveryAddressActivity extends AppCompatActivity {
     RecyclerView bookCartRecyclerView,deliveryAddressRecyclerView;
-    DeliveryAddressModel deliveryAddressModel;
-    DeliveryAddressAdapter deliveryAddressAdapter;
-    ArrayList<DeliveryAddressModel> deliveryAddressModelArrayList;
+    CreateDeliveryAddressModel createDeliveryAddressModel;
+    CreateDeliveryAddressAdapter createDeliveryAddressAdapter;
+    ArrayList<CreateDeliveryAddressModel> createDeliveryAddressModelArrayList;
     CartViewAdapter cartViewAdapter;
     CartViewModel cartViewModel;
     ArrayList<CartViewModel> cartViewModelArrayList;
@@ -66,6 +70,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
     TextView priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
     String addressCombineStr = "";
     String billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress;
+    int totalSellPrice = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +97,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
         cartViewModelArrayList = new ArrayList<>();
-        deliveryAddressModelArrayList = new ArrayList<>();
+        createDeliveryAddressModelArrayList = new ArrayList<>();
 
         bookCartRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         deliveryAddressRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -107,13 +112,13 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
         changeAddressBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DeliveryAddressAdapter adapter = (DeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
+                CreateDeliveryAddressAdapter adapter = (CreateDeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
+                CreateDeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
                 if (adapter != null) {
-                    DeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
                     if (selectedAddress != null) {
                         openPopUpAddAddress(selectedAddress);
                     } else {
-                        Toast.makeText(CreateBillingAddressActivity.this, "Please select an address to edit.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to edit.", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -124,6 +129,79 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                 openPopUpAddAddress(null);
             }
         });
+        goToCheckout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CreateDeliveryAddressAdapter adapter = (CreateDeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
+                CreateDeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
+                if (selectedAddress == null) {
+                    Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to continue.", Toast.LENGTH_SHORT).show();
+                }else {
+                    openOrderSummaryDialog();
+                }
+            }
+        });
+
+        Checkout.preload(getApplicationContext());
+        Checkout checkout = new Checkout();
+        checkout.setKeyID("<YOUR_KEY_ID>");
+
+    }
+    RecyclerView itemDetailsRecyclerView;
+    BookOrderSummaryItemsDetailsRecyclerViewModel bookOrderSummaryItemsDetailsRecyclerViewModel;
+    BookOrderSummaryItemsDetailsRecyclerViewAdapter bookOrderSummaryItemsDetailsRecyclerViewAdapter;
+    ArrayList<BookOrderSummaryItemsDetailsRecyclerViewModel> bookOrderSummaryItemsDetailsRecyclerViewModelArrayList;
+    TextView totalAmountTxt;
+    Button proceedToPaymentBtn;
+    ImageView orderSummaryCrossBtn;
+    private void openOrderSummaryDialog() {
+        Dialog orderSummaryDialog = new Dialog(this);
+        orderSummaryDialog.setContentView(R.layout.book_order_summary_before_payment_dialog_box);
+
+        itemDetailsRecyclerView = orderSummaryDialog.findViewById(R.id.orderSummaryRecyclerView);
+        itemDetailsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        totalAmountTxt = orderSummaryDialog.findViewById(R.id.totalAmountPriceTxt);
+        proceedToPaymentBtn = orderSummaryDialog.findViewById(R.id.proceedToPayment);
+        orderSummaryCrossBtn = orderSummaryDialog.findViewById(R.id.crossBtn);
+
+        bookOrderSummaryItemsDetailsRecyclerViewModelArrayList = new ArrayList<>();
+
+        for (int i = 0; i<cartViewModelArrayList.size(); i++){
+            bookOrderSummaryItemsDetailsRecyclerViewModel = new BookOrderSummaryItemsDetailsRecyclerViewModel(cartViewModelArrayList.get(i).getTitle(),cartViewModelArrayList.get(i).getSellPrice(),cartViewModelArrayList.get(i).getQuantity());
+            bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.add(bookOrderSummaryItemsDetailsRecyclerViewModel);
+        }
+        bookOrderSummaryItemsDetailsRecyclerViewAdapter = new BookOrderSummaryItemsDetailsRecyclerViewAdapter(this,bookOrderSummaryItemsDetailsRecyclerViewModelArrayList);
+        itemDetailsRecyclerView.setAdapter(bookOrderSummaryItemsDetailsRecyclerViewAdapter);
+
+        totalAmountTxt.setText("₹" + totalSellPrice);
+
+        orderSummaryCrossBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                orderSummaryDialog.dismiss();
+            }
+        });
+
+        orderSummaryDialog.show();
+        WindowManager.LayoutParams params = orderSummaryDialog.getWindow().getAttributes();
+        params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.gravity = Gravity.CENTER;
+
+        // Set the window attributes
+        orderSummaryDialog.getWindow().setAttributes(params);
+
+        // Now, to set margins, you'll need to set it in the root view of the dialog
+        FrameLayout layout = (FrameLayout) orderSummaryDialog.findViewById(android.R.id.content);
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) layout.getLayoutParams();
+
+        layoutParams.setMargins(0, 50, 0, 50);
+        layout.setLayoutParams(layoutParams);
+
+        // Background and animation settings
+        orderSummaryDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        orderSummaryDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+
     }
 
     private void getBillingAddress() {
@@ -134,7 +212,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
-                            deliveryAddressModelArrayList.clear();
+                            createDeliveryAddressModelArrayList.clear();
                             for (int i = 0;i<response.length();i++){
                                 JSONObject jsonObject = response.getJSONObject(i);
                                 billingId = jsonObject.getString("_id");
@@ -149,13 +227,13 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                                 phone = jsonObject.getString("phone");
                                 emailAddress = jsonObject.getString("email");
 
-                                deliveryAddressModel = new DeliveryAddressModel(billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress);
-                                deliveryAddressModelArrayList.add(deliveryAddressModel);
+                                createDeliveryAddressModel = new CreateDeliveryAddressModel(billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress);
+                                createDeliveryAddressModelArrayList.add(createDeliveryAddressModel);
 
                                 addressCombineStr = firstName +" " + lastName + ", " + houseNoOrApartmentNo + ", " + streetAddress + ", " + townCity + ", " + state + ", " + pinCode + ", " + countryName + ", " + phone + ", " + emailAddress;
                             }
-                            deliveryAddressAdapter = new DeliveryAddressAdapter(CreateBillingAddressActivity.this,deliveryAddressModelArrayList);
-                            deliveryAddressRecyclerView.setAdapter(deliveryAddressAdapter);
+                            createDeliveryAddressAdapter = new CreateDeliveryAddressAdapter(CreateDeliveryAddressActivity.this, createDeliveryAddressModelArrayList);
+                            deliveryAddressRecyclerView.setAdapter(createDeliveryAddressAdapter);
                         } catch (JSONException e) {
 
                             Log.e("JSON_ERROR", e.getMessage());
@@ -186,13 +264,13 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                 return headers;
             }
         };
-        MySingleton.getInstance(CreateBillingAddressActivity.this).addToRequestQueue(jsonObjectRequest);
+        MySingleton.getInstance(CreateDeliveryAddressActivity.this).addToRequestQueue(jsonObjectRequest);
     }
 
     EditText firstNameEditText,lastNameEditText,houseNoOrApartmentNoEditText,streetAddressEditText,townCityEditText,stateEditText,pinCodeEditText,countryNameEditText,phoneEditText,emailAddressEditText;
     Button saveAndContinueBtn;
     ImageView crossBtn;
-    private void openPopUpAddAddress(DeliveryAddressModel selectedAddress) {
+    private void openPopUpAddAddress(CreateDeliveryAddressModel selectedAddress) {
         Dialog billingAddressInputDialogBox = new Dialog(this);
         billingAddressInputDialogBox.setContentView(R.layout.delivery_address_input_layout);
 
@@ -312,14 +390,14 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                         try {
                             String status = response.getString("status");
                             String message = response.getString("message");
-                            Toast.makeText(CreateBillingAddressActivity.this, message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_SHORT).show();
 
                             if (status.equals("true")) {
                                 billingAddressInputDialogBox.dismiss();
                                 getBillingAddress();
                             }
                         } catch (JSONException e) {
-                            Toast.makeText(CreateBillingAddressActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateDeliveryAddressActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -336,7 +414,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                Toast.makeText(CreateBillingAddressActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateDeliveryAddressActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 Log.e("LoginActivity", errorMessage);
             }
         }) {
@@ -348,7 +426,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                 return headers;
             }
         };
-        MySingleton.getInstance(CreateBillingAddressActivity.this).addToRequestQueue(jsonObjectRequest);
+        MySingleton.getInstance(CreateDeliveryAddressActivity.this).addToRequestQueue(jsonObjectRequest);
     }
 
     private void createBillingAddress(String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress,Dialog billingAddressInputDialogBox) {
@@ -381,14 +459,14 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                         try {
                             String status = response.getString("status");
                             String message = response.getString("message");
-                            Toast.makeText(CreateBillingAddressActivity.this, message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_SHORT).show();
 
                             if (status.equals("true")) {
                                 billingAddressInputDialogBox.dismiss();
                                 getBillingAddress();
                             }
                         } catch (JSONException e) {
-                            Toast.makeText(CreateBillingAddressActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateDeliveryAddressActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -405,7 +483,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                Toast.makeText(CreateBillingAddressActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateDeliveryAddressActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 Log.e("LoginActivity", errorMessage);
             }
         }) {
@@ -417,13 +495,13 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                 return headers;
             }
         };
-        MySingleton.getInstance(CreateBillingAddressActivity.this).addToRequestQueue(jsonObjectRequest);
+        MySingleton.getInstance(CreateDeliveryAddressActivity.this).addToRequestQueue(jsonObjectRequest);
     }
 
     @SuppressLint("ResourceType")
     private void setUpPriceDetails() {
 
-        int totalItems,totalOriginalPrice = 0,totalSellPrice = 0,totalDiscount = 0,totalDelivery = 0;
+        int totalItems,totalOriginalPrice = 0,totalDiscount = 0,totalDelivery = 0;
 
         totalItems = cartViewModelArrayList.size();
 
@@ -539,7 +617,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                                 }
                                 // If you have already created the adapter, just notify the change
                                 if (cartViewModelArrayList.isEmpty()) {
-                                    Toast.makeText(CreateBillingAddressActivity.this, "654", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(CreateDeliveryAddressActivity.this, "654", Toast.LENGTH_LONG).show();
 
                                     noDataLayout.setVisibility(View.VISIBLE);
                                     progressBar.setVisibility(View.GONE);
@@ -552,7 +630,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                                         bottomStickyButtonLayout.setVisibility(View.VISIBLE);
                                         noDataLayout.setVisibility(View.GONE);
                                         progressBar.setVisibility(View.GONE);
-                                        cartViewAdapter = new CartViewAdapter(CreateBillingAddressActivity.this, cartViewModelArrayList);
+                                        cartViewAdapter = new CartViewAdapter(CreateDeliveryAddressActivity.this, cartViewModelArrayList);
                                         bookCartRecyclerView.setAdapter(cartViewAdapter);
                                     } else {
                                         cartViewAdapter.notifyDataSetChanged();
@@ -586,7 +664,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                Toast.makeText(CreateBillingAddressActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateDeliveryAddressActivity.this, errorMessage, Toast.LENGTH_LONG).show();
             }
         }) {
             @Override
@@ -597,7 +675,7 @@ public class CreateBillingAddressActivity extends AppCompatActivity {
                 return headers;
             }
         };
-        MySingleton.getInstance(CreateBillingAddressActivity.this).addToRequestQueue(jsonObjectRequest);
+        MySingleton.getInstance(CreateDeliveryAddressActivity.this).addToRequestQueue(jsonObjectRequest);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

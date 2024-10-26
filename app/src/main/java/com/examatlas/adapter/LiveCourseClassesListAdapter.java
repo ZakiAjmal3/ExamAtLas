@@ -102,6 +102,7 @@ public class LiveCourseClassesListAdapter extends RecyclerView.Adapter<LiveCours
                                     String status = response.getString("status");
                                     String token = response.getString("token");
                                     Intent intent = new Intent(context, JoinLiveClassActivity.class);
+                                    intent.putExtra("course_id" ,((LiveCoursesClassesListActivity) context).getCourseId());
                                     intent.putExtra("token" ,token);
                                     intent.putExtra("meetingID",liveCoursesClassesListModelArrayList.get(position).getMeetingID());
                                     progressDialog.dismiss();

@@ -44,6 +44,8 @@ dependencies {
     implementation 'com.amitshekhar.android:android-networking:1.0.2'
     implementation 'com.google.android.exoplayer:exoplayer:2.18.5'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.razorpay:checkout:1.6.40'
     implementation libs.recyclerview
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

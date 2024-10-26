@@ -11,8 +11,8 @@
         android:id="@+id/meetingLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="12sp"
-        android:paddingVertical="5sp">
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="5dp">
 
         <TextView
             android:id="@+id/meetingId"
@@ -29,7 +29,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Leave" />
-
     </LinearLayout>
 
     <TextView
@@ -38,16 +37,17 @@
         android:layout_height="match_parent"
         android:text="Waiting for host \n to start the live streaming"
         android:textColor="@color/white"
-        android:textFontWeight="700"
+        android:textStyle="bold"
         android:textSize="20sp"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:visibility="visible" />
 
     <com.google.android.exoplayer2.ui.StyledPlayerView
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        app:resize_mode="fixed_width"
+        app:resize_mode="fit"
         app:show_buffering="when_playing"
         app:show_subtitle_button="false"
         app:use_artwork="false"

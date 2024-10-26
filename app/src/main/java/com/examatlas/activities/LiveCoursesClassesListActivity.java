@@ -9,12 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,14 +21,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.LiveCourseClassesListAdapter;
-import com.examatlas.adapter.LiveCoursesAdapter;
-import com.examatlas.fragment.LiveCoursesFragment;
 import com.examatlas.models.LiveCoursesClassesListModel;
-import com.examatlas.models.LiveCoursesModel;
-import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
-import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
 
 import org.json.JSONArray;
@@ -49,12 +40,11 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
     RelativeLayout noDataLayout;
     RecyclerView classesListRecyclerView;
     LiveCourseClassesListAdapter liveCourseClassesListAdapter;
-    LiveCoursesClassesListModel liveCoursesClassesListModel;
     ArrayList<LiveCoursesClassesListModel> liveCoursesClassesListModelArrayList;
     String getLiveClassesListURL;
     SessionManager sessionManager;
     String authToken;
-
+    String courseId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +53,7 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         authToken = sessionManager.getUserData().get("authToken");
         Intent intent = getIntent();
-        String courseId = intent.getStringExtra("course_id");
+        courseId = intent.getStringExtra("course_id");
 
         toolbar = findViewById(R.id.liveCoursesClassesListToolbar);
         setSupportActionBar(toolbar);
@@ -74,24 +64,33 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.liveCoursesClassesListProgressBar);
         noDataLayout = findViewById(R.id.noDataLayout);
-
         classesListRecyclerView = findViewById(R.id.liveCoursesClassesListRecyclerView);
         classesListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         liveCoursesClassesListModelArrayList = new ArrayList<>();
 
-        getLiveClassesListURL  = Constant.BASE_URL + "liveclass/getAllScheduledCourseByCourseId/" + courseId;
-        getLiveClassesList();
+        getLiveClassesListURL = Constant.BASE_URL + "liveclass/getAllScheduledCourseByCourseId/" + courseId;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getLiveClassesList(); // Always refresh data when the activity is resumed
     }
 
     private void getLiveClassesList() {
+        progressBar.setVisibility(View.VISIBLE);
+        noDataLayout.setVisibility(View.GONE);
+        classesListRecyclerView.setVisibility(View.GONE);
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, getLiveClassesListURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("API Response", response.toString()); // Log the entire response
+                        Log.d("API Response", response.toString());
                         try {
                             boolean status = response.getBoolean("status");
                             if (status) {
+                                liveCoursesClassesListModelArrayList.clear();
                                 JSONArray jsonArray = response.getJSONArray("courses");
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -105,29 +104,30 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
                                     String scheduledTime = jsonObject.getString("scheduleTime");
                                     String classStatus = jsonObject.getString("status");
                                     String startedAt = jsonObject.getString("startedAt");
-                                    liveCoursesClassesListModel = new LiveCoursesClassesListModel(classID, courseID, title, meetingID, time, date, addedBy, scheduledTime, classStatus, startedAt, null);
+                                    LiveCoursesClassesListModel liveCoursesClassesListModel = new LiveCoursesClassesListModel(classID, courseID, title, meetingID, time, date, addedBy, scheduledTime, classStatus, startedAt, null);
                                     liveCoursesClassesListModelArrayList.add(liveCoursesClassesListModel);
                                 }
-                                if (liveCoursesClassesListModelArrayList != null) {
+
+                                if (!liveCoursesClassesListModelArrayList.isEmpty()) {
                                     progressBar.setVisibility(View.GONE);
                                     classesListRecyclerView.setVisibility(View.VISIBLE);
                                     liveCourseClassesListAdapter = new LiveCourseClassesListAdapter(LiveCoursesClassesListActivity.this, liveCoursesClassesListModelArrayList);
                                     classesListRecyclerView.setAdapter(liveCourseClassesListAdapter);
                                     liveCourseClassesListAdapter.notifyDataSetChanged();
                                 } else {
-                                    classesListRecyclerView.setVisibility(View.GONE);
-                                    progressBar.setVisibility(View.GONE);
-                                    noDataLayout.setVisibility(View.VISIBLE);
+                                    showNoDataLayout();
                                 }
+                            } else {
+                                showNoDataLayout();
                             }
                         } catch (JSONException e) {
-                            Toast.makeText(LiveCoursesClassesListActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                            showErrorToast(String.valueOf(e));
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(LiveCoursesClassesListActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                showErrorToast(String.valueOf(error));
             }
         }) {
             @Override
@@ -138,12 +138,25 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
                 return headers;
             }
         };
+
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getLiveClassesList();
+
+    private void showNoDataLayout() {
+        classesListRecyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        noDataLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showErrorToast(String message) {
+        if (message != null && !message.isEmpty()) {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show(); // Fallback message
+        }
+    }
+    public String getCourseId() {
+        return courseId;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

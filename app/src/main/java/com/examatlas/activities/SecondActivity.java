@@ -11,29 +11,26 @@ import com.examatlas.R;
 import com.google.android.material.button.MaterialButton;
 
 public class SecondActivity extends AppCompatActivity {
-    MaterialButton btnNext;
-    TextView txtSignUp;
+    MaterialButton userNextBtn,adminNextBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        btnNext = findViewById(R.id.btnNext);
-        txtSignUp = findViewById(R.id.txtSignUp);
+        userNextBtn = findViewById(R.id.userNextBtn);
+        adminNextBtn = findViewById(R.id.adminNextBtn);
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
+        userNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(SecondActivity.this, LoginActivity.class));
-                finish();
             }
         });
 
-        txtSignUp.setOnClickListener(new View.OnClickListener() {
+        adminNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(SecondActivity.this, SignUpActivity.class));
-                finish();
+                startActivity(new Intent(SecondActivity.this, AdminLoginActivity.class));
             }
         });
 

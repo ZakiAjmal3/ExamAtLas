@@ -24,9 +24,9 @@ import com.examatlas.activities.LiveCoursesClassesListActivity;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import com.google.android.exoplayer2.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,14 +39,13 @@ public class LiveClassesViewerFragment extends Fragment {
     private Meeting meeting;
     protected StyledPlayerView playerView;
     private TextView waitingLayout;
-    protected @Nullable
-    ExoPlayer player;
+    protected @Nullable ExoPlayer player;
 
     private DefaultHttpDataSource.Factory dataSourceFactory;
     private boolean startAutoPlay = true;
     private String playbackHlsUrl = "";
-    private static Activity mActivity;
-    private static Context mContext;
+    private Activity mActivity;
+    private Context mContext;
 
     public LiveClassesViewerFragment() {
         // Required empty public constructor
@@ -55,34 +54,37 @@ public class LiveClassesViewerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Restore playback URL if fragment is recreated
+        if (savedInstanceState != null) {
+            playbackHlsUrl = savedInstanceState.getString("playbackHlsUrl", "");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.live_classes_viewer_fragment, container, false);
 
         playerView = view.findViewById(R.id.player_view);
-
         waitingLayout = view.findViewById(R.id.waitingLayout);
+
         if (meeting != null) {
-            // set MeetingId to TextView
             ((TextView) view.findViewById(R.id.meetingId)).setText("Meeting Id : " + meeting.getMeetingId());
-            // leave the meeting on btnLeave click
             Button leave = view.findViewById(R.id.btnLeave);
-            leave.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    meeting.leave();
-                    Intent intent = new Intent(getContext(), DashboardActivity.class);
-                    startActivity(intent);
-                }
+            leave.setOnClickListener(v -> {
+                meeting.leave();
+                Intent intent = new Intent(getContext(), DashboardActivity.class);
+                startActivity(intent);
             });
         }
+
+        // Initialize player if the playback URL is available
+        if (!playbackHlsUrl.isEmpty()) {
+            initializePlayer();
+        }
+
         return view;
     }
-
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -90,21 +92,18 @@ public class LiveClassesViewerFragment extends Fragment {
         mContext = context;
         if (context instanceof Activity) {
             mActivity = (Activity) context;
-            // get meeting object from MeetingActivity
             meeting = ((JoinLiveClassActivity) mActivity).getMeeting();
-//            Log.d("LiveClassesViewerFragment", "Meeting ID: " + (meeting != null ? meeting.getMeetingId() : "Meeting is null"));
         }
     }
 
     private final MeetingEventListener meetingEventListener = new MeetingEventListener() {
-
         @Override
         public void onMeetingLeft() {
             if (isAdded()) {
-                Intent intents = new Intent(mContext, LiveCoursesClassesListActivity.class);
-                intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intents);
+                Intent intent = new Intent(mContext, LiveCoursesClassesListActivity.class);
+                intent.putExtra("course_id", ((JoinLiveClassActivity) mActivity).getCourseId());
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
                 mActivity.finish();
             }
         }
@@ -114,18 +113,15 @@ public class LiveClassesViewerFragment extends Fragment {
         public void onHlsStateChanged(JSONObject HlsState) {
             if (HlsState.has("status")) {
                 try {
-                    if (HlsState.getString("status").equals("HLS_PLAYABLE") && HlsState.has("playbackHlsUrl")) {
+                    String status = HlsState.getString("status");
+                    if ("HLS_PLAYABLE".equals(status) && HlsState.has("playbackHlsUrl")) {
                         playbackHlsUrl = HlsState.getString("playbackHlsUrl");
                         waitingLayout.setVisibility(View.GONE);
                         playerView.setVisibility(View.VISIBLE);
-                        // initialize player
                         initializePlayer();
-                    }
-                    if (HlsState.getString("status").equals("HLS_STOPPED")) {
-                        // release the player
+                    } else if ("HLS_STOPPED".equals(status)) {
                         releasePlayer();
-                        playbackHlsUrl = null;
-                        waitingLayout.setText("Host has stopped \n the live streaming");
+                        waitingLayout.setText("Host has stopped the live streaming");
                         waitingLayout.setVisibility(View.VISIBLE);
                         playerView.setVisibility(View.GONE);
                     }
@@ -136,54 +132,29 @@ public class LiveClassesViewerFragment extends Fragment {
         }
     };
 
-//    protected void initializePlayer() {
-//        if (player == null) {
-//            dataSourceFactory = new DefaultHttpDataSource.Factory();
-//            HlsMediaSource mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(
-//                    MediaItem.fromUri(Uri.parse(this.playbackHlsUrl)));
-//            ExoPlayer.Builder playerBuilder =
-//                    new ExoPlayer.Builder(/* context= */ mContext);
-//            player = playerBuilder.build();
-//            // auto play when player is ready
-//            player.setPlayWhenReady(startAutoPlay);
-//            player.setMediaSource(mediaSource);
-//            // if you want display setting for player then remove this line
-//            playerView.findViewById(com.google.android.exoplayer2.ui.R.id.exo_settings).setVisibility(View.GONE);
-//            playerView.setPlayer(player);
-//        }
-//        player.prepare();
-//    }
-
     protected void initializePlayer() {
-        if (player == null) {
+        if (player == null && !playbackHlsUrl.isEmpty()) {
             dataSourceFactory = new DefaultHttpDataSource.Factory();
             HlsMediaSource mediaSource = new HlsMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(MediaItem.fromUri(Uri.parse(this.playbackHlsUrl)));
+                    .createMediaSource(MediaItem.fromUri(Uri.parse(playbackHlsUrl)));
 
-            ExoPlayer.Builder playerBuilder = new ExoPlayer.Builder(mContext);
-            player = playerBuilder.build();
-
-            // Set the player to the view
+            player = new ExoPlayer.Builder(mContext).build();
             playerView.setPlayer(player);
-
-            // Prepare the player
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             player.setMediaSource(mediaSource);
             player.prepare();
-
-            // Auto play when player is ready
             player.setPlayWhenReady(startAutoPlay);
         }
     }
-
 
     protected void releasePlayer() {
         if (player != null) {
             player.release();
             player = null;
-            dataSourceFactory = null;
-            playerView.setPlayer(/* player= */ null);
+            playerView.setPlayer(null);
         }
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -197,8 +168,10 @@ public class LiveClassesViewerFragment extends Fragment {
         if (meeting != null) {
             meeting.removeEventListener(meetingEventListener);
         }
+        releasePlayer(); // Release player when stopped
         super.onStop();
     }
+
     @Override
     public void onDestroy() {
         mContext = null;
@@ -210,5 +183,11 @@ public class LiveClassesViewerFragment extends Fragment {
             meeting = null;
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("playbackHlsUrl", playbackHlsUrl);
     }
 }

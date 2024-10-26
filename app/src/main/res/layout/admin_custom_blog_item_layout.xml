@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/blogLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    android:layout_margin="5dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="5dp"
+    app:strokeWidth="1dp">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp">
+            <TextView
+                android:id="@+id/createdDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="Tag Text"
+                android:textColor="@color/red"
+                android:textSize="8sp"
+                android:layout_marginBottom="10dp" />
+            <ImageView
+                android:id="@+id/editBlogBtn"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="5dp"
+                android:src="@drawable/ic_edit"
+                android:layout_alignParentEnd="true"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"/>
+            <ImageView
+                android:id="@+id/deleteBlogBtn"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="5dp"
+                android:src="@drawable/ic_delete"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                 />
+
+            <TextView
+                android:id="@+id/txtBlogTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="Blog Title"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_below="@id/createdDate"/>
+            <TextView
+                android:id="@+id/txtBlogKeyword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="Blog Title"
+                android:textColor="@color/dark_grey"
+                android:textSize="10sp"
+                android:layout_below="@id/txtBlogTitle"
+                android:layout_marginLeft="10dp"/>
+            <TextView
+                android:id="@+id/content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="CONTENT"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_below="@id/txtBlogKeyword"/>
+
+            <LinearLayout
+                android:id="@+id/layout1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/content"
+                >
+
+                <TextView
+                    android:id="@+id/txtAuthor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="TAGS:"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/tagTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/poppins"
+                    android:text="Tag Text"
+                    android:textColor="@color/seed"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey" />
+
+</com.google.android.material.card.MaterialCardView>

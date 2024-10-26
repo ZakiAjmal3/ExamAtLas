@@ -24,10 +24,25 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".activities.AdminOtpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AdminForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AdminSignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AdminLoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AdminDashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.LiveCoursesClassesListActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.CreateBillingAddressActivity"
+            android:name=".activities.CreateDeliveryAddressActivity"
             android:exported="false" />
         <activity
             android:name=".activities.CartViewActivity"
@@ -43,7 +58,8 @@
             android:exported="false" />
         <activity
             android:name=".activities.JoinLiveClassActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".activities.WebViewActivity"
             android:exported="false" />

@@ -83,7 +83,7 @@ public class CartViewActivity extends AppCompatActivity {
         goToCheckOutBTn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(CartViewActivity.this, CreateBillingAddressActivity.class);
+                Intent intent = new Intent(CartViewActivity.this, CreateDeliveryAddressActivity.class);
                 startActivity(intent);
             }
         });
