@@ -49,7 +49,7 @@ public class AdminSignUpActivity extends AppCompatActivity {
     EditText edtName, edtEmail, edtMobile, edtPassword, edtRePassword;
     MaterialCheckBox checkBox;
     boolean isAllFieldsChecked = false, isPasswordVisible = false, isRePasswordVisible = false;
-    private final String serverUrl = Constant.BASE_URL + "user/createUser";
+    private final String serverUrl = Constant.BASE_URL + "auth/createUser";
     SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,14 +187,16 @@ public class AdminSignUpActivity extends AppCompatActivity {
                 String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {
                     try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
+                        // Parse the error response
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        // Now you can use the message
+                        Toast.makeText(AdminSignUpActivity.this, message, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                Toast.makeText(AdminSignUpActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 Log.e("AdminSignUpActivity", errorMessage);
             }
         }) {

@@ -1,15 +1,33 @@
 package com.examatlas.models;
 
 public class AdminShowAllBlogModel {
-    String blogID,title,keyword,content,tags,createdDate;
+    String blogID,title,keyword,content,tags, totalRows,totalPages,currentPage;
 
-    public AdminShowAllBlogModel(String blogID, String title, String keyword, String content, String tags, String createdDate) {
+    public AdminShowAllBlogModel(String blogID, String title, String keyword, String content, String tags, String totalRows, String totalPages, String currentPage) {
         this.blogID = blogID;
         this.title = title;
         this.keyword = keyword;
         this.content = content;
         this.tags = tags;
-        this.createdDate = createdDate;
+        this.totalRows = totalRows;
+        this.totalPages = totalPages;
+        this.currentPage = currentPage;
+    }
+
+    public String getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(String totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public String getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(String currentPage) {
+        this.currentPage = currentPage;
     }
 
     public String getBlogID() {
@@ -20,12 +38,12 @@ public class AdminShowAllBlogModel {
         this.blogID = blogID;
     }
 
-    public String getCreatedDate() {
-        return createdDate;
+    public String getTotalRows() {
+        return totalRows;
     }
 
-    public void setCreatedDate(String createdDate) {
-        this.createdDate = createdDate;
+    public void setTotalRows(String totalRows) {
+        this.totalRows = totalRows;
     }
 
     public String getTitle() {

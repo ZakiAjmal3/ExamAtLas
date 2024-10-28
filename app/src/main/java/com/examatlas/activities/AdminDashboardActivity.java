@@ -29,6 +29,7 @@ import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.fragment.AdminBlogCreateDeleteFragment;
 import com.examatlas.fragment.AdminCoursesCreateDeleteFragment;
+import com.examatlas.fragment.AdminCreateLiveCoursesClassesFragment;
 import com.examatlas.fragment.AdminCurrentAffairCreateDeleteFragment;
 import com.examatlas.fragment.AdminEBooksCreateDeleteFragment;
 import com.examatlas.fragment.AdminHomeFragment;
@@ -370,6 +371,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         loadFragment(new AdminEBooksCreateDeleteFragment());
                         currentFragment = new AdminEBooksCreateDeleteFragment();
                         drawerDialog.dismiss();
+                    } else if (contentItemsSelected.equals("Live Classes")){
+                        loadFragment(new AdminCreateLiveCoursesClassesFragment());
+                        currentFragment = new AdminCreateLiveCoursesClassesFragment();
+                        drawerDialog.dismiss();
                     }
                 }
                 @Override
@@ -456,8 +461,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         SessionManager sessionManager = new SessionManager(AdminDashboardActivity.this);
                         sessionManager.logout();
+                        startActivity(new Intent(AdminDashboardActivity.this, MainActivity.class));
                         Toast.makeText(AdminDashboardActivity.this, "Logout Successfully...", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AdminDashboardActivity.this, LauncherActivity.class));
                         finishAffinity();
                     }
                 }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {

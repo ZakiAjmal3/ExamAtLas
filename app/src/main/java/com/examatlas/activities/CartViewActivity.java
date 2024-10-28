@@ -246,14 +246,17 @@ public class CartViewActivity extends AppCompatActivity {
                 String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {
                     try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
+                        // Parse the error response
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        // Now you can use the message
+                        Toast.makeText(CartViewActivity.this, message, Toast.LENGTH_LONG).show();
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                Toast.makeText(CartViewActivity.this, errorMessage, Toast.LENGTH_LONG).show();
             }
         }) {
             @Override

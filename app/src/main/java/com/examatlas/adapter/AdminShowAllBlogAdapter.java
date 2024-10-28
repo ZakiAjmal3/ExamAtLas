@@ -60,7 +60,6 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
         this.adminShowAllBlogModelArrayList = adminShowAllBlogModelArrayList;
         this.context = context;
         this.orginalAdminShowAllBlogModelArrayList = new ArrayList<>(adminShowAllBlogModelArrayList);
-        Collections.reverse(this.adminShowAllBlogModelArrayList);
         sessionManager = new SessionManager(context.getContext());
         authToken = sessionManager.getUserData().get("authToken");
     }
@@ -74,7 +73,7 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        AdminShowAllBlogModel currentBlog = adminShowAllBlogModelArrayList.get(adminShowAllBlogModelArrayList.size() - 1 - position);
+        AdminShowAllBlogModel currentBlog = adminShowAllBlogModelArrayList.get(position);
         holder.itemView.setTag(currentBlog);
 
         // Set highlighted text
@@ -82,7 +81,6 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
         holder.setHighlightedText(holder.keyword, currentBlog.getKeyword(), currentQuery);
         holder.setHighlightedText(holder.content, currentBlog.getContent(), currentQuery);
         holder.setHighlightedText(holder.tags, currentBlog.getTags(), currentQuery);
-        holder.createdDate.setText(currentBlog.getCreatedDate());
 
         holder.editBlogBtn.setOnClickListener(view -> openEditBlogDialog(currentBlog));
         holder.deleteBlogBtn.setOnClickListener(view -> quitDialog(position));
@@ -94,7 +92,7 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, keyword, content, tags, createdDate;
+        TextView title, keyword, content, tags;
         ImageView editBlogBtn, deleteBlogBtn;
 
         public ViewHolder(@NonNull View itemView) {
@@ -103,7 +101,6 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
             keyword = itemView.findViewById(R.id.txtBlogKeyword);
             content = itemView.findViewById(R.id.content);
             tags = itemView.findViewById(R.id.tagTxt);
-            createdDate = itemView.findViewById(R.id.createdDate);
             editBlogBtn = itemView.findViewById(R.id.editBlogBtn);
             deleteBlogBtn = itemView.findViewById(R.id.deleteBlogBtn);
         }
@@ -171,6 +168,7 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
         adminTagsForDataALLAdapter.notifyDataSetChanged();
 
         Button uploadBlogDetailsBtn = editBlogDialogBox.findViewById(R.id.btnSubmit);
+        uploadBlogDetailsBtn.setClickable(true);
 
         tagsEditTxt.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEND || (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
@@ -187,6 +185,7 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
         });
 
         uploadBlogDetailsBtn.setOnClickListener(view -> {
+            uploadBlogDetailsBtn.setClickable(false);
             sendingBlogDetails(blogModel.getBlogID(),
                     titleEditTxt.getText().toString().trim(),
                     keywordEditTxt.getText().toString().trim(),
@@ -334,6 +333,7 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
                 return headers;
             }
         };

@@ -134,7 +134,7 @@ public class AdminLoginActivity extends AppCompatActivity {
                                         String mobile = userDataJson.getString("mobile");
                                         String role = userDataJson.getString("role");
                                         String createdAt = userDataJson.getString("createdAt");
-                                        String updatedAt = userDataJson.getString("updateAt");
+                                        String updatedAt = userDataJson.getString("updatedAt");
                                         sessionManager.saveLoginDetails(user_id,name,email,mobile,role,authToken,createdAt,updatedAt);
                                         Intent intent = new Intent(AdminLoginActivity.this, AdminDashboardActivity.class);
                                         startActivity(intent);
@@ -151,14 +151,16 @@ public class AdminLoginActivity extends AppCompatActivity {
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {
-                                String responseData = new String(error.networkResponse.data, "UTF-8");
-                                errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                                errorMessage += "\nResponse Data: " + responseData;
+                                // Parse the error response
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                // Now you can use the message
+                                Toast.makeText(AdminLoginActivity.this, message, Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
-                        Toast.makeText(AdminLoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                         Log.e("AdminLoginActivity", errorMessage);
                     }
                 }) {

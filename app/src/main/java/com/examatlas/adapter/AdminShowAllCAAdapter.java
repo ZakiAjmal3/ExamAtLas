@@ -59,7 +59,6 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         this.adminShowAllCAModelArrayList = adminShowAllCAModelArrayList;
         this.context = context;
         this.orginalAdminShowAllCAModelArrayList = new ArrayList<>(adminShowAllCAModelArrayList);
-        Collections.reverse(this.adminShowAllCAModelArrayList);
         sessionManager = new SessionManager(context.getContext());
         authToken = sessionManager.getUserData().get("authToken");
     }
@@ -73,7 +72,7 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        AdminShowAllCAModel currentCA = adminShowAllCAModelArrayList.get(adminShowAllCAModelArrayList.size() - 1 - position);
+        AdminShowAllCAModel currentCA = adminShowAllCAModelArrayList.get(position);
         holder.itemView.setTag(currentCA);
 
         // Set highlighted text
@@ -81,7 +80,6 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         holder.setHighlightedText(holder.keyword, currentCA.getKeyword(), currentQuery);
         holder.setHighlightedText(holder.content, currentCA.getContent(), currentQuery);
         holder.setHighlightedText(holder.tags, currentCA.getTags(), currentQuery);
-        holder.createdDate.setText(currentCA.getCreatedDate());
 
         holder.editCABtn.setOnClickListener(view -> openEditBlogDialog(currentCA));
         holder.deleteCABtn.setOnClickListener(view -> quitDialog(position));
@@ -311,7 +309,7 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         MySingletonFragment.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, keyword, content, tags, createdDate;
+        TextView title, keyword, content, tags;
         ImageView editCABtn, deleteCABtn;
 
         public ViewHolder(@NonNull View itemView) {
@@ -320,7 +318,6 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
             keyword = itemView.findViewById(R.id.txtCAKeyword);
             content = itemView.findViewById(R.id.txtContent);
             tags = itemView.findViewById(R.id.tagTxt);
-            createdDate = itemView.findViewById(R.id.txtDate);
             editCABtn = itemView.findViewById(R.id.editCABtn);
             deleteCABtn = itemView.findViewById(R.id.deleteCABtn);
         }

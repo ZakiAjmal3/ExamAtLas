@@ -127,7 +127,20 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                showErrorToast(String.valueOf(error));
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        // Parse the error response
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        // Now you can use the message
+                        Toast.makeText(LiveCoursesClassesListActivity.this, message, Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.e("BlogFetchError", errorMessage);
             }
         }) {
             @Override

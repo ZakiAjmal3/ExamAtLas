@@ -280,9 +280,12 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                         Log.e("onErrorResponse", errorMessage);
                         if (error.networkResponse != null) {
                             try {
-                                String responseData = new String(error.networkResponse.data, "UTF-8");
-                                errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                                errorMessage += "\nResponse Data: " + responseData;
+                                // Parse the error response
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                // Now you can use the message
+                                Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_LONG).show();
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -364,9 +367,12 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                 String errorMessage = error.toString();
                 if (error.networkResponse != null) {
                     try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
+                        // Parse the error response
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        // Now you can use the message
+                        Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
 
                         e.printStackTrace();
@@ -526,9 +532,12 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                 String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {
                     try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
+                        // Parse the error response
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        // Now you can use the message
+                        Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -595,14 +604,16 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                 String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {
                     try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
+                        // Parse the error response
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        // Now you can use the message
+                        Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                Toast.makeText(CreateDeliveryAddressActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 Log.e("LoginActivity", errorMessage);
             }
         }) {
@@ -776,14 +787,16 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                 String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {
                     try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
+                        // Parse the error response
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        // Now you can use the message
+                        Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                Toast.makeText(CreateDeliveryAddressActivity.this, errorMessage, Toast.LENGTH_LONG).show();
             }
         }) {
             @Override

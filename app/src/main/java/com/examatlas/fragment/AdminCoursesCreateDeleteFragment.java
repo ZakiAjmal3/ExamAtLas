@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -59,6 +60,7 @@ public class AdminCoursesCreateDeleteFragment extends Fragment {
     private Dialog createCoursesDialogBox;
     private EditText titleEditTxt, priceEditTxt;
     Button submitCourseDetailsBtn;
+    ImageView crossBtn;
     SessionManager sessionManager;
     String authToken;
     @Nullable
@@ -218,8 +220,16 @@ public class AdminCoursesCreateDeleteFragment extends Fragment {
 
         titleEditTxt = createCoursesDialogBox.findViewById(R.id.titleEditTxt);
         priceEditTxt = createCoursesDialogBox.findViewById(R.id.priceEditTxt);
+        crossBtn = createCoursesDialogBox.findViewById(R.id.btnCross);
 
         submitCourseDetailsBtn = createCoursesDialogBox.findViewById(R.id.btnSubmit);
+
+        crossBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createCoursesDialogBox.dismiss();
+            }
+        });
 
         submitCourseDetailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override

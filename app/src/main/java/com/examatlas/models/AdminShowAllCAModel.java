@@ -1,24 +1,41 @@
 package com.examatlas.models;
 
 public class AdminShowAllCAModel {
-    String caID,title,keyword,content,tags,createdDate,image;
+    String caID,title,keyword,content,tags,totalRows,totalPages,currentPage;
 
-    public AdminShowAllCAModel(String caID, String title, String keyword, String content, String tags, String createdDate, String image) {
+    public AdminShowAllCAModel(String caID, String title, String keyword, String content, String tags,String totalRows,String totalPages,String currentPage) {
         this.caID = caID;
         this.title = title;
         this.keyword = keyword;
         this.content = content;
         this.tags = tags;
-        this.createdDate = createdDate;
-        this.image = image;
+        this.totalRows = totalRows;
+        this.totalPages = totalPages;
+        this.currentPage = currentPage;
     }
 
-    public String getImage() {
-        return image;
+    public String getTotalRows() {
+        return totalRows;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setTotalRows(String totalRows) {
+        this.totalRows = totalRows;
+    }
+
+    public String getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(String totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public String getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(String currentPage) {
+        this.currentPage = currentPage;
     }
 
     public String getCaID() {
@@ -27,14 +44,6 @@ public class AdminShowAllCAModel {
 
     public void setCaID(String caID) {
         this.caID = caID;
-    }
-
-    public String getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(String createdDate) {
-        this.createdDate = createdDate;
     }
 
     public String getTitle() {

@@ -61,7 +61,6 @@ public class AdminShowAllEBookAdapter extends RecyclerView.Adapter<AdminShowAllE
     public AdminShowAllEBookAdapter(ArrayList<AdminShowAllEBooksModel> ebookModelArrayList, Fragment context) {
         this.originalEbookModelArrayList = new ArrayList<>(ebookModelArrayList);
         this.ebookModelArrayList = new ArrayList<>(originalEbookModelArrayList);
-        Collections.reverse(this.ebookModelArrayList);
         this.context = context;
         sessionManager = new SessionManager(context.getContext());
         authToken = sessionManager.getUserData().get("authToken");
@@ -77,7 +76,7 @@ public class AdminShowAllEBookAdapter extends RecyclerView.Adapter<AdminShowAllE
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         // Access the last item first
-            AdminShowAllEBooksModel currentEbook = ebookModelArrayList.get(ebookModelArrayList.size() - 1 - position);
+            AdminShowAllEBooksModel currentEbook = ebookModelArrayList.get(position);
             holder.itemView.setTag(currentEbook);
 
         holder.setHighlightedText(holder.title, currentEbook.getTitle(), currentQuery);

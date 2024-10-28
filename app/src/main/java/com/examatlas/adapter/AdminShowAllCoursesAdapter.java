@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -28,7 +29,6 @@ public class AdminShowAllCoursesAdapter extends RecyclerView.Adapter<AdminShowAl
         this.context = context;
         this.adminShowAllCourseModelArrayList = adminShowAllCourseModelArrayList2;
         this.orginalShowAllBlogModelArrayList = new ArrayList<>(adminShowAllCourseModelArrayList2);
-        Collections.reverse(this.adminShowAllCourseModelArrayList);
     }
 
     @NonNull
@@ -41,11 +41,24 @@ public class AdminShowAllCoursesAdapter extends RecyclerView.Adapter<AdminShowAl
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        AdminShowAllCourseModel currentCourse = adminShowAllCourseModelArrayList.get(adminShowAllCourseModelArrayList.size() - 1 - position);
+        AdminShowAllCourseModel currentCourse = adminShowAllCourseModelArrayList.get(position);
         holder.itemView.setTag(currentCourse);
 
         holder.setHighlightedText(holder.title, currentCourse.getTitle(), currentQuery);
         holder.setHighlightedText(holder.price,"₹ " + currentCourse.getPrice(), currentQuery);
+
+        holder.editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context.getContext(), "Work in Progress", Toast.LENGTH_SHORT).show();
+            }
+        });
+        holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context.getContext(), "Work in Progress", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -56,13 +69,15 @@ public class AdminShowAllCoursesAdapter extends RecyclerView.Adapter<AdminShowAl
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView title,price;
-        ImageView courseImage;
+        ImageView courseImage,editBtn,deleteBtn;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
 
             title = itemView.findViewById(R.id.title);
             price = itemView.findViewById(R.id.txtPrice);
             courseImage = itemView.findViewById(R.id.courseImage);
+            editBtn = itemView.findViewById(R.id.btnEdit);
+            deleteBtn = itemView.findViewById(R.id.btnDelete);
 
         }
         public void setHighlightedText(TextView textView, String text, String query) {

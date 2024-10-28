@@ -168,21 +168,27 @@ public class AdminCurrentAffairCreateDeleteFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("currentAffairs");
+                                JSONArray jsonArray = response.getJSONArray("data");
                                 adminShowAllCAModelArrayList.clear(); // Clear the list before adding new items
 
+                                JSONObject jsonObject2 = response.getJSONObject("pagination");
+                                String totalRows = jsonObject2.getString("totalRows");
+                                String totalPages = jsonObject2.getString("totalPages");
+                                String currentPage = jsonObject2.getString("currentPage");
+
                                 for (int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    String caID = jsonObject2.getString("_id");
-                                    String title = jsonObject2.getString("title");
-                                    String keyword = jsonObject2.getString("keyword");
-                                    String content = jsonObject2.getString("content");
-                                    String image = jsonObject2.getString("image");
-                                    String createdDate = jsonObject2.getString("createdAt");
+                                    JSONObject jsonObject3 = jsonArray.getJSONObject(i);
+                                    String affairID = jsonObject3.getString("_id");
+                                    String title = jsonObject3.getString("title");
+                                    String keyword = jsonObject3.getString("keyword");
+                                    String content = jsonObject3.getString("content");
+//                                    String image = jsonObject3.getString("image");
+//                                    String createdDate = jsonObject3.getString("createdAt");
+
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
-                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
+                                    JSONArray jsonArray1 = jsonObject3.getJSONArray("tags");
                                     for (int j = 0; j < jsonArray1.length(); j++) {
                                         String singleTag = jsonArray1.getString(j);
                                         tags.append(singleTag).append(", ");
@@ -192,7 +198,7 @@ public class AdminCurrentAffairCreateDeleteFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    adminShowAllCAModel = new AdminShowAllCAModel(caID, title, keyword, content, tags.toString(), createdDate,image);
+                                    adminShowAllCAModel = new AdminShowAllCAModel(affairID, title, keyword, content, tags.toString(),totalRows, totalPages,currentPage);
                                     adminShowAllCAModelArrayList.add(adminShowAllCAModel);
                                 }
                                 // Update the original list in the adapter
