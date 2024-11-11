@@ -62,9 +62,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/topBar"
-        android:layout_above="@id/bottom_navigation"
         tools:listitem="@layout/all_order_history_recycler_view_item_layout"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
