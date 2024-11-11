@@ -152,7 +152,7 @@ public class DashboardActivity extends AppCompatActivity {
     Dialog drawerDialog;
     LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks, layoutLiveClasses,
             layoutEbook, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy,
-            layoutTerms, layoutRefund, layoutFaq, layoutServices;
+            layoutTerms, layoutOrderHistory, layoutFaq, layoutServices;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
     MaterialCardView cardBack;
@@ -175,7 +175,7 @@ public class DashboardActivity extends AppCompatActivity {
         layoutAboutUs = drawerDialog.findViewById(R.id.layoutAboutUs);
         layoutPrivacy = drawerDialog.findViewById(R.id.layoutPrivacy);
         layoutTerms = drawerDialog.findViewById(R.id.layoutTerms);
-//        layoutRefund = drawerDialog.findViewById(R.id.layoutRefund);
+        layoutOrderHistory = drawerDialog.findViewById(R.id.layoutOrderHistory);
         cardBack = drawerDialog.findViewById(R.id.cardBack);
         imgUser = drawerDialog.findViewById(R.id.imgUser);
 //        layoutFaq = drawerDialog.findViewById(R.id.layoutFaq);
@@ -291,17 +291,14 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-//        layoutRefund.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                Intent intent = new Intent(DashboardActivity.this, WebActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                intent.putExtra("title", "Refund Policy");
-//                intent.putExtra("url", "https://examatlas.com/refundpolicy");
-//                startActivity(intent);
-//            }
-//        });
+        layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerDialog.dismiss();
+                Intent intent = new Intent(DashboardActivity.this, BookOrderHistoryActivity.class);
+                startActivity(intent);
+            }
+        });
 
 //        layoutFaq.setOnClickListener(new View.OnClickListener() {
 //            @Override
