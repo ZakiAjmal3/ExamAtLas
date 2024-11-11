@@ -185,18 +185,30 @@ public class HomeFragment extends Fragment {
                                     String subjectId = jsonObject2.getString("subjectId");
 
                                     ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
-                                    JSONArray jsonImageArray = jsonObject2.getJSONArray("images");
-                                    for (int j = 0; j<jsonImageArray.length();j++){
-                                        JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
-                                        BookImageModels bookImageModels = new BookImageModels(
-                                                jsonImageObject.getString("url"),
-                                                jsonImageObject.getString("filename"),
-                                                jsonImageObject.getString("contentType"),
-                                                jsonImageObject.getString("size"), // Assuming size is an integer
-                                                jsonImageObject.getString("uploadDate"),
-                                                jsonImageObject.getString("_id")
-                                        );
-                                        bookImageArrayList.add(bookImageModels);
+
+                                    // Check if "images" is a JSONArray or JSONObject
+                                    if (jsonObject2.has("images")) {
+                                        Object imagesObj = jsonObject2.get("images");
+                                        if (imagesObj instanceof JSONArray) {
+                                            // If images is a JSONArray
+                                            JSONArray jsonImageArray = (JSONArray) imagesObj;
+                                            for (int j = 0; j < jsonImageArray.length(); j++) {
+                                                JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
+                                                BookImageModels bookImageModels = new BookImageModels(
+                                                        jsonImageObject.getString("url"),
+                                                        jsonImageObject.getString("filename")
+                                                );
+                                                bookImageArrayList.add(bookImageModels);
+                                            }
+                                        } else if (imagesObj instanceof JSONObject) {
+                                            // If images is a JSONObject
+                                            JSONObject jsonImageObject = (JSONObject) imagesObj;
+                                            BookImageModels bookImageModels = new BookImageModels(
+                                                    jsonImageObject.getString("url"),
+                                                    jsonImageObject.getString("filename")
+                                            );
+                                            bookImageArrayList.add(bookImageModels);
+                                        }
                                     }
 
                                     String startDate = jsonObject2.getString("startDate");
@@ -204,12 +216,12 @@ public class HomeFragment extends Fragment {
 
                                     JSONArray jsonStudentArray = jsonObject2.getJSONArray("students");
                                     ArrayList<BookImageModels> studentsArrayList = new ArrayList<>();
-                                    for (int j = 0; j<jsonImageArray.length();j++){
-                                    }
+//                                    for (int j = 0; j<jsonImageArray.length();j++){
+//                                    }
                                     JSONArray jsonLiveClasses = jsonObject2.getJSONArray("liveClasses");
                                     ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
-                                    for (int j = 0; j<jsonImageArray.length();j++){
-                                    }
+//                                    for (int j = 0; j<jsonImageArray.length();j++){
+//                                    }
                                     LiveCoursesModel liveCoursesModel = new LiveCoursesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
                                     liveCoursesModelArrayList.add(liveCoursesModel);
                                 }
@@ -225,12 +237,14 @@ public class HomeFragment extends Fragment {
                             }
                         } catch (JSONException e) {
                             Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                            Log.e("Live Classes Error", e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                Log.e("Live Classes Error", error.getMessage());
             }
         }) {
             @Override

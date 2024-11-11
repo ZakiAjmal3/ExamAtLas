@@ -215,11 +215,6 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                                 JSONObject imageObject = new JSONObject();
                                 imageObject.put("url", image.getUrl());
                                 imageObject.put("filename", image.getFileName());
-                                imageObject.put("contentType", image.getContentType());
-                                imageObject.put("size", image.getSize());
-                                imageObject.put("uploadDate", image.getUploadDate());
-                                imageObject.put("_id", image.getId()); // Assuming you have an ID for the image
-
                                 bookImagesArray.put(imageObject);
                             }
                             itemObject.put("images", bookImagesArray);
@@ -721,11 +716,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                                         JSONObject jsonObject4 = jsonArray3.getJSONObject(j);
                                         BookImageModels bookImageModels = new BookImageModels(
                                                 jsonObject4.getString("url"),
-                                                jsonObject4.getString("filename"),
-                                                jsonObject4.getString("contentType"),
-                                                jsonObject4.getString("size"), // Assuming size is an integer
-                                                jsonObject4.getString("uploadDate"),
-                                                jsonObject4.getString("_id")
+                                                jsonObject4.getString("filename")
                                         );
                                         bookImageArrayList.add(bookImageModels);
                                     }

@@ -117,11 +117,7 @@ public class EbookActivity extends AppCompatActivity {
                                         JSONObject jsonObject3 = jsonArray1.getJSONObject(j);
                                         BookImageModels bookImageModels = new BookImageModels(
                                                 jsonObject3.getString("url"),
-                                                jsonObject3.getString("filename"),
-                                                jsonObject3.getString("contentType"),
-                                                jsonObject3.getString("size"), // Assuming size is an integer
-                                                jsonObject3.getString("uploadDate"),
-                                                jsonObject3.getString("_id")
+                                                jsonObject3.getString("filename")
                                         );
                                         bookImageArrayList.add(bookImageModels);
                                     }

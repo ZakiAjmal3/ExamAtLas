@@ -36,7 +36,7 @@
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/poppins"
         android:gravity="center"
-        android:text="Developed By Zaki Ajmal"
+        android:text="Developed By ZAKI AJMAL"
         android:textColor="@color/black"
         android:textSize="12sp" />
 

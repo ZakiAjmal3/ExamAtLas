@@ -103,11 +103,7 @@ public class LiveCoursesFragment extends Fragment {
                                         JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
                                         BookImageModels bookImageModels = new BookImageModels(
                                                 jsonImageObject.getString("url"),
-                                                jsonImageObject.getString("filename"),
-                                                jsonImageObject.getString("contentType"),
-                                                jsonImageObject.getString("size"), // Assuming size is an integer
-                                                jsonImageObject.getString("uploadDate"),
-                                                jsonImageObject.getString("_id")
+                                                jsonImageObject.getString("filename")
                                         );
                                         bookImageArrayList.add(bookImageModels);
                                     }

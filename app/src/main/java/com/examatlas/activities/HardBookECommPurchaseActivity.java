@@ -59,6 +59,8 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
     private int currentPage = 1;
     private int totalPages = 1;
     private final int itemsPerPage = 10;
+    private boolean isLoading = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +69,6 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
         initializeViews();
         setupToolbar();
         setupImageSlider();
-        setupRecyclerView();
         setupSearchView();
         getAllBooks();
         setClickingListeners();
@@ -87,6 +88,32 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
         hardBookECommPurchaseModelArrayList = new ArrayList<>();
         sessionManager = new SessionManager(this);
         token = sessionManager.getUserData().get("authToken");
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2); // 2 is the number of columns
+        booksRecyclerView.setLayoutManager(gridLayoutManager);
+
+        booksRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                // Get the GridLayoutManager and find the last visible item position
+                int lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition();
+                int totalItemCount = gridLayoutManager.getItemCount();
+
+                Log.d("ScrollListener", "Last visible item position: " + lastVisibleItemPosition + " Total items: " + totalItemCount);
+
+                // Check if we are at the bottom of the list
+                if (lastVisibleItemPosition + 1 >= totalItemCount && !isLoading) {
+                    // Check if there are more pages to load
+                    if (currentPage < totalPages) {
+                        currentPage++;  // Increment the current page
+                        getAllBooks();   // Fetch the next set of books
+                    }
+                }
+            }
+        });
+
     }
     private void setClickingListeners() {
         wishlistIcon.setOnClickListener(new View.OnClickListener() {
@@ -118,10 +145,6 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
         sliderArrayList.add(new SlideModel(R.drawable.image2, ScaleTypes.CENTER_CROP));
         sliderArrayList.add(new SlideModel(R.drawable.image3, ScaleTypes.CENTER_CROP));
         slider.setImageList(sliderArrayList);
-    }
-
-    private void setupRecyclerView() {
-        booksRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -183,11 +206,7 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                                         JSONObject jsonObject3 = jsonArray1.getJSONObject(j);
                                         BookImageModels bookImageModels = new BookImageModels(
                                                 jsonObject3.getString("url"),
-                                                jsonObject3.getString("filename"),
-                                                jsonObject3.getString("contentType"),
-                                                jsonObject3.getString("size"), // Assuming size is an integer
-                                                jsonObject3.getString("uploadDate"),
-                                                jsonObject3.getString("_id")
+                                                jsonObject3.getString("filename")
                                         );
                                         bookImageArrayList.add(bookImageModels);
                                     }
