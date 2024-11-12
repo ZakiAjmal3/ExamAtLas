@@ -63,7 +63,6 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         liveClassesRecycler = view.findViewById(R.id.examRecycler);
-//        testimonialRecycler = view.findViewById(R.id.testimonialRecycler);
         currentAffairRecycler = view.findViewById(R.id.currentAffairRecycler);
         blogsRecycler = view.findViewById(R.id.blogsRecycler);
         homeProgress = view.findViewById(R.id.homeProgress);
@@ -85,68 +84,19 @@ public class HomeFragment extends Fragment {
 
         liveClassesRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         blogsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-//        testimonialRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        currentAffairRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-//        getSliderImage();
-        liveClassesRecycler.setVisibility(View.GONE);
+        currentAffairRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));liveClassesRecycler.setVisibility(View.GONE);
         liveClassesProgress.setVisibility(View.VISIBLE);
         blogsRecycler.setVisibility(View.GONE);
         blogProgressBar.setVisibility(View.VISIBLE);
         currentAffairRecycler.setVisibility(View.GONE);
         currentAffairProgress.setVisibility(View.VISIBLE);
-        getLiveClasses();
-
-//        txtSeeAll.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-////                ((DashboardActivity) getActivity()).loadCourse();
-//            }
-//        });
         token = sessionManager.getUserData().get("authToken");
 
+        getLiveClasses();
+        getBlogList();
+        getCurrentAffairs();
         return view;
     }
-
-    public void loadFragment(Fragment fragment) {
-        getActivity()
-                .getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
-    }
-
-//    private void getSliderImage() {
-//        homeProgress.setVisibility(View.VISIBLE);
-//        ServiceApi api = ApiClient.getClient().create(ServiceApi.class);
-//        Call<BannerRequest> call = api.getBannerImages();
-//        call.enqueue(new Callback<BannerRequest>() {
-//            @Override
-//            public void onResponse(Call<BannerRequest> call, Response<BannerRequest> response) {
-//                homeProgress.setVisibility(View.GONE);
-//                if (response.body() != null) {
-//                    if (response.body().getStatus()) {
-//                        bannerList.addAll(response.body().getBannerimages());
-//                        SliderAdapter adapter = new SliderAdapter(HomeFragment.this, bannerList);
-//                        slider.setAutoCycleDirection(SliderView.LAYOUT_DIRECTION_LTR);
-//                        slider.setSliderAdapter(adapter);
-//                        slider.setScrollTimeInSec(3);
-//                        slider.setAutoCycle(true);
-//                        slider.startAutoCycle();
-//                    }
-//                } else {
-//                    Log.e("BODY", "Body is null");
-//                }
-//                getExamsList();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BannerRequest> call, Throwable t) {
-//                Log.e("EXCEPTION", t.getLocalizedMessage());
-//                homeProgress.setVisibility(View.GONE);
-//                getExamsList();
-//            }
-//        });
-//    }
 
     private void getLiveClasses() {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, liveClassURL, null,
@@ -211,8 +161,11 @@ public class HomeFragment extends Fragment {
                                         }
                                     }
 
-                                    String startDate = jsonObject2.getString("startDate");
-                                    String endDate = jsonObject2.getString("endDate");
+                                    String startDate = "",endDate = "";
+                                    if (jsonObject2.has("startDate")) {
+                                        startDate = jsonObject2.getString("startDate");
+                                        endDate = jsonObject2.getString("endDate");
+                                    }
 
                                     JSONArray jsonStudentArray = jsonObject2.getJSONArray("students");
                                     ArrayList<BookImageModels> studentsArrayList = new ArrayList<>();
@@ -256,7 +209,6 @@ public class HomeFragment extends Fragment {
             }
         };
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
-        getBlogList();
     }
 
     private void getBlogList() {
@@ -342,7 +294,6 @@ public class HomeFragment extends Fragment {
             }
         };
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
-        getCurrentAffairs();
     }
 
 

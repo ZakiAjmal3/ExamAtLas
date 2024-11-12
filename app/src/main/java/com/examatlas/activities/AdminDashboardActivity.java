@@ -29,7 +29,9 @@ import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.fragment.AdminBlogCreateDeleteFragment;
 import com.examatlas.fragment.AdminCoursesCreateDeleteFragment;
+import com.examatlas.fragment.AdminCreateCategoryFragment;
 import com.examatlas.fragment.AdminCreateLiveCoursesClassesFragment;
+import com.examatlas.fragment.AdminCreateSubjectFragment;
 import com.examatlas.fragment.AdminCurrentAffairCreateDeleteFragment;
 import com.examatlas.fragment.AdminEBooksCreateDeleteFragment;
 import com.examatlas.fragment.AdminHomeFragment;
@@ -100,7 +102,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
     String [] usersItems = {"Select from below","Learners","Groups","Sub-Admins","Contacts"};
     String [] manageItems = {"Select from below","Course Encryption","Discussions","Rating & Reviews","Legacy Answer Reviews","Learner Support"};
     String [] reportsItems = {"Select from below","Enrollments","Transactions","Payment Gateways","Invoices","Progress & Scores","Sales & Marketing","Live Class-Legacy","Live Class","Live Class-Legacy","Custom Fields","Digital Evaluation","Legacy Reports","Exports","Broadcast Message","Resource Usage","Messenger Insights","School Payout"};
-    String contentItemsSelected;
+    String masterItemsSelected,contentItemsSelected;
     private void showDrawerDialog() {
         drawerDialog = new Dialog(AdminDashboardActivity.this);
         drawerDialog.setContentView(R.layout.admin_custom_drawer_dialog);
@@ -341,7 +343,16 @@ public class AdminDashboardActivity extends AppCompatActivity {
         setupSpinner(masterDropdown, masterItems, new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    // Handle item selection
+                    masterItemsSelected = masterItems[position];
+                    if (masterItemsSelected.equals("Subject")){
+                        loadFragment(new AdminCreateSubjectFragment());
+                        currentFragment = new AdminCreateSubjectFragment();
+                        drawerDialog.dismiss();
+                    }else if (masterItemsSelected.equals("Category")){
+                        loadFragment(new AdminCreateCategoryFragment());
+                        currentFragment = new AdminCreateCategoryFragment();
+                        drawerDialog.dismiss();
+                    }
                 }
 
                 @Override

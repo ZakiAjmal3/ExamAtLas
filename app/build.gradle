@@ -45,6 +45,7 @@ dependencies {
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.razorpay:checkout:1.6.40'
+    implementation 'org.jsoup:jsoup:1.15.3'
     implementation libs.recyclerview
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

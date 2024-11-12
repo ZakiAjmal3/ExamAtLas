@@ -1,6 +1,7 @@
 package com.examatlas.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,27 +99,46 @@ public class AdminCreateLiveCoursesClassesFragment extends Fragment {
                                     String subjectId = jsonObject2.getString("subjectId");
 
                                     ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
-                                    JSONArray jsonImageArray = jsonObject2.getJSONArray("images");
-                                    for (int j = 0; j<jsonImageArray.length();j++){
-                                        JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
+                                    Object imagesObject = jsonObject2.get("images"); // Get the "images" field as an Object
+
+                                    if (imagesObject instanceof JSONArray) {
+                                        // If it's a JSONArray, iterate through the array
+                                        JSONArray jsonImageArray = (JSONArray) imagesObject;
+                                        for (int j = 0; j < jsonImageArray.length(); j++) {
+                                            JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
+                                            BookImageModels bookImageModels = new BookImageModels(
+                                                    jsonImageObject.getString("url"),
+                                                    jsonImageObject.getString("filename")
+                                            );
+                                            bookImageArrayList.add(bookImageModels);
+                                        }
+                                    } else if (imagesObject instanceof JSONObject) {
+                                        // If it's a JSONObject, treat it as a single image object
+                                        JSONObject jsonImageObject = (JSONObject) imagesObject;
                                         BookImageModels bookImageModels = new BookImageModels(
                                                 jsonImageObject.getString("url"),
                                                 jsonImageObject.getString("filename")
                                         );
                                         bookImageArrayList.add(bookImageModels);
+                                    } else {
+                                        // Handle case where "images" is neither an array nor an object (invalid data)
+                                        Log.e("JSON_ERROR", "\"images\" is neither an array nor an object");
                                     }
 
-                                    String startDate = jsonObject2.getString("startDate");
-                                    String endDate = jsonObject2.getString("endDate");
+                                    String startDate = "",endDate = "";
+                                    if (jsonObject2.has("startDate")) {
+                                        startDate = jsonObject2.getString("startDate");
+                                        endDate = jsonObject2.getString("endDate");
+                                    }
 
                                     JSONArray jsonStudentArray = jsonObject2.getJSONArray("students");
                                     ArrayList<BookImageModels> studentsArrayList = new ArrayList<>();
-                                    for (int j = 0; j<jsonImageArray.length();j++){
-                                    }
+//                                    for (int j = 0; j<jsonImageArray.length();j++){
+//                                    }
                                     JSONArray jsonLiveClasses = jsonObject2.getJSONArray("liveClasses");
                                     ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
-                                    for (int j = 0; j<jsonImageArray.length();j++){
-                                    }
+//                                    for (int j = 0; j<jsonImageArray.length();j++){
+//                                    }
                                     LiveCoursesModel liveCoursesModel = new LiveCoursesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
                                     liveCoursesModelArrayList.add(liveCoursesModel);
                                 }
@@ -131,15 +151,18 @@ public class AdminCreateLiveCoursesClassesFragment extends Fragment {
                             } else {
                                 String message = response.getString("message");
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                                Log.e("onResponse",response.toString());
                             }
                         } catch (JSONException e) {
                             Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                            Log.e("catch",e.toString());
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                Log.e("onErrorResponse",error.toString());
             }
         }) {
             @Override
