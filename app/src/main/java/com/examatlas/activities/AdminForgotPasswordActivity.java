@@ -1,25 +1,41 @@
 package com.examatlas.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.utils.Constant;
+import com.examatlas.utils.MySingleton;
+import com.examatlas.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdminForgotPasswordActivity extends AppCompatActivity {
 
     TextView txtLogin;
     MaterialButton btnRequestOtp;
-    ProgressBar progressBar;
-    EditText edtNumber;
-    private final String serverUrl = Constant.BASE_URL + "user/loginUser";
+    EditText emailEditTxt;
+    private final String serverUrl = Constant.BASE_URL + "auth/forgotpassword";
+    SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,8 +43,9 @@ public class AdminForgotPasswordActivity extends AppCompatActivity {
 
         txtLogin = findViewById(R.id.txtLogin);
         btnRequestOtp = findViewById(R.id.btnRequestOtp);
-        progressBar = findViewById(R.id.progressBar);
-        edtNumber = findViewById(R.id.edtNumber);
+        emailEditTxt = findViewById(R.id.edtNumber);
+
+        sessionManager = new SessionManager(this);
 
         txtLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,49 +56,83 @@ public class AdminForgotPasswordActivity extends AppCompatActivity {
         btnRequestOtp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (edtNumber.length() != 0 && !(edtNumber.getText().length() < 10)) {
-                    forgotPassword(edtNumber.getText().toString().trim());
+                if (emailEditTxt.length() != 0 && !(emailEditTxt.getText().length() < 10)) {
+                    forgotPassword(emailEditTxt.getText().toString().trim());
                 }
             }
         });
     }
 
-    private void forgotPassword(String mobile) {
-        progressBar.setVisibility(View.VISIBLE);
-        Intent intent = new Intent(AdminForgotPasswordActivity.this, AdminOtpActivity.class);
-        startActivity(intent);
-        finish();
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST, serverUrl,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        try {
-//                            JSONObject jsonObject = new JSONObject(response);
-//                            String Response = jsonObject.getString("response");
-//                            if (Response.equals("Success")){
-//                                Intent intent = new Intent(AdminForgotPasswordActivity.this,AdminOtpActivity.class);
-//                                startActivity(intent);
-//                                finish();
-//                            }else if (Response.equals("User does not exist")){
-//                                Toast.makeText(AdminForgotPasswordActivity.this, "No user found with these credentials", Toast.LENGTH_SHORT).show();
-//                            }
-//                        } catch (JSONException e) {
-//                            Toast.makeText(AdminForgotPasswordActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Toast.makeText(AdminForgotPasswordActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-//            }
-//        }) {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String, String> params = new HashMap<>();
-//                params.put("mobile", mobile);
-//                return params;
-//            }
-//        };
-//        MySingleton.getInstance(AdminForgotPasswordActivity.this).addToRequestQueue(stringRequest);
+    private void forgotPassword(String email) {
+        // Create JSON object for the request
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("email", email);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return; // Early return if JSON creation fails
+        }
+
+        Log.d("LoginPayload", jsonObject.toString());
+
+        // Show progress dialog while logging in (you can replace this with a ProgressBar in the UI)
+        ProgressDialog progressDialog = new ProgressDialog(AdminForgotPasswordActivity.this);
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+
+        // This line should be called before the startActivity() to avoid the WindowLeaked error
+        progressDialog.show();
+
+        // Create JsonObjectRequest
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, serverUrl, jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // Dismiss the ProgressDialog here before finishing or transitioning to a new activity
+                        progressDialog.dismiss();
+
+                        try {
+                            String status = response.getString("status");
+                            String message = response.getString("message");
+                            Toast.makeText(AdminForgotPasswordActivity.this, message, Toast.LENGTH_SHORT).show();
+                            // Start the AdminDashboardActivity and finish the current activity
+                            Intent intent = new Intent(AdminForgotPasswordActivity.this, AdminLoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } catch (JSONException e) {
+                            Toast.makeText(AdminForgotPasswordActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Dismiss the ProgressDialog here as well
+                progressDialog.dismiss();
+
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        // Parse the error response and display the message
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        Toast.makeText(AdminForgotPasswordActivity.this, message, Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.e("AdminLoginActivity", errorMessage);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        MySingleton.getInstance(AdminForgotPasswordActivity.this).addToRequestQueue(jsonObjectRequest);
     }
+
 }

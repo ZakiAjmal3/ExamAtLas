@@ -6,7 +6,7 @@
         android:id="@+id/txtBlog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Category"
+        android:text="Sub-Category"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginTop="20dp"
@@ -16,7 +16,7 @@
         android:id="@+id/txtWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to Category Dashboard"
+        android:text="Welcome to Sub-Category Dashboard"
         android:textSize="14sp"
         android:layout_below="@id/txtBlog"
         android:layout_marginLeft="20dp"/>
@@ -61,14 +61,14 @@
         android:layout_below="@id/txtWelcome"
         android:layout_alignParentEnd="true"/>
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/showAllCategoryRecycler"
+        android:id="@+id/showAllSubCategoryRecycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/searchView"
         android:visibility="gone"
         android:layout_margin="15dp"/>
     <ProgressBar
-        android:id="@+id/showAllCategoryProgressBar"
+        android:id="@+id/showAllSubCategoryProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/searchView"

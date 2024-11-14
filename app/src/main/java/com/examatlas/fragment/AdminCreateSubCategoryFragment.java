@@ -1,5 +1,6 @@
 package com.examatlas.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -15,14 +16,19 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -35,9 +41,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.adapter.AdminShowAllCategoryAdapter;
+import com.examatlas.adapter.AdminShowAllSubCategoryAdapter;
 import com.examatlas.adapter.AdminTagsForDataALLAdapter;
 import com.examatlas.models.AdminShowAllCategoryModel;
+import com.examatlas.models.AdminShowAllSubCategoryModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
@@ -52,44 +59,47 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AdminCreateCategoryFragment extends Fragment {
-    Button createBtn,searchBtn;
+public class AdminCreateSubCategoryFragment extends Fragment {
+    Button createBtn, searchBtn;
     SearchView searchView;
-    RecyclerView showCategoryRecycler;
+    RecyclerView showSubCategoryRecycler;
     RelativeLayout noDataLayout;
     ProgressBar progressBar;
-    AdminShowAllCategoryAdapter categoryAdapter;
-    AdminShowAllCategoryModel categoryModel;
-    ArrayList<AdminShowAllCategoryModel> categoryModelArrayList = new ArrayList<>();
-    private final String categoryURL = Constant.BASE_URL + "category/getCategory";
-    private final String createCategoryURL = Constant.BASE_URL + "category/createCategory";
+    AdminShowAllSubCategoryAdapter subCategoryAdapter;
+    AdminShowAllSubCategoryModel subCategoryModel;
+    ArrayList<AdminShowAllSubCategoryModel> subCategoryModelArrayList = new ArrayList<>();
+    private final String subCategoryURL = Constant.BASE_URL + "/category/getSubCategory";
+    private final String subCreateCategoryURL = Constant.BASE_URL + "category/createSubCategory";
     SessionManager sessionManager;
     String authToken;
     private String searchQuery = "";
-    private int totalPages = 1,currentPage = 1;
+    private int totalPages = 1, currentPage = 1;
     private final int itemsPerPage = 10;
     private boolean isLoading = false;
-
+    ArrayList<String> categoryNameList;
+    String categoryId = null;
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.admin_fragment_create_category, container, false);
+        View view = inflater.inflate(R.layout.admin_fragment_create_subcategory, container, false);
 
         createBtn = view.findViewById(R.id.btnCreate);
         searchBtn = view.findViewById(R.id.btnSearch);
         searchView = view.findViewById(R.id.searchView);
-        showCategoryRecycler = view.findViewById(R.id.showAllCategoryRecycler);
+        showSubCategoryRecycler = view.findViewById(R.id.showAllSubCategoryRecycler);
         noDataLayout = view.findViewById(R.id.noDataLayout);
-        progressBar = view.findViewById(R.id.showAllCategoryProgressBar);
+        progressBar = view.findViewById(R.id.showAllSubCategoryProgressBar);
 
         sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        showCategoryRecycler.setLayoutManager(linearLayoutManager);
-        categoryModelArrayList.clear();
-        getAllCategory();
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        showSubCategoryRecycler.setLayoutManager(linearLayoutManager);
+        subCategoryModelArrayList.clear();
+        getAllSubCategory();
+
+
 
         createBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,19 +107,19 @@ public class AdminCreateCategoryFragment extends Fragment {
                 openDialogBoxCreateSubject();
             }
         });
-        showCategoryRecycler.setItemAnimator(null);
-        showCategoryRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        showSubCategoryRecycler.setItemAnimator(null);
+        showSubCategoryRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
                 // Check if we are at the bottom of the RecyclerView
-                int totalItemCount = showCategoryRecycler.getLayoutManager().getItemCount();
-                int lastVisibleItem = ((LinearLayoutManager) showCategoryRecycler.getLayoutManager()).findLastVisibleItemPosition();
+                int totalItemCount = showSubCategoryRecycler.getLayoutManager().getItemCount();
+                int lastVisibleItem = ((LinearLayoutManager) showSubCategoryRecycler.getLayoutManager()).findLastVisibleItemPosition();
 
                 if (totalItemCount <= (lastVisibleItem + 2) && !isLoading && currentPage < totalPages) {
                     isLoading = true;
-                    getAllCategory();  // Load next page
+                    getAllSubCategory();  // Load next page
                 }
             }
         });
@@ -145,8 +155,8 @@ public class AdminCreateCategoryFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 // Call the filter method when the search text changes
-                if (categoryAdapter != null) {
-                    categoryAdapter.filter(newText);
+                if (subCategoryAdapter != null) {
+                    subCategoryAdapter.filter(newText);
                 }
                 return true;
             }
@@ -155,7 +165,8 @@ public class AdminCreateCategoryFragment extends Fragment {
         return view;
     }
 
-    private Dialog createCategoryDialogBox;
+    private Dialog createSubCategoryDialogBox;
+    Spinner categorySpinner;
     private EditText titleEditTxt,descriptionEditTxt,tagsEditTxt;
     private Button submitBtn;
     private ImageView crossBtn;
@@ -163,36 +174,75 @@ public class AdminCreateCategoryFragment extends Fragment {
     private AdminTagsForDataALLAdapter adminTagsForDataALLAdapter;
     private AdminTagsForDataALLModel adminTagsForDataALLModel;
     private ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList;
+    @SuppressLint("ClickableViewAccessibility")
     private void openDialogBoxCreateSubject() {
 
-        createCategoryDialogBox = new Dialog(requireContext());
-        createCategoryDialogBox.setContentView(R.layout.admin_create_category_dialog_box);
+        createSubCategoryDialogBox = new Dialog(requireContext());
+        createSubCategoryDialogBox.setContentView(R.layout.admin_create_subcategory_dialog_box);
 
-        titleEditTxt = createCategoryDialogBox.findViewById(R.id.titleEditTxt);
-        descriptionEditTxt = createCategoryDialogBox.findViewById(R.id.descriptionEditText);
-        submitBtn = createCategoryDialogBox.findViewById(R.id.btnSubmit);
-        crossBtn = createCategoryDialogBox.findViewById(R.id.btnCross);
+        titleEditTxt = createSubCategoryDialogBox.findViewById(R.id.titleEditTxt);
+        categorySpinner = createSubCategoryDialogBox.findViewById(R.id.categorySpinner);
+        descriptionEditTxt = createSubCategoryDialogBox.findViewById(R.id.descriptionEditText);
+        submitBtn = createSubCategoryDialogBox.findViewById(R.id.btnSubmit);
+        crossBtn = createSubCategoryDialogBox.findViewById(R.id.btnCross);
 
-        tagsRecyclerView = createCategoryDialogBox.findViewById(R.id.tagsRecycler);
+        tagsRecyclerView = createSubCategoryDialogBox.findViewById(R.id.tagsRecycler);
         adminTagsForDataALLModelArrayList = new ArrayList<>();
-        tagsRecyclerView = createCategoryDialogBox.findViewById(R.id.tagsRecycler);
+        tagsRecyclerView = createSubCategoryDialogBox.findViewById(R.id.tagsRecycler);
         tagsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
         adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
         tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
 
-        tagsEditTxt = createCategoryDialogBox.findViewById(R.id.tagsEditText);
+        tagsEditTxt = createSubCategoryDialogBox.findViewById(R.id.tagsEditText);
+        categoryNameList = new ArrayList<>();
+        String[] categoryNameList = new String[subCategoryModelArrayList.size() + 1]; // +1 for "Select Category"
+        categoryNameList[0] = "Select Category";
+        for (int i = 0; i < subCategoryModelArrayList.size(); i++) {
+            categoryNameList[i + 1] = subCategoryModelArrayList.get(i).getSubCategoryName();
+        }
+        setupCategorySpinner(categorySpinner,titleEditTxt,descriptionEditTxt,tagsEditTxt,null);
 
         crossBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createCategoryDialogBox.dismiss();
+                createSubCategoryDialogBox.dismiss();
             }
         });
-
+        createSubCategoryDialogBox.findViewById(android.R.id.content).setOnTouchListener((v, event) -> {
+            if (categoryId == null) {
+                // Show toast if no category is selected
+                Toast.makeText(getContext(), "Please select a category first", Toast.LENGTH_SHORT).show();
+            }
+            return false; // Return false to allow the touch event to propagate
+        });
+        titleEditTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (categoryId == null){
+                    Toast.makeText(getContext(), "Please Select a Category", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        descriptionEditTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (categoryId == null){
+                    Toast.makeText(getContext(), "Please Select a Category", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        tagsEditTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (categoryId == null){
+                    Toast.makeText(getContext(), "Please Select a Category", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendCategoryDetails(titleEditTxt.getText().toString().trim(),descriptionEditTxt.getText().toString().trim(),adminTagsForDataALLModelArrayList,createCategoryDialogBox);
+                sendSubCategoryDetails(categoryId,titleEditTxt.getText().toString().trim(),descriptionEditTxt.getText().toString().trim(),adminTagsForDataALLModelArrayList, createSubCategoryDialogBox);
             }
         });
 
@@ -211,17 +261,17 @@ public class AdminCreateCategoryFragment extends Fragment {
             return false; // Pass the event on
         });
 
-        createCategoryDialogBox.show();
-        WindowManager.LayoutParams params = createCategoryDialogBox.getWindow().getAttributes();
+        createSubCategoryDialogBox.show();
+        WindowManager.LayoutParams params = createSubCategoryDialogBox.getWindow().getAttributes();
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         params.gravity = Gravity.CENTER;
 
 // Set the window attributes
-        createCategoryDialogBox.getWindow().setAttributes(params);
+        createSubCategoryDialogBox.getWindow().setAttributes(params);
 
 // Now, to set margins, you'll need to set it in the root view of the dialog
-        FrameLayout layout = (FrameLayout) createCategoryDialogBox.findViewById(android.R.id.content);
+        FrameLayout layout = (FrameLayout) createSubCategoryDialogBox.findViewById(android.R.id.content);
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) layout.getLayoutParams();
 
 // Set top and bottom margins (adjust values as needed)
@@ -229,16 +279,66 @@ public class AdminCreateCategoryFragment extends Fragment {
         layout.setLayoutParams(layoutParams);
 
 // Background and animation settings
-        createCategoryDialogBox.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        createCategoryDialogBox.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        createCategoryDialogBox.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        createSubCategoryDialogBox.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        createSubCategoryDialogBox.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        createSubCategoryDialogBox.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
     }
 
-    private void sendCategoryDetails(String title, String description, ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, Dialog createCategoryDialogBox) {
+    public void setupCategorySpinner(Spinner categorySpinners, EditText titleEditTxt, EditText descriptionEditTxt, EditText tagsEditTxt, AdminShowAllSubCategoryModel currentCategory) {
+        // Assuming `subCategoryModelArrayList` contains the categories data
+        ArrayList<String> categoryNameList = new ArrayList<>();
+        categoryNameList.add("Select Category"); // First item is "Select Category"
+
+        // Populate category names from your subCategoryModelArrayList
+        for (AdminShowAllSubCategoryModel category : subCategoryModelArrayList) {
+            categoryNameList.add(category.getCategoryName());
+        }
+
+        // Set the adapter for the Spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categoryNameList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinners.setAdapter(adapter);
+        if (currentCategory != null) {
+            for (int i = 0; i < categoryNameList.size(); i++) {
+                if (categoryNameList.get(i).equals(currentCategory.getCategoryName())) {
+                    categorySpinners.setSelection(i);
+                    categorySpinners.setEnabled(false);
+                }
+            }
+        }
+
+        // Set the OnItemSelectedListener to handle category selection
+        categorySpinners.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if (position > 0) { // Ensure that a category is selected (not "Select Category")
+                    categoryId = subCategoryModelArrayList.get(position - 1).getCategoryId(); // Get the corresponding categoryId
+                    titleEditTxt.setEnabled(true); // Enable the EditText fields
+                    descriptionEditTxt.setEnabled(true);
+                    tagsEditTxt.setEnabled(true);
+                } else {
+                    categoryId = null; // Reset categoryId if "Select Category" is selected
+                    titleEditTxt.setEnabled(false); // Disable the EditText fields
+                    descriptionEditTxt.setEnabled(false);
+                    tagsEditTxt.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                categoryId = null; // Reset categoryId if nothing is selected
+                titleEditTxt.setEnabled(false); // Disable the EditText fields
+                descriptionEditTxt.setEnabled(false);
+                tagsEditTxt.setEnabled(false);
+            }
+        });
+    }
+    private void sendSubCategoryDetails(String categoryId,String title, String description, ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, Dialog createCategoryDialogBox) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("categoryName", title);
+            jsonObject.put("categoryId", categoryId);
+            jsonObject.put("subCategoryName", title);
             jsonObject.put("description", description);
 
             // Create a JSONArray for the tags
@@ -252,7 +352,7 @@ public class AdminCreateCategoryFragment extends Fragment {
             return;
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, createCategoryURL, jsonObject,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, subCreateCategoryURL, jsonObject,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -261,7 +361,7 @@ public class AdminCreateCategoryFragment extends Fragment {
                             if (status) {
                                 String message = response.getString("message");
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                                getAllCategory();
+                                getAllSubCategory();
                                 createCategoryDialogBox.dismiss();
                             }
                         } catch (JSONException e) {
@@ -296,20 +396,23 @@ public class AdminCreateCategoryFragment extends Fragment {
 
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-
-    public void getAllCategory() {
-        String subjectURLPage = categoryURL  + "?search=" + searchQuery + "&page=" + currentPage + "&per_page=" + itemsPerPage;
+    public void getAllSubCategory() {
+        subCategoryAdapter = null;
+        String subjectURLPage = subCategoryURL  + "?per_page=" + itemsPerPage;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, subjectURLPage, null,
                 new Response.Listener<JSONObject>() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            createBtn.setEnabled(true);
-                            showCategoryRecycler.setVisibility(View.VISIBLE);
+                            Log.e("SubCategoryResponse", response.toString());
+                            showSubCategoryRecycler.setVisibility(View.VISIBLE);
                             progressBar.setVisibility(View.GONE);
                             boolean status = response.getBoolean("status");
+                            subCategoryModelArrayList.clear();
 
                             if (status) {
+                                createBtn.setEnabled(true);
                                 JSONObject jsonObject = response.getJSONObject("pagination");
 
                                 int totalRows = Integer.parseInt(jsonObject.getString("totalRows"));
@@ -320,37 +423,69 @@ public class AdminCreateCategoryFragment extends Fragment {
                                 // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    String id = jsonObject2.getString("_id");
-                                    String categoryName = jsonObject2.getString("categoryName");
-                                    String description = jsonObject2.getString("description");
-                                    String is_active = jsonObject2.getString("is_active");
+                                    String subCategoryId = jsonObject2.getString("_id");
 
-                                    // Use StringBuilder for tags
-                                    StringBuilder tags = new StringBuilder();
-                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
-                                    for (int j = 0; j < jsonArray1.length(); j++) {
-                                        String singleTag = jsonArray1.getString(j);
-                                        tags.append(singleTag).append(", ");
-                                    }
-                                    // Remove trailing comma and space if any
-                                    if (tags.length() > 0) {
-                                        tags.setLength(tags.length() - 2);
+                                    // Check if categoryId is null
+                                    JSONObject jsonObject3 = jsonObject2.optJSONObject("categoryId");
+                                    String categoryId = "";
+                                    String categoryName = "";
+                                    String categoryDescription = "";
+                                    String categoryTags = "";
+
+                                    // If categoryId is not null, parse its data
+                                    if (jsonObject3 != null) {
+                                        categoryId = jsonObject3.getString("_id");
+                                        categoryName = jsonObject3.getString("categoryName");
+                                        categoryDescription = jsonObject3.getString("description");
+
+                                        // Use StringBuilder for tags, but only if jsonObject3 is not null
+                                        StringBuilder categoryTagsBuilder = new StringBuilder();
+                                        if (jsonObject3.has("tags")) {
+                                            JSONArray jsonArray1 = jsonObject3.getJSONArray("tags");
+                                            for (int j = 0; j < jsonArray1.length(); j++) {
+                                                String singleTag = jsonArray1.getString(j);
+                                                categoryTagsBuilder.append(singleTag).append(", ");
+                                            }
+                                            if (categoryTagsBuilder.length() > 0) {
+                                                categoryTagsBuilder.setLength(categoryTagsBuilder.length() - 2); // Remove trailing comma
+                                            }
+                                            categoryTags = categoryTagsBuilder.toString();
+                                        }
                                     }
 
-                                    categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,tags.toString());
-                                    categoryModelArrayList.add(categoryModel);
+                                    String subCategoryName = jsonObject2.getString("subCategoryName");
+                                    String subCategoryDescription = jsonObject2.getString("description");
+
+                                    // Use StringBuilder for subcategory tags
+                                    StringBuilder subCategoryTagsBuilder = new StringBuilder();
+                                    JSONArray jsonArray2 = jsonObject2.getJSONArray("tags");
+                                    for (int j = 0; j < jsonArray2.length(); j++) {
+                                        String singleTag = jsonArray2.getString(j);
+                                        subCategoryTagsBuilder.append(singleTag).append(", ");
+                                    }
+                                    if (subCategoryTagsBuilder.length() > 0) {
+                                        subCategoryTagsBuilder.setLength(subCategoryTagsBuilder.length() - 2); // Remove trailing comma
+                                    }
+                                    String subCategoryTags = subCategoryTagsBuilder.toString();
+
+                                    subCategoryModel = new AdminShowAllSubCategoryModel(
+                                            categoryId, categoryName, categoryDescription, categoryTags,
+                                            subCategoryId, subCategoryName, subCategoryDescription, subCategoryTags);
+
+                                    subCategoryModelArrayList.add(subCategoryModel);
                                 }
-//                                updateUI();
-                                if (categoryModelArrayList.isEmpty()) {
+
+                                // Update UI after fetching the data
+                                if (subCategoryModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
-                                    showCategoryRecycler.setVisibility(View.GONE);
+                                    showSubCategoryRecycler.setVisibility(View.GONE);
                                     progressBar.setVisibility(View.GONE);
                                 } else {
-                                    if (categoryAdapter == null) {
-                                        categoryAdapter = new AdminShowAllCategoryAdapter( categoryModelArrayList,AdminCreateCategoryFragment.this);
-                                        showCategoryRecycler.setAdapter(categoryAdapter);
+                                    if (subCategoryAdapter == null) {
+                                        subCategoryAdapter = new AdminShowAllSubCategoryAdapter(subCategoryModelArrayList, AdminCreateSubCategoryFragment.this);
+                                        showSubCategoryRecycler.setAdapter(subCategoryAdapter);
                                     } else {
-                                        categoryAdapter.notifyDataSetChanged();
+                                        subCategoryAdapter.notifyDataSetChanged();
                                     }
                                 }
                                 isLoading = false;
@@ -392,6 +527,7 @@ public class AdminCreateCategoryFragment extends Fragment {
 
         MySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
     }
+
 
     private void openKeyboard() {
         searchView.setIconified(false); // Expands the search view

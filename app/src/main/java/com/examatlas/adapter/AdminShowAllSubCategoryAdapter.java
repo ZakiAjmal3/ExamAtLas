@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,9 +35,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.fragment.AdminCreateCategoryFragment;
 import com.examatlas.fragment.AdminCreateSubCategoryFragment;
-import com.examatlas.models.AdminShowAllCategoryModel;
+import com.examatlas.models.AdminShowAllSubCategoryModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
@@ -51,35 +51,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowAllCategoryAdapter.ViewHolder> {
-    private ArrayList<AdminShowAllCategoryModel> categoryModelArrayList;
-    private ArrayList<AdminShowAllCategoryModel> originalCategoryModelArrayList;
+public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminShowAllSubCategoryAdapter.ViewHolder> {
+
+    private ArrayList<AdminShowAllSubCategoryModel> subCategoryModelArrayList;
+    private ArrayList<AdminShowAllSubCategoryModel> originalSubCategoryModelArrayList;
     private Fragment context;
     private String currentQuery = "";
     SessionManager sessionManager;
     String authToken;
-    public AdminShowAllCategoryAdapter(ArrayList<AdminShowAllCategoryModel> categoryModelArrayList, Fragment context) {
-        this.originalCategoryModelArrayList = new ArrayList<>(categoryModelArrayList);
-        this.categoryModelArrayList = new ArrayList<>(originalCategoryModelArrayList);
+    public AdminShowAllSubCategoryAdapter(ArrayList<AdminShowAllSubCategoryModel> subCategoryModelArrayList, Fragment context) {
+        this.originalSubCategoryModelArrayList = new ArrayList<>(subCategoryModelArrayList);
+        this.subCategoryModelArrayList = new ArrayList<>(originalSubCategoryModelArrayList);
         this.context = context;
         sessionManager = new SessionManager(context.getContext());
         authToken = sessionManager.getUserData().get("authToken");
     }
     @NonNull
     @Override
-    public AdminShowAllCategoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_create_category_item_layout, parent, false);
-        return new AdminShowAllCategoryAdapter.ViewHolder(view);
+    public AdminShowAllSubCategoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_create_subcategory_item_layout, parent, false);
+        return new AdminShowAllSubCategoryAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdminShowAllCategoryAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        AdminShowAllCategoryModel currentCategory = categoryModelArrayList.get(position);
+    public void onBindViewHolder(@NonNull AdminShowAllSubCategoryAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        AdminShowAllSubCategoryModel currentCategory = subCategoryModelArrayList.get(position);
         holder.itemView.setTag(currentCategory);
 
-        holder.setHighlightedText(holder.title, currentCategory.getCategoryName(), currentQuery);
-        holder.setHighlightedText(holder.description, currentCategory.getDescription(), currentQuery);
-        holder.setHighlightedText(holder.tags, currentCategory.getTags(), currentQuery);
+        holder.setHighlightedText(holder.categoryName, currentCategory.getCategoryName() + ":", currentQuery);
+        holder.setHighlightedText(holder.subCategoryName, currentCategory.getSubCategoryName(), currentQuery);
+        holder.setHighlightedText(holder.description, currentCategory.getSubCategoryDescription(), currentQuery);
+        holder.setHighlightedText(holder.tags, currentCategory.getSubCategoryTags(), currentQuery);
 
         holder.editSubjectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +98,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
                         .setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                deleteCategory(categoryModelArrayList.get(position));
+                                deleteSubCategory(subCategoryModelArrayList.get(position));
                             }
                         }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                             @Override
@@ -109,9 +111,9 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
 
     }
 
-    private void deleteCategory(AdminShowAllCategoryModel adminShowAllCategoryModel) {
-        String id = adminShowAllCategoryModel.getId();
-        String deleteURL = Constant.BASE_URL + "category/deleteCategory/" + id;
+    private void deleteSubCategory(AdminShowAllSubCategoryModel adminShowAllCategoryModel) {
+        String id = adminShowAllCategoryModel.getSubCategoryId();
+        String deleteURL = Constant.BASE_URL + "category/deleteSubCategory/" + id;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, deleteURL, null,
                 new Response.Listener<JSONObject>() {
@@ -122,9 +124,9 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
                             if (status) {
                                 String message = response.getString("message");
                                 Toast.makeText(context.getContext(), message, Toast.LENGTH_SHORT).show();
-                                categoryModelArrayList.remove(adminShowAllCategoryModel);
+                                subCategoryModelArrayList.remove(adminShowAllCategoryModel);
+                                ((AdminCreateSubCategoryFragment) context).getAllSubCategory();
                                 notifyDataSetChanged();
-                                ((AdminCreateCategoryFragment) context).getAllCategory();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
@@ -157,14 +159,16 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         };
         MySingletonFragment.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
-    private void openEditCategoryDialogBox(AdminShowAllCategoryModel currentCategory, int position) {
+    private void openEditCategoryDialogBox(AdminShowAllSubCategoryModel currentCategory, int position) {
         Dialog dialog = new Dialog(context.getContext());
-        dialog.setContentView(R.layout.admin_create_category_dialog_box);
+        dialog.setContentView(R.layout.admin_create_subcategory_dialog_box);
+
+        Spinner categorySpinner = dialog.findViewById(R.id.categorySpinner);
 
         EditText titleEditTxt = dialog.findViewById(R.id.titleEditTxt);
-        titleEditTxt.setText(currentCategory.getCategoryName());
+        titleEditTxt.setText(currentCategory.getSubCategoryName());
         EditText descriptionEditText = dialog.findViewById(R.id.descriptionEditText);
-        descriptionEditText.setText(currentCategory.getDescription());
+        descriptionEditText.setText(currentCategory.getSubCategoryDescription());
         EditText tagsEditTxt = dialog.findViewById(R.id.tagsEditText);
 
         ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList = new ArrayList<>();
@@ -174,7 +178,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         tagsRecyclerView.setLayoutManager(new GridLayoutManager(context.requireContext(), 2));
         tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
 
-        String[] tagsArray = currentCategory.getTags().split(",");
+        String[] tagsArray = currentCategory.getSubCategoryTags().split(",");
         for (String tag : tagsArray) {
             adminTagsForDataALLModelArrayList.add(new AdminTagsForDataALLModel(tag.trim()));
         }
@@ -200,7 +204,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendUpdateSubjectDetails(position,currentCategory,titleEditTxt.getText().toString().trim(),descriptionEditText.getText().toString().trim(),adminTagsForDataALLModelArrayList,dialog);
+                sendUpdateSubjectDetails(currentCategory,titleEditTxt.getText().toString().trim(),descriptionEditText.getText().toString().trim(),adminTagsForDataALLModelArrayList,dialog,position);
             }
         });
         crossBtn.setOnClickListener(new View.OnClickListener() {
@@ -209,7 +213,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
                 dialog.dismiss();
             }
         });
-
+        ((AdminCreateSubCategoryFragment) context).setupCategorySpinner(categorySpinner,titleEditTxt,descriptionEditText,tagsEditTxt,currentCategory);
         dialog.show();
         WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -234,13 +238,14 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
 
     }
 
-    private void sendUpdateSubjectDetails(int position, AdminShowAllCategoryModel currentCategory, String name, String description, ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, Dialog dialog) {
-        String updateURL = Constant.BASE_URL + "category/createCategory";
+    private void sendUpdateSubjectDetails(AdminShowAllSubCategoryModel currentCategory, String name, String description, ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, Dialog dialog, int position) {
+        String updateURL = Constant.BASE_URL + "category/createSubCategory";
         // Create JSON object to send in the request
         JSONObject categoryObject = new JSONObject();
         try {
-            categoryObject.put("id", currentCategory.getId());
-            categoryObject.put("categoryName", name);
+            categoryObject.put("id", currentCategory.getSubCategoryId());
+            categoryObject.put("categoryId", currentCategory.getCategoryId());
+            categoryObject.put("subCategoryName", name);
             categoryObject.put("description", description);
 
             // Convert tags to a JSONArray
@@ -260,9 +265,10 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
                         try {
                             boolean status = response.getBoolean("status");
                             if (status) {
-                                Toast.makeText(context.getContext(), "Blog Updated Successfully", Toast.LENGTH_SHORT).show();
+                                String message = response.getString("message");
+                                Toast.makeText(context.getContext(),message, Toast.LENGTH_SHORT).show();
                                 updateSubjectInList(currentCategory, name,description);
-                                ((AdminCreateCategoryFragment) context).getAllCategory();
+                                ((AdminCreateSubCategoryFragment) context).getAllSubCategory();
                                 notifyItemChanged(position);
                                 dialog.dismiss();
                             } else {
@@ -300,13 +306,13 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         MySingletonFragment.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
 
-    private void updateSubjectInList(AdminShowAllCategoryModel currentCategory, String name, String description) {
+    private void updateSubjectInList(AdminShowAllSubCategoryModel currentCategory, String name, String description) {
         // Find the subject in the list
-        for (int i = 0; i < categoryModelArrayList.size(); i++) {
-            if (categoryModelArrayList.get(i).getId().equals(currentCategory.getId())) {
+        for (int i = 0; i < subCategoryModelArrayList.size(); i++) {
+            if (subCategoryModelArrayList.get(i).getSubCategoryId().equals(currentCategory.getSubCategoryId())) {
                 // Update the title of the subject in the list
-                categoryModelArrayList.get(i).setCategoryName(name);
-                categoryModelArrayList.get(i).setDescription(description);
+                subCategoryModelArrayList.get(i).setCategoryName(name);
+//                subCategoryModelArrayList.get(i).de(description);
                 notifyItemChanged(i);
                 break;
             }
@@ -315,33 +321,34 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
 
     @Override
     public int getItemCount() {
-        return categoryModelArrayList.size();
+        return subCategoryModelArrayList.size();
     }
 
     public void filter(String query) {
         currentQuery = query; // Store current query
-        categoryModelArrayList.clear();
+        subCategoryModelArrayList.clear();
         if (query.isEmpty()) {
-            categoryModelArrayList.addAll(originalCategoryModelArrayList); // Restore the original list if no query
+            subCategoryModelArrayList.addAll(originalSubCategoryModelArrayList); // Restore the original list if no query
         } else {
             String lowerCaseQuery = query.toLowerCase();
-            for (AdminShowAllCategoryModel categoryModel : originalCategoryModelArrayList) {
-                if (categoryModel.getCategoryName().toLowerCase().contains(lowerCaseQuery) || categoryModel.getTags().contains(lowerCaseQuery) ||categoryModel.getDescription().toLowerCase().contains(lowerCaseQuery)) {
-                    categoryModelArrayList.add(categoryModel); // Add matching eBook to the filtered list
-                }
+            for (AdminShowAllSubCategoryModel categoryModel : originalSubCategoryModelArrayList) {
+//                if (categoryModel.getCategoryName().toLowerCase().contains(lowerCaseQuery) || categoryModel.getTags().contains(lowerCaseQuery) ||categoryModel.getDescription().toLowerCase().contains(lowerCaseQuery)) {
+//                    subCategoryModelArrayList.add(categoryModel); // Add matching eBook to the filtered list
+//                }
             }
         }
         notifyDataSetChanged(); // Notify adapter of data change
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title,description,tags;
+        TextView categoryName,subCategoryName,description,tags;
         ImageView editSubjectBtn, deleteSubjectBtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            title = itemView.findViewById(R.id.titleTxt);
+            categoryName = itemView.findViewById(R.id.categoryTxt);
+            subCategoryName = itemView.findViewById(R.id.titleTxt);
             description = itemView.findViewById(R.id.descriptionTxt);
             tags = itemView.findViewById(R.id.tagTxt);
             editSubjectBtn = itemView.findViewById(R.id.editTitleBtn);
@@ -364,8 +371,8 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         }
     }
 
-    public void updateOriginalList(ArrayList<AdminShowAllCategoryModel> newList) {
-        originalCategoryModelArrayList.clear();
-        originalCategoryModelArrayList.addAll(newList);
+    public void updateOriginalList(ArrayList<AdminShowAllSubCategoryModel> newList) {
+        originalSubCategoryModelArrayList.clear();
+        originalSubCategoryModelArrayList.addAll(newList);
     }
 }

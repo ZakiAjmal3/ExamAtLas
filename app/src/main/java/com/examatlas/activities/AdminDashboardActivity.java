@@ -31,6 +31,7 @@ import com.examatlas.fragment.AdminBlogCreateDeleteFragment;
 import com.examatlas.fragment.AdminCoursesCreateDeleteFragment;
 import com.examatlas.fragment.AdminCreateCategoryFragment;
 import com.examatlas.fragment.AdminCreateLiveCoursesClassesFragment;
+import com.examatlas.fragment.AdminCreateSubCategoryFragment;
 import com.examatlas.fragment.AdminCreateSubjectFragment;
 import com.examatlas.fragment.AdminCurrentAffairCreateDeleteFragment;
 import com.examatlas.fragment.AdminEBooksCreateDeleteFragment;
@@ -351,6 +352,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     }else if (masterItemsSelected.equals("Category")){
                         loadFragment(new AdminCreateCategoryFragment());
                         currentFragment = new AdminCreateCategoryFragment();
+                        drawerDialog.dismiss();
+                    }else if (masterItemsSelected.equals("Sub Category")){
+                        loadFragment(new AdminCreateSubCategoryFragment());
+                        currentFragment = new AdminCreateSubCategoryFragment();
                         drawerDialog.dismiss();
                     }
                 }
