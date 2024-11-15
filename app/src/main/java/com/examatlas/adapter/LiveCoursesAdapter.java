@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,12 +44,32 @@ public class LiveCoursesAdapter extends RecyclerView.Adapter<LiveCoursesAdapter.
         holder.itemView.setTag(currentClasss);
         holder.itemView.setTag(liveCoursesModelArrayList.get(position));
         holder.title.setText(liveCoursesModelArrayList.get(position).getTitle());
-        holder.description.setText(liveCoursesModelArrayList.get(position).getDescription());
         holder.tags.setText(liveCoursesModelArrayList.get(position).getTags());
         holder.teacherName.setText(liveCoursesModelArrayList.get(position).getTeacherName());
 
         BookImageAdapter bookImageAdapter = new BookImageAdapter(currentClasss.getImageArrayList());
         holder.cfImage.setAdapter(bookImageAdapter);
+
+        // Enable JavaScript (optional, depending on your content)
+        WebSettings webSettings = holder.description.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        String htmlContentTxt = liveCoursesModelArrayList.get(position).getDescription();
+
+        // Inject CSS to control the image size
+        String injectedCss = "<style>"
+                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
+                + "img { width: 100%; height: auto; }" // Adjust image size as needed
+                + "</style>";
+        String fullHtmlContent = injectedCss + htmlContentTxt;
+
+        // Disable scrolling and over-scrolling
+        holder.description.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
+        holder.description.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+
+        // Load the modified HTML content
+        holder.description.loadData(fullHtmlContent, "text/html", "UTF-8");
+
     }
 
     @Override
@@ -56,8 +78,9 @@ public class LiveCoursesAdapter extends RecyclerView.Adapter<LiveCoursesAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView title, description, tags, teacherName;
+        TextView title, tags, teacherName;
         ViewPager2 cfImage;
+        WebView description;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

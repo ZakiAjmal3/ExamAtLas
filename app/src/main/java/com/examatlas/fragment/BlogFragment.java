@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -54,7 +55,7 @@ public class BlogFragment extends Fragment {
         blogProgress = view.findViewById(R.id.blogProgress);
         blogRecycler = view.findViewById(R.id.blogRecycler);
 //        blogRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        blogRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        blogRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         getBlogList();
         blogModelArrayList = new ArrayList<>();
 

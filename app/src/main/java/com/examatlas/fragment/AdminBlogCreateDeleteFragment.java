@@ -111,9 +111,9 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         noDataLayout = view.findViewById(R.id.noDataLayout);
 
         adminShowAllBlogModelArrayList = new ArrayList<>();
-        showAllBlogRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        showAllBlogRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false));
 
-        sessionManager = new SessionManager(getContext());
+                sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
 
         showAllBlogFunction();

@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -33,7 +35,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
-import com.examatlas.fragment.AdminCurrentAffairCreateDeleteFragment;
+import com.examatlas.fragment.AdminCreateCurrentAffairFragment;
 import com.examatlas.models.AdminShowAllCAModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
 import com.examatlas.utils.SessionManager;
@@ -44,7 +46,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,11 +79,30 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         // Set highlighted text
         holder.setHighlightedText(holder.title, currentCA.getTitle(), currentQuery);
         holder.setHighlightedText(holder.keyword, currentCA.getKeyword(), currentQuery);
-        holder.setHighlightedText(holder.content, currentCA.getContent(), currentQuery);
         holder.setHighlightedText(holder.tags, currentCA.getTags(), currentQuery);
 
         holder.editCABtn.setOnClickListener(view -> openEditBlogDialog(currentCA));
         holder.deleteCABtn.setOnClickListener(view -> quitDialog(position));
+
+        // Enable JavaScript (optional, depending on your content)
+        WebSettings webSettings = holder.content.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        String htmlContentTxt = adminShowAllCAModelArrayList.get(position).getContent();
+
+        // Inject CSS to control the image size
+        String injectedCss = "<style>"
+                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
+                + "img { width: 100%; height: auto; }" // Adjust image size as needed
+                + "</style>";
+        String fullHtmlContent = injectedCss + htmlContentTxt;
+
+        // Disable scrolling and over-scrolling
+        holder.content.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
+        holder.content.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+
+        // Load the modified HTML content
+        holder.content.loadData(fullHtmlContent, "text/html", "UTF-8");
     }
 
 
@@ -214,7 +234,7 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
                             boolean status = response.getBoolean("status");
                             if (status) {
                                 Toast.makeText(context.getContext(), "Current Affairs Updated Successfully", Toast.LENGTH_SHORT).show();
-                                ((AdminCurrentAffairCreateDeleteFragment) context).showAllCAFunction();
+                                ((AdminCreateCurrentAffairFragment) context).showAllCAFunction();
                             } else {
                                 Toast.makeText(context.getContext(), "Failed to update Current Affairs", Toast.LENGTH_SHORT).show();
                             }
@@ -275,7 +295,7 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
                                 adminShowAllCAModelArrayList.remove(position);
                                 notifyItemRemoved(position);
                                 notifyItemRangeChanged(position, adminShowAllCAModelArrayList.size());
-                                ((AdminCurrentAffairCreateDeleteFragment) context).showAllCAFunction();
+                                ((AdminCreateCurrentAffairFragment) context).showAllCAFunction();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
@@ -309,8 +329,9 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         MySingletonFragment.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, keyword, content, tags;
+        TextView title, keyword, tags;
         ImageView editCABtn, deleteCABtn;
+        WebView content;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

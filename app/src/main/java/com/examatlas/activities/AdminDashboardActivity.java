@@ -2,7 +2,6 @@ package com.examatlas.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.LauncherActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -33,7 +32,7 @@ import com.examatlas.fragment.AdminCreateCategoryFragment;
 import com.examatlas.fragment.AdminCreateLiveCoursesClassesFragment;
 import com.examatlas.fragment.AdminCreateSubCategoryFragment;
 import com.examatlas.fragment.AdminCreateSubjectFragment;
-import com.examatlas.fragment.AdminCurrentAffairCreateDeleteFragment;
+import com.examatlas.fragment.AdminCreateCurrentAffairFragment;
 import com.examatlas.fragment.AdminEBooksCreateDeleteFragment;
 import com.examatlas.fragment.AdminHomeFragment;
 import com.examatlas.utils.SessionManager;
@@ -376,8 +375,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         currentFragment = new AdminBlogCreateDeleteFragment();
                         drawerDialog.dismiss();
                     } else if(contentItemsSelected.equals("Current Affairs")){
-                        loadFragment(new AdminCurrentAffairCreateDeleteFragment());
-                        currentFragment = new AdminCurrentAffairCreateDeleteFragment();
+                        loadFragment(new AdminCreateCurrentAffairFragment());
+                        currentFragment = new AdminCreateCurrentAffairFragment();
                         drawerDialog.dismiss();
                     } else if (contentItemsSelected.equals("Courses")){
                         loadFragment(new AdminCoursesCreateDeleteFragment());

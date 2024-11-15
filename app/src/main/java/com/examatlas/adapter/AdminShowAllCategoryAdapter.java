@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -78,7 +80,6 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         holder.itemView.setTag(currentCategory);
 
         holder.setHighlightedText(holder.title, currentCategory.getCategoryName(), currentQuery);
-        holder.setHighlightedText(holder.description, currentCategory.getDescription(), currentQuery);
         holder.setHighlightedText(holder.tags, currentCategory.getTags(), currentQuery);
 
         holder.editSubjectBtn.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +107,26 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
                         }).show();
             }
         });
+
+        // Enable JavaScript (optional, depending on your content)
+        WebSettings webSettings = holder.description.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        String htmlContentTxt = categoryModelArrayList.get(position).getDescription();
+
+        // Inject CSS to control the image size
+        String injectedCss = "<style>"
+                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
+                + "img { width: 100%; height: auto; }" // Adjust image size as needed
+                + "</style>";
+        String fullHtmlContent = injectedCss + htmlContentTxt;
+
+        // Disable scrolling and over-scrolling
+        holder.description.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
+        holder.description.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+
+        // Load the modified HTML content
+        holder.description.loadData(fullHtmlContent, "text/html", "UTF-8");
 
     }
 
@@ -335,8 +356,9 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title,description,tags;
+        TextView title,tags;
         ImageView editSubjectBtn, deleteSubjectBtn;
+        WebView description;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -79,11 +81,30 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
         // Set highlighted text
         holder.setHighlightedText(holder.title, currentBlog.getTitle(), currentQuery);
         holder.setHighlightedText(holder.keyword, currentBlog.getKeyword(), currentQuery);
-        holder.setHighlightedText(holder.content, currentBlog.getContent(), currentQuery);
         holder.setHighlightedText(holder.tags, currentBlog.getTags(), currentQuery);
 
         holder.editBlogBtn.setOnClickListener(view -> openEditBlogDialog(currentBlog));
         holder.deleteBlogBtn.setOnClickListener(view -> quitDialog(position));
+
+        // Enable JavaScript (optional, depending on your content)
+        WebSettings webSettings = holder.content.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        String htmlContentTxt = adminShowAllBlogModelArrayList.get(position).getContent();
+
+        // Inject CSS to control the image size
+        String injectedCss = "<style>"
+                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
+                + "img { width: 100%; height: auto; }" // Adjust image size as needed
+                + "</style>";
+        String fullHtmlContent = injectedCss + htmlContentTxt;
+
+        // Disable scrolling and over-scrolling
+        holder.content.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
+        holder.content.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+
+        // Load the modified HTML content
+        holder.content.loadData(fullHtmlContent, "text/html", "UTF-8");
     }
 
     @Override
@@ -92,8 +113,9 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, keyword, content, tags;
+        TextView title, keyword, tags;
         ImageView editBlogBtn, deleteBlogBtn;
+        WebView content;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -3,6 +3,8 @@ package com.examatlas.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,7 +42,6 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
     public void onBindViewHolder(@NonNull CurrentAffairsAdapter.ViewHolder holder, int position) {
         holder.itemView.setTag(currentAffairsModelArrayList.get(position));
         holder.title.setText(currentAffairsModelArrayList.get(position).getCfTitle());
-        holder.content.setText(currentAffairsModelArrayList.get(position).getCfContent());
         holder.tags.setText(currentAffairsModelArrayList.get(position).getCfTags());
 
 //        if (currentAffairsModelArrayList.get(position).getCfImage() != null) {
@@ -57,6 +58,25 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
 //                    .error(R.drawable.noimage)
 //                    .into(holder.cfImage);
 //        }
+        // Enable JavaScript (optional, depending on your content)
+        WebSettings webSettings = holder.content.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        String htmlContentTxt = currentAffairsModelArrayList.get(position).getCfContent();
+
+        // Inject CSS to control the image size
+        String injectedCss = "<style>"
+                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
+                + "img { width: 100%; height: auto; }" // Adjust image size as needed
+                + "</style>";
+        String fullHtmlContent = injectedCss + htmlContentTxt;
+
+        // Disable scrolling and over-scrolling
+        holder.content.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
+        holder.content.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+
+        // Load the modified HTML content
+        holder.content.loadData(fullHtmlContent, "text/html", "UTF-8");
     }
 
     @Override
@@ -64,22 +84,12 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
         return currentAffairsModelArrayList.size();
     }
 
-//    private String formatDate(String dateStr) {
-//        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-//        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-//        Date date;
-//        try {
-//            date = inputFormat.parse(dateStr);
-//            return outputFormat.format(date);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//            return dateStr; // Return original if parsing fails
-//        }
-//    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, content, tags;
+        TextView title, tags;
         ImageView cfImage;
+        WebView content;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

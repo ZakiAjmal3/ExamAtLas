@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -53,7 +54,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AdminCurrentAffairCreateDeleteFragment extends Fragment {
+public class AdminCreateCurrentAffairFragment extends Fragment {
     private SearchView searchView;
     RecyclerView showAllCARecyclerView;
     AdminShowAllCAAdapter adminShowAllCAAdapter;
@@ -89,7 +90,7 @@ public class AdminCurrentAffairCreateDeleteFragment extends Fragment {
         noDataLayout = view.findViewById(R.id.noDataLayout);
 
         adminShowAllCAModelArrayList = new ArrayList<>();
-        showAllCARecyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
+        showAllCARecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false));
 
         sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
@@ -211,7 +212,7 @@ public class AdminCurrentAffairCreateDeleteFragment extends Fragment {
                                     noDataLayout.setVisibility(View.VISIBLE);
                                 } else {
                                     if (adminShowAllCAAdapter == null) {
-                                        adminShowAllCAAdapter = new AdminShowAllCAAdapter(adminShowAllCAModelArrayList, AdminCurrentAffairCreateDeleteFragment.this);
+                                        adminShowAllCAAdapter = new AdminShowAllCAAdapter(adminShowAllCAModelArrayList, AdminCreateCurrentAffairFragment.this);
                                         showAllCARecyclerView.setAdapter(adminShowAllCAAdapter);
                                     } else {
                                         adminShowAllCAAdapter.notifyDataSetChanged();
