@@ -49,25 +49,25 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.ViewHolder> {
         holder.title.setText(blogModelArrayList.get(position).getTitle());
         holder.tags.setText(blogModelArrayList.get(position).getTags());
 
-        // Enable JavaScript (optional, depending on your content)
-        WebSettings webSettings = holder.webViewContent.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-
-        String htmlContentTxt = blogModelArrayList.get(position).getContent();
-
-        // Inject CSS to control the image size
-        String injectedCss = "<style>"
-                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
-                + "img { width: 100%; height: auto; }" // Adjust image size as needed
-                + "</style>";
-        String fullHtmlContent = injectedCss + htmlContentTxt;
-
-        // Disable scrolling and over-scrolling
-        holder.webViewContent.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
-        holder.webViewContent.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
-
-        // Load the modified HTML content
-        holder.webViewContent.loadData(fullHtmlContent, "text/html", "UTF-8");
+//        // Enable JavaScript (optional, depending on your content)
+//        WebSettings webSettings = holder.webViewContent.getSettings();
+//        webSettings.setJavaScriptEnabled(true);
+//
+//        String htmlContentTxt = blogModelArrayList.get(position).getContent();
+//
+//        // Inject CSS to control the image size
+//        String injectedCss = "<style>"
+//                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
+//                + "img { width: 100%; height: auto; }" // Adjust image size as needed
+//                + "</style>";
+//        String fullHtmlContent = injectedCss + htmlContentTxt;
+//
+//        // Disable scrolling and over-scrolling
+//        holder.webViewContent.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
+//        holder.webViewContent.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+//
+//        // Load the modified HTML content
+//        holder.webViewContent.loadData(fullHtmlContent, "text/html", "UTF-8");
     }
 
     @Override
@@ -76,13 +76,13 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.ViewHolder> {
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView title,tags;
-        WebView webViewContent;
+//        WebView webViewContent;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             title = itemView.findViewById(R.id.txtBlogTitle);
-            webViewContent = itemView.findViewById(R.id.content);
+//            webViewContent = itemView.findViewById(R.id.content);
             tags = itemView.findViewById(R.id.tagTxt);
         }
     }

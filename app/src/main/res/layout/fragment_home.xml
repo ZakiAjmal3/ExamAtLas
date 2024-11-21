@@ -52,8 +52,13 @@
                         android:fontFamily="@font/poppins"
                         android:text="Live Classes"
                         android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:letterSpacing="0.1"
+                        android:shadowColor="#000000"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="1" />
 
 <!--                    <TextView-->
 <!--                        android:id="@+id/txtSeeAll"-->
@@ -86,8 +91,13 @@
                     android:fontFamily="@font/poppins"
                     android:text="Blogs"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textSize="18sp"
+                    android:textStyle="normal"
+                    android:letterSpacing="0.1"
+                    android:shadowColor="#000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="1" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/blogsRecycler"
@@ -106,8 +116,13 @@
                     android:fontFamily="@font/poppins"
                     android:text="Current Affairs"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textSize="18sp"
+                    android:textStyle="normal"
+                    android:letterSpacing="0.1"
+                    android:shadowColor="#000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="1" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/currentAffairRecycler"

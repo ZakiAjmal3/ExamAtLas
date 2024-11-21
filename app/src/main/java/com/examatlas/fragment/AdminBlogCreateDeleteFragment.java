@@ -6,12 +6,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -47,10 +49,12 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.AdminShowAllBlogAdapter;
 import com.examatlas.adapter.AdminTagsForDataALLAdapter;
 import com.examatlas.utils.Constant;
+import com.examatlas.utils.MultipartRequest;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.models.AdminShowAllBlogModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
@@ -61,6 +65,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,10 +85,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
     private ImageView uploadImage,btnCross;
     private TextView uploadImageName;
     Button uploadBlogDetailsBtn;
-    private static final int CAPTURE_IMAGE_FROM_CAMERA = 1;
-    private static final int CHOOSE_IMAGE_FROM_GALLERY = 2;
     private Uri image_uri;
-    private String Encoded_images;
     private final String createBlogURL = Constant.BASE_URL + "blog/createBlog";
     RecyclerView showAllBlogRecyclerView;
     AdminShowAllBlogAdapter adminShowAllBlogAdapter;
@@ -92,7 +96,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
     RelativeLayout noDataLayout;
     SessionManager sessionManager;
     String authToken;
-
+    private File imageFile;
     // ActivityResultLaunchers
     private ActivityResultLauncher<Intent> galleryLauncher;
     private ActivityResultLauncher<Intent> cameraLauncher;
@@ -113,7 +117,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         adminShowAllBlogModelArrayList = new ArrayList<>();
         showAllBlogRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false));
 
-                sessionManager = new SessionManager(getContext());
+        sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
 
         showAllBlogFunction();
@@ -266,43 +270,6 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
-    private void setupActivityResultLaunchers() {
-        galleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                Intent data = result.getData();
-                if (data != null) {
-                    image_uri = data.getData();
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), image_uri);
-                        bitmap = getResizedBitmap(bitmap, 400);
-                        uploadImage.setImageBitmap(bitmap);
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                        byte[] byteArray = stream.toByteArray();
-                        Encoded_images = android.util.Base64.encodeToString(byteArray, android.util.Base64.DEFAULT);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        cameraLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
-                if (bitmap != null) {
-                    bitmap = getResizedBitmap(bitmap, 400);
-                    uploadImage.setImageBitmap(bitmap);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                    byte[] byteArray = stream.toByteArray();
-                    Encoded_images = android.util.Base64.encodeToString(byteArray, android.util.Base64.DEFAULT);
-                    Toast.makeText(getContext(), "Image Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
     private void openCreateBlogDialog() {
         createBlogDialogBox = new Dialog(requireContext());
         createBlogDialogBox.setContentView(R.layout.admin_create_data_dialog_box);
@@ -331,7 +298,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                openGallery();
+                openGallery();
             }
         });
         btnCross.setOnClickListener(new View.OnClickListener() {
@@ -398,11 +365,135 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         return (x >= location[0] && x <= (location[0] + view.getWidth()) &&
                 y >= location[1] && y <= (location[1] + view.getHeight()));
     }
+//    private void setupActivityResultLaunchers() {
+//        galleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+//            if (result.getResultCode() == RESULT_OK) {
+//                Intent data = result.getData();
+//                if (data != null) {
+//                    image_uri = data.getData();
+//                    try {
+//                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), image_uri);
+//                        bitmap = getResizedBitmap(bitmap, 400);
+//                        uploadImage.setImageBitmap(bitmap);
+//                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//                        byte[] byteArray = stream.toByteArray();
+//                        Encoded_images = android.util.Base64.encodeToString(byteArray, android.util.Base64.DEFAULT);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
+//
+//        cameraLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+//            if (result.getResultCode() == RESULT_OK) {
+//                Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
+//                if (bitmap != null) {
+//                    bitmap = getResizedBitmap(bitmap, 400);
+//                    uploadImage.setImageBitmap(bitmap);
+//                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//                    byte[] byteArray = stream.toByteArray();
+//                    Encoded_images = android.util.Base64.encodeToString(byteArray, android.util.Base64.DEFAULT);
+//                    Toast.makeText(getContext(), "Image Uploaded Successfully", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//    }
 
+    private void setupActivityResultLaunchers() {
+        galleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    image_uri = data.getData();
+                    handleImageUri(image_uri);
+                }
+            }
+        });
+
+        cameraLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
+                if (bitmap != null) {
+                    handleBitmap(bitmap);
+                }
+            }
+        });
+    }
+    private void handleImageUri(Uri uri) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+            handleBitmap(bitmap);// Process the Bitmap as you did in handleBitmap()
+            uploadImage.setImageBitmap(bitmap);
+            // Extract the image name from the URI
+            String imageName = getFileName(uri);
+            // Set the image name to the TextView (uploadImageName)
+            uploadImageName.setText(imageName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private String getFileName(Uri uri) {
+        String fileName = null;
+
+        // If the URI is a content URI (which is usually the case for gallery images)
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = requireActivity().getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                // Get the column index for the display name (filename)
+                int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (columnIndex != -1) {
+                    fileName = cursor.getString(columnIndex);
+                }
+                cursor.close();
+            }
+        }
+        // If the URI is a file URI
+        else if (uri.getScheme().equals("file")) {
+            fileName = uri.getLastPathSegment(); // Get the last part of the path (filename)
+        }
+
+        return fileName != null ? fileName : "Unknown";
+    }
+    private void handleBitmap(Bitmap bitmap) {
+        // Resize image
+        bitmap = getResizedBitmap(bitmap, 400);
+        uploadImage.setImageBitmap(bitmap);
+
+        // Convert Bitmap to File
+        imageFile = bitmapToFile(bitmap);  // Store the imageFile globally
+
+        // Encode the image to Base64 for further use
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        // Extract the file name from the imageFile (created from Bitmap)
+        String imageName = getFileNameFromFile(imageFile);
+
+        // Set the image name to the TextView (uploadImageName)
+        uploadImageName.setText(imageName);
+
+    }
+    private String getFileNameFromFile(File file) {
+        // Extract the file name from the imageFile (file name is the last segment of the path)
+        return file != null ? file.getName() : "Unknown";
+    }
+    private File bitmapToFile(Bitmap bitmap) {
+        File file = new File(getContext().getCacheDir(), "uploaded_image.jpg");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
     private void openGallery() {
         final CharSequence[] options = {"Open Camera", "Choose from Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Add RC!");
+        builder.setTitle("Add Image");
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
@@ -416,7 +507,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                     galleryLauncher.launch(Intent.createChooser(intent, "Select Image")); // Use galleryLauncher
                 } else if (options[item].equals("Cancel")) {
                     dialog.dismiss();
-                    Toast.makeText(getContext(), "RC Uploading Cancelled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Image Uploading Cancelled", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -441,33 +532,40 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         String keyword = keywordEditTxt.getText().toString().trim();
         String content = contentEditTxt.getText().toString().trim();
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("title", title);
-            jsonObject.put("keyword", keyword);
-            jsonObject.put("content", content);
+        // Prepare form data
+        Map<String, String> params = new HashMap<>();
+        params.put("title", title);
+        params.put("keyword", keyword);
+        params.put("content", content);
 
-            // Create a JSONArray for the tags
-            JSONArray tagsArray = new JSONArray();
-            for (AdminTagsForDataALLModel tag : adminTagsForDataALLModelArrayList) {
-                tagsArray.put(tag.getTagName()); // Assuming getTagText() returns the tag's text
+        // Add the tags as a comma-separated string
+        StringBuilder tagsBuilder = new StringBuilder();
+        for (AdminTagsForDataALLModel tag : adminTagsForDataALLModelArrayList) {
+            if (tagsBuilder.length() > 0) {
+                tagsBuilder.append(",");
             }
-            jsonObject.put("tags", tagsArray); // Add the tags array to the JSON object
+            tagsBuilder.append(tag.getTagName());
+        }
+        params.put("tags", tagsBuilder.toString());
 
-            jsonObject.put("image", null); // Or whatever your image handling logic is
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
+        // Create a Map for files
+        Map<String, File> files = new HashMap<>();
+
+        // If an image is selected, add the image file
+        if (imageFile != null && imageFile.exists()) {
+            files.put("image", imageFile);
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, createBlogURL, jsonObject,
-                new Response.Listener<JSONObject>() {
+        // Create and send the multipart request
+        MultipartRequest multipartRequest = new MultipartRequest(createBlogURL, params, files,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                         try {
-                            boolean status = response.getBoolean("status");
+                            JSONObject responseObject = new JSONObject(response);
+                            boolean status = responseObject.getBoolean("status");
                             if (status) {
-                                String message = response.getString("message");
+                                String message = responseObject.getString("message");
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                                 showAllBlogFunction();
                                 createBlogDialogBox.dismiss();
@@ -476,33 +574,26 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMessage = "Error: " + error.toString();
-                if (error.networkResponse != null) {
-                    try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                String responseData = new String(error.networkResponse.data, "UTF-8");
+                                errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                                errorMessage += "\nResponse Data: " + responseData;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                        Log.e("BlogFetchError", errorMessage);
                     }
-                }
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
-                Log.e("BlogFetchError", errorMessage);
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + authToken);
-                return headers;
-            }
-        };
+                }, authToken);
 
-        MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
+        // Add the request to the queue
+        MySingletonFragment.getInstance(this).addToRequestQueue(multipartRequest);
     }
-
 }

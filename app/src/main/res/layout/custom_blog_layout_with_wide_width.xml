@@ -2,7 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/blogLayout"
-    android:layout_width="match_parent"
+    android:layout_width="160dp"
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusable="true"
@@ -26,7 +26,7 @@
                 android:fontFamily="@font/poppins"
                 android:text="Blog Title"
                 android:textColor="@color/black"
-                android:textSize="22sp"
+                android:textSize="16sp"
                 android:textStyle="normal"
                 android:letterSpacing="0.1"
                 android:shadowColor="#000000"
@@ -34,28 +34,28 @@
                 android:shadowDy="2"
                 android:shadowRadius="1"
                 android:layout_centerHorizontal="true"/>
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="30dp"
-                android:layout_below="@id/txtBlogTitle">
-                <WebView
-                    android:id="@+id/content"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins"
-                    android:text="CONTENT"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="10sp" />
-            </ScrollView>
+<!--            <ScrollView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:layout_marginBottom="30dp"-->
+<!--                android:layout_below="@id/txtBlogTitle">-->
+<!--                <WebView-->
+<!--                    android:id="@+id/content"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:fontFamily="@font/poppins"-->
+<!--                    android:text="CONTENT"-->
+<!--                    android:textColor="@color/dark_grey"-->
+<!--                    android:textSize="10sp" />-->
+<!--            </ScrollView>-->
             <LinearLayout
                 android:id="@+id/layout1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
                 android:orientation="horizontal"
-                android:layout_alignParentBottom="true">
+                android:layout_below="@id/txtBlogTitle">
 
                 <TextView
                     android:id="@+id/txtAuthor"

@@ -58,25 +58,25 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
 //                    .error(R.drawable.noimage)
 //                    .into(holder.cfImage);
 //        }
-        // Enable JavaScript (optional, depending on your content)
-        WebSettings webSettings = holder.content.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-
-        String htmlContentTxt = currentAffairsModelArrayList.get(position).getCfContent();
-
-        // Inject CSS to control the image size
-        String injectedCss = "<style>"
-                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
-                + "img { width: 100%; height: auto; }" // Adjust image size as needed
-                + "</style>";
-        String fullHtmlContent = injectedCss + htmlContentTxt;
-
-        // Disable scrolling and over-scrolling
-        holder.content.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
-        holder.content.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
-
-        // Load the modified HTML content
-        holder.content.loadData(fullHtmlContent, "text/html", "UTF-8");
+//        // Enable JavaScript (optional, depending on your content)
+//        WebSettings webSettings = holder.content.getSettings();
+//        webSettings.setJavaScriptEnabled(true);
+//
+//        String htmlContentTxt = currentAffairsModelArrayList.get(position).getCfContent();
+//
+//        // Inject CSS to control the image size
+//        String injectedCss = "<style>"
+//                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
+//                + "img { width: 100%; height: auto; }" // Adjust image size as needed
+//                + "</style>";
+//        String fullHtmlContent = injectedCss + htmlContentTxt;
+//
+//        // Disable scrolling and over-scrolling
+//        holder.content.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
+//        holder.content.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+//
+//        // Load the modified HTML content
+//        holder.content.loadData(fullHtmlContent, "text/html", "UTF-8");
     }
 
     @Override
@@ -88,14 +88,14 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, tags;
         ImageView cfImage;
-        WebView content;
+//        WebView content;
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             cfImage = itemView.findViewById(R.id.imgAffair);
             title = itemView.findViewById(R.id.txtTitle);
-            content = itemView.findViewById(R.id.txtContent);
+//            content = itemView.findViewById(R.id.txtContent);
             tags = itemView.findViewById(R.id.tagTxt);
         }
     }

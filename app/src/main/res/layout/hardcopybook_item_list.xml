@@ -99,6 +99,7 @@
                 android:layout_marginBottom="10dp"
                 android:textSize="12sp"
                 android:text="ADD TO CART"
+                android:visibility="gone"
                 />
             <Button
                 android:id="@+id/goToCartBtn"
@@ -111,7 +112,7 @@
                 android:layout_marginBottom="10dp"
                 android:textSize="12sp"
                 android:text="GO TO CART"
-                android:visibility="gone"
+                android:visibility="visible"
                 />
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>

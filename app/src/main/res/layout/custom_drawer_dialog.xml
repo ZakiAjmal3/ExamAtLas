@@ -109,7 +109,11 @@
                             android:fontFamily="@font/poppins"
                             android:text="Home"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="normal"
+                            android:letterSpacing="0.05"                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
 
@@ -146,7 +150,11 @@
                                     android:fontFamily="@font/poppins"
                                     android:text="Live Classes"
                                     android:textColor="@color/white"
-                                    android:textStyle="bold" />
+                                    android:textStyle="bold"
+                                    android:letterSpacing="0.05"                                    android:shadowColor="#000000"
+                                    android:shadowDx="2"
+                                    android:shadowDy="2"
+                                    android:shadowRadius="1" />
 
                             </LinearLayout>
 
@@ -177,7 +185,11 @@
                             android:fontFamily="@font/poppins"
                             android:text="Blogs"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
                     <LinearLayout
@@ -203,7 +215,11 @@
                             android:fontFamily="@font/poppins"
                             android:text="Current Affairs"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
                     <LinearLayout
@@ -229,7 +245,12 @@
                             android:fontFamily="@font/poppins"
                             android:text="Free EBooks"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"
+                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
 
@@ -256,7 +277,12 @@
                             android:fontFamily="@font/poppins"
                             android:text="Purchase Books"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"
+                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
 
@@ -309,7 +335,12 @@
                             android:fontFamily="@font/poppins"
                             android:text="Books Order History"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"
+                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
 
@@ -336,7 +367,12 @@
                             android:fontFamily="@font/poppins"
                             android:text="About Us"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"
+                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
 
@@ -417,7 +453,12 @@
                             android:fontFamily="@font/poppins"
                             android:text="Privacy"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"
+                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
 
@@ -444,7 +485,12 @@
                             android:fontFamily="@font/poppins"
                             android:text="Terms"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"
+                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
 
@@ -497,7 +543,12 @@
                             android:fontFamily="@font/poppins"
                             android:text="Share"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"
+                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
                     <LinearLayout
@@ -523,7 +574,12 @@
                             android:fontFamily="@font/poppins"
                             android:text="Logout"
                             android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"
+                            android:shadowColor="#000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1" />
 
                     </LinearLayout>
 

@@ -73,6 +73,55 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtUploadImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload Image"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_below="@id/priceEditTxt"/>
+        <!--        <TextView-->
+        <!--            android:id="@+id/txtChooseImage"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="Upload Image"-->
+        <!--            android:textSize="16dp"-->
+        <!--            android:textColor="@color/black"-->
+        <!--            android:layout_marginLeft="20dp"-->
+        <!--            android:layout_marginTop="10dp"-->
+        <!--            android:paddingTop="5dp"-->
+        <!--            android:paddingBottom="5dp"-->
+        <!--            android:paddingLeft="10dp"-->
+        <!--            android:paddingRight="10dp"-->
+        <!--            android:background="@drawable/box_layout_with_border_and_color"-->
+        <!--            android:layout_below="@id/txtUploadImage"/>-->
+        <ImageView
+            android:id="@+id/uploadImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_image"
+            android:background="@drawable/rounded_corner_with_border3"
+            android:padding="6dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/txtUploadImage"
+            />
+        <TextView
+            android:id="@+id/txtNoFileChosen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No file chosen"
+            android:textSize="14dp"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_below="@id/txtUploadImage"
+            android:layout_toRightOf="@id/uploadImage"/>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmit"
             android:layout_width="match_parent"
@@ -86,7 +135,7 @@
             android:layout_marginTop="30dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_below="@id/priceEditTxt"
+            android:layout_below="@id/uploadImage"
             />
     </RelativeLayout>
 </ScrollView>

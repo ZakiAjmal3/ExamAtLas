@@ -50,25 +50,25 @@ public class LiveCoursesAdapter extends RecyclerView.Adapter<LiveCoursesAdapter.
         BookImageAdapter bookImageAdapter = new BookImageAdapter(currentClasss.getImageArrayList());
         holder.cfImage.setAdapter(bookImageAdapter);
 
-        // Enable JavaScript (optional, depending on your content)
-        WebSettings webSettings = holder.description.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-
-        String htmlContentTxt = liveCoursesModelArrayList.get(position).getDescription();
-
-        // Inject CSS to control the image size
-        String injectedCss = "<style>"
-                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
-                + "img { width: 100%; height: auto; }" // Adjust image size as needed
-                + "</style>";
-        String fullHtmlContent = injectedCss + htmlContentTxt;
-
-        // Disable scrolling and over-scrolling
-        holder.description.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
-        holder.description.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
-
-        // Load the modified HTML content
-        holder.description.loadData(fullHtmlContent, "text/html", "UTF-8");
+//        // Enable JavaScript (optional, depending on your content)
+//        WebSettings webSettings = holder.description.getSettings();
+//        webSettings.setJavaScriptEnabled(true);
+//
+//        String htmlContentTxt = liveCoursesModelArrayList.get(position).getDescription();
+//
+//        // Inject CSS to control the image size
+//        String injectedCss = "<style>"
+//                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
+//                + "img { width: 100%; height: auto; }" // Adjust image size as needed
+//                + "</style>";
+//        String fullHtmlContent = injectedCss + htmlContentTxt;
+//
+//        // Disable scrolling and over-scrolling
+//        holder.description.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
+//        holder.description.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+//
+//        // Load the modified HTML content
+//        holder.description.loadData(fullHtmlContent, "text/html", "UTF-8");
 
     }
 
@@ -86,7 +86,7 @@ public class LiveCoursesAdapter extends RecyclerView.Adapter<LiveCoursesAdapter.
             super(itemView);
             cfImage = itemView.findViewById(R.id.imgLiveCourse);
             title = itemView.findViewById(R.id.txtFullName);
-            description = itemView.findViewById(R.id.txtDesc);
+//            description = itemView.findViewById(R.id.txtDesc);
             tags = itemView.findViewById(R.id.txtTag);
             teacherName = itemView.findViewById(R.id.txtTeacherName);
 

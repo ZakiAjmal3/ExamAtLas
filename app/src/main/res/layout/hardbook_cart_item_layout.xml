@@ -29,7 +29,8 @@
         android:layout_height="25dp"
         android:src="@drawable/ic_delete"
         android:layout_alignParentEnd="true"
-        android:padding="5dp" android:foreground="?android:attr/selectableItemBackgroundBorderless"
+        android:padding="5dp"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
         />
     <TextView
         android:id="@+id/bookTitle"

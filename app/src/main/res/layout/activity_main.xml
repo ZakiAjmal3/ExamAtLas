@@ -36,8 +36,14 @@
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/poppins"
         android:gravity="center"
-        android:text="Developed By ZAKI AJMAL"
+        android:text="Developed &amp; Maintained By EXAMATLAS PVT LTD"
         android:textColor="@color/black"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1"
+        android:shadowColor="#000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="1"/>
 
 </RelativeLayout>

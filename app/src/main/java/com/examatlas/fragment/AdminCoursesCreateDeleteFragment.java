@@ -1,10 +1,19 @@
 package com.examatlas.fragment;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,10 +27,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,6 +48,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.AdminShowAllCoursesAdapter;
 import com.examatlas.utils.Constant;
+import com.examatlas.utils.MultipartRequest;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.models.AdminShowAllCourseModel;
 import com.examatlas.utils.SessionManager;
@@ -43,6 +57,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,9 +78,15 @@ public class AdminCoursesCreateDeleteFragment extends Fragment {
     private Dialog createCoursesDialogBox;
     private EditText titleEditTxt, priceEditTxt;
     Button submitCourseDetailsBtn;
-    ImageView crossBtn;
+    ImageView crossBtn,uploadImageBtn;
+    private Uri image_uri;
+    TextView uploadImageName;
     SessionManager sessionManager;
     String authToken;
+    private File imageFile;
+    // ActivityResultLaunchers
+    private ActivityResultLauncher<Intent> galleryLauncher;
+    private ActivityResultLauncher<Intent> cameraLauncher;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -126,6 +150,10 @@ public class AdminCoursesCreateDeleteFragment extends Fragment {
                 openCreateCoursesDialog();
             }
         });
+
+        // Setup ActivityResultLaunchers
+        setupActivityResultLaunchers();
+
         return view;
     }
 
@@ -221,6 +249,8 @@ public class AdminCoursesCreateDeleteFragment extends Fragment {
         titleEditTxt = createCoursesDialogBox.findViewById(R.id.titleEditTxt);
         priceEditTxt = createCoursesDialogBox.findViewById(R.id.priceEditTxt);
         crossBtn = createCoursesDialogBox.findViewById(R.id.btnCross);
+        uploadImageBtn = createCoursesDialogBox.findViewById(R.id.uploadImage);
+        uploadImageName = createCoursesDialogBox.findViewById(R.id.txtNoFileChosen);
 
         submitCourseDetailsBtn = createCoursesDialogBox.findViewById(R.id.btnSubmit);
 
@@ -237,6 +267,14 @@ public class AdminCoursesCreateDeleteFragment extends Fragment {
                 submitCourseDetailsFunction(titleEditTxt.getText().toString().trim(),priceEditTxt.getText().toString().trim());
             }
         });
+
+        uploadImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery();
+            }
+        });
+
         createCoursesDialogBox.show();
         WindowManager.LayoutParams params = createCoursesDialogBox.getWindow().getAttributes();
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -248,24 +286,154 @@ public class AdminCoursesCreateDeleteFragment extends Fragment {
         createCoursesDialogBox.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
     }
 
-    private void submitCourseDetailsFunction(String title, String price) {
-        JSONObject jsonObject = new JSONObject();
+
+    private void setupActivityResultLaunchers() {
+        galleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    image_uri = data.getData();
+                    handleImageUri(image_uri);
+                }
+            }
+        });
+
+        cameraLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
+                if (bitmap != null) {
+                    handleBitmap(bitmap);
+                }
+            }
+        });
+    }
+    private void handleImageUri(Uri uri) {
         try {
-            jsonObject.put("title", title);
-            jsonObject.put("price", price);
-        } catch (JSONException e) {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+            handleBitmap(bitmap);// Process the Bitmap as you did in handleBitmap()
+            uploadImageBtn.setImageBitmap(bitmap);
+            // Extract the image name from the URI
+            String imageName = getFileName(uri);
+            // Set the image name to the TextView (uploadImageName)
+            uploadImageName.setText(imageName);
+        } catch (IOException e) {
             e.printStackTrace();
-            return;
+        }
+    }
+    private String getFileName(Uri uri) {
+        String fileName = null;
+
+        // If the URI is a content URI (which is usually the case for gallery images)
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = requireActivity().getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                // Get the column index for the display name (filename)
+                int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (columnIndex != -1) {
+                    fileName = cursor.getString(columnIndex);
+                }
+                cursor.close();
+            }
+        }
+        // If the URI is a file URI
+        else if (uri.getScheme().equals("file")) {
+            fileName = uri.getLastPathSegment(); // Get the last part of the path (filename)
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, createCoursesURL, jsonObject,
-                new Response.Listener<JSONObject>() {
+        return fileName != null ? fileName : "Unknown";
+    }
+    private void handleBitmap(Bitmap bitmap) {
+        // Resize image
+        bitmap = getResizedBitmap(bitmap, 400);
+        uploadImageBtn.setImageBitmap(bitmap);
+
+        // Convert Bitmap to File
+        imageFile = bitmapToFile(bitmap);  // Store the imageFile globally
+
+        // Encode the image to Base64 for further use
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        // Extract the file name from the imageFile (created from Bitmap)
+        String imageName = getFileNameFromFile(imageFile);
+
+        // Set the image name to the TextView (uploadImageName)
+        uploadImageName.setText(imageName);
+
+    }
+    private String getFileNameFromFile(File file) {
+        // Extract the file name from the imageFile (file name is the last segment of the path)
+        return file != null ? file.getName() : "Unknown";
+    }
+    private File bitmapToFile(Bitmap bitmap) {
+        File file = new File(getContext().getCacheDir(), "uploaded_image.jpg");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+    private void openGallery() {
+        final CharSequence[] options = {"Open Camera", "Choose from Gallery", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Add RC!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Open Camera")) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    cameraLauncher.launch(intent); // Use cameraLauncher
+                } else if (options[item].equals("Choose from Gallery")) {
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    galleryLauncher.launch(Intent.createChooser(intent, "Select Image")); // Use galleryLauncher
+                } else if (options[item].equals("Cancel")) {
+                    dialog.dismiss();
+                    Toast.makeText(getContext(), "RC Uploading Cancelled", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+
+    public void submitCourseDetailsFunction(String title, String price) {
+        // Prepare form data
+        Map<String, String> params = new HashMap<>();
+        params.put("title", title);
+        params.put("price", price);
+        // Create a Map for files (if imageFile exists)
+        Map<String, File> files = new HashMap<>();
+
+        // If an image file is selected, add it to the files map
+        if (imageFile != null && imageFile.exists()) {
+            files.put("image", imageFile);
+        }
+        // Create and send the multipart request
+        MultipartRequest multipartRequest = new MultipartRequest(createCoursesURL, params, files,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                         try {
-                            boolean status = response.getBoolean("status");
+                            JSONObject responseObject = new JSONObject(response);
+                            boolean status = responseObject.getBoolean("status");
                             if (status) {
-                                String message = response.getString("message");
+                                String message = responseObject.getString("message");
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
 
                                 // Refresh the course list
@@ -279,33 +447,26 @@ public class AdminCoursesCreateDeleteFragment extends Fragment {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMessage = "Error: " + error.toString();
-                if (error.networkResponse != null) {
-                    try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                String responseData = new String(error.networkResponse.data, "UTF-8");
+                                errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                                errorMessage += "\nResponse Data: " + responseData;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                        Log.e("CourseFetchError", errorMessage);
                     }
-                }
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
-                Log.e("BlogFetchError", errorMessage);
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + authToken);
-                return headers;
-            }
-        };
+                }, authToken);
 
-        MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
+        // Add the request to the queue
+        MySingletonFragment.getInstance(this).addToRequestQueue(multipartRequest);
     }
-
 }
