@@ -2,11 +2,11 @@ package com.examatlas.models;
 
 import java.util.ArrayList;
 
-public class LiveCoursesClassesListModel {
+public class AdminLiveCoursesClassesListModel {
     String classID,courseID,title,meetingID,time,date,addedBy,scheduledTime,status,startedAt,endedAt;
     ArrayList<String> students;
 
-    public LiveCoursesClassesListModel(String classID, String courseID, String title, String meetingID, String time, String date, String addedBy, String scheduledTime, String status, String startedAt, String endedAt, ArrayList<String> students) {
+    public AdminLiveCoursesClassesListModel(String classID, String courseID, String title, String meetingID, String time, String date, String addedBy, String scheduledTime, String status, String startedAt, String endedAt, ArrayList<String> students) {
         this.classID = classID;
         this.courseID = courseID;
         this.title = title;

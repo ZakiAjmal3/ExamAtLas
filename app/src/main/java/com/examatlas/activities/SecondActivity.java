@@ -11,14 +11,13 @@ import com.examatlas.R;
 import com.google.android.material.button.MaterialButton;
 
 public class SecondActivity extends AppCompatActivity {
-    MaterialButton userNextBtn,adminNextBtn;
+    MaterialButton userNextBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
         userNextBtn = findViewById(R.id.userNextBtn);
-        adminNextBtn = findViewById(R.id.adminNextBtn);
 
         userNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -26,13 +25,5 @@ public class SecondActivity extends AppCompatActivity {
                 startActivity(new Intent(SecondActivity.this, LoginActivity.class));
             }
         });
-
-        adminNextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(SecondActivity.this, AdminLoginActivity.class));
-            }
-        });
-
     }
 }

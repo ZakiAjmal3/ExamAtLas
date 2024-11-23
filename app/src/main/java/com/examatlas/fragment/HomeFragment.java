@@ -84,7 +84,8 @@ public class HomeFragment extends Fragment {
 
         liveClassesRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         blogsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        currentAffairRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));liveClassesRecycler.setVisibility(View.GONE);
+        currentAffairRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        liveClassesRecycler.setVisibility(View.GONE);
         liveClassesProgress.setVisibility(View.VISIBLE);
         blogsRecycler.setVisibility(View.GONE);
         blogProgressBar.setVisibility(View.VISIBLE);
@@ -326,7 +327,6 @@ public class HomeFragment extends Fragment {
 //                                    String image = jsonObject.getString("image");
 //                                    String createdDate = jsonObject.getString("createdAt");
 
-
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
                                     JSONArray tagsArray = jsonObject.getJSONArray("tags");
@@ -345,7 +345,7 @@ public class HomeFragment extends Fragment {
 
                                 // If you have already created the adapter, just notify the change
                                 if (currentAffairAdapter == null) {
-                                    currentAffairAdapter = new CurrentAffairsAdapter(currentAffairsModelArrayList, HomeFragment.this);
+                                    currentAffairAdapter = new CurrentAffairsAdapter(currentAffairsModelArrayList, HomeFragment.this,null);
                                     currentAffairRecycler.setAdapter(currentAffairAdapter);
                                 } else {
                                     currentAffairAdapter.notifyDataSetChanged();

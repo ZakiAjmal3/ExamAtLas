@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     MaterialButton btnLogin;
     private ImageView eyePassword;
     private boolean isPasswordVisible = false;
-    private final String serverUrl = Constant.BASE_URL + "auth/loginUser";
+    private final String serverUrl = Constant.BASE_URL + "auth/login";
     SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,10 +128,17 @@ public class LoginActivity extends AppCompatActivity {
                                         String role = userDataJson.getString("role");
                                         String createdAt = userDataJson.getString("createdAt");
                                         String updatedAt = userDataJson.getString("updatedAt");
-                                        sessionManager.saveLoginDetails(user_id,name,email,mobile,role,authToken,createdAt,updatedAt);
-                                        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                                        startActivity(intent);
-                                        finish();
+                                        if (role.equalsIgnoreCase("user")){
+                                            sessionManager.saveLoginDetails(user_id,name,email,mobile,role,authToken,createdAt,updatedAt);
+                                            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }else if (role.equalsIgnoreCase("admin")){
+                                            sessionManager.saveLoginDetails(user_id,name,email,mobile,role,authToken,createdAt,updatedAt);
+                                            Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
                                     }
                                 } catch (JSONException e) {
                                     Toast.makeText(LoginActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();

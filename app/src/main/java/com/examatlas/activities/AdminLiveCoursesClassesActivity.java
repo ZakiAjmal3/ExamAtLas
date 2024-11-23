@@ -20,7 +20,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
+import com.examatlas.adapter.AdminLiveCourseClassesListAdapter;
 import com.examatlas.adapter.LiveCourseClassesListAdapter;
+import com.examatlas.models.AdminLiveCoursesClassesListModel;
 import com.examatlas.models.LiveCoursesClassesListModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
@@ -34,13 +36,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LiveCoursesClassesListActivity extends AppCompatActivity {
+public class AdminLiveCoursesClassesActivity extends AppCompatActivity {
     Toolbar toolbar;
     ProgressBar progressBar;
     RelativeLayout noDataLayout;
     RecyclerView classesListRecyclerView;
-    LiveCourseClassesListAdapter liveCourseClassesListAdapter;
-    ArrayList<LiveCoursesClassesListModel> liveCoursesClassesListModelArrayList;
+    AdminLiveCourseClassesListAdapter liveCourseClassesListAdapter;
+    ArrayList<AdminLiveCoursesClassesListModel> liveCoursesClassesListModelArrayList;
     String getLiveClassesListURL;
     SessionManager sessionManager;
     String authToken;
@@ -111,14 +113,14 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
                                         startedAt = null;
                                         endedAt = null;
                                     }
-                                    LiveCoursesClassesListModel liveCoursesClassesListModel = new LiveCoursesClassesListModel(classID, courseID, title, meetingID, time, date, addedBy, scheduledTime, classStatus, startedAt,endedAt, null);
+                                    AdminLiveCoursesClassesListModel liveCoursesClassesListModel = new AdminLiveCoursesClassesListModel(classID, courseID, title, meetingID, time, date, addedBy, scheduledTime, classStatus, startedAt,endedAt, null);
                                     liveCoursesClassesListModelArrayList.add(liveCoursesClassesListModel);
                                 }
 
                                 if (!liveCoursesClassesListModelArrayList.isEmpty()) {
                                     progressBar.setVisibility(View.GONE);
                                     classesListRecyclerView.setVisibility(View.VISIBLE);
-                                    liveCourseClassesListAdapter = new LiveCourseClassesListAdapter(LiveCoursesClassesListActivity.this, liveCoursesClassesListModelArrayList);
+                                    liveCourseClassesListAdapter = new AdminLiveCourseClassesListAdapter(AdminLiveCoursesClassesActivity.this, liveCoursesClassesListModelArrayList);
                                     classesListRecyclerView.setAdapter(liveCourseClassesListAdapter);
                                     liveCourseClassesListAdapter.notifyDataSetChanged();
                                 } else {
@@ -142,7 +144,7 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
                         JSONObject jsonObject = new JSONObject(jsonError);
                         String message = jsonObject.optString("message", "Unknown error");
                         // Now you can use the message
-                        Toast.makeText(LiveCoursesClassesListActivity.this, message, Toast.LENGTH_LONG).show();
+                        Toast.makeText(AdminLiveCoursesClassesActivity.this, message, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

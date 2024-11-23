@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="160dp"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="5dp"
+    app:strokeWidth="1dp"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="10dp">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/imageCardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp">
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/imgLiveCourse"
+                android:layout_width="match_parent"
+                android:layout_height="110dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/noimage" />
+
+        </com.google.android.material.card.MaterialCardView>
+        <TextView
+            android:id="@+id/txtFullName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:layout_below="@id/imageCardView"
+            android:text="Blog Title"
+            android:textColor="@color/black"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            android:letterSpacing="0.1"
+            android:shadowColor="#000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="1"
+            android:layout_centerHorizontal="true" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtFullName"
+            >
+            <TextView
+                android:id="@+id/teacher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="By "
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginLeft="10dp"
+                />
+            <TextView
+                android:id="@+id/txtTeacherName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="ExamAtlas"
+                android:layout_toRightOf="@id/teacher"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/red"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                />
+            <!--        <ScrollView-->
+            <!--            android:id="@+id/scrollView"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="match_parent"-->
+            <!--            android:layout_below="@id/teacher"-->
+            <!--            android:layout_marginBottom="10dp"-->
+            <!--            android:visibility="gone">-->
+            <!--            <WebView-->
+            <!--                android:id="@+id/txtDesc"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:fontFamily="@font/poppins"-->
+            <!--                android:maxLines="2"-->
+            <!--                android:text="Description"-->
+            <!--                android:textColor="@color/dark_grey"-->
+            <!--                android:textSize="10sp"-->
+            <!--                android:visibility="visible"-->
+            <!--                android:layout_marginTop="5dp"-->
+            <!--                android:layout_marginBottom="5dp"-->
+            <!--                android:layout_marginLeft="5dp"-->
+            <!--                android:layout_marginRight="5dp"/>-->
+            <!--            </ScrollView>-->
+            <TextView
+                android:id="@+id/tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="TAGS:  "
+                android:textColor="@color/dark_grey"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/teacher"
+                />
+            <TextView
+                android:id="@+id/txtTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="UPSC"
+                android:layout_toRightOf="@id/tag"
+                android:textColor="#4CAF50"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="5dp"
+                android:textSize="10sp"
+                android:visibility="visible"
+                android:layout_below="@id/teacher"
+                />
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_delete"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/txtTeacherName"
+                android:padding="5dp"/>
+        </RelativeLayout>
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

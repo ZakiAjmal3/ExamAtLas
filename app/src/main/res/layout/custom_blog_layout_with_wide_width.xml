@@ -34,21 +34,6 @@
                 android:shadowDy="2"
                 android:shadowRadius="1"
                 android:layout_centerHorizontal="true"/>
-<!--            <ScrollView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_marginTop="10dp"-->
-<!--                android:layout_marginBottom="30dp"-->
-<!--                android:layout_below="@id/txtBlogTitle">-->
-<!--                <WebView-->
-<!--                    android:id="@+id/content"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:fontFamily="@font/poppins"-->
-<!--                    android:text="CONTENT"-->
-<!--                    android:textColor="@color/dark_grey"-->
-<!--                    android:textSize="10sp" />-->
-<!--            </ScrollView>-->
             <LinearLayout
                 android:id="@+id/layout1"
                 android:layout_width="wrap_content"
@@ -76,5 +61,19 @@
                     android:textColor="#4CAF50"
                     android:textSize="10sp" />
             </LinearLayout>
+            <ScrollView
+                android:id="@+id/contentScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/layout1">
+                <WebView
+                    android:id="@+id/content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="CONTENT"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="10sp" />
+            </ScrollView>
         </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

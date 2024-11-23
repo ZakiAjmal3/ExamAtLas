@@ -29,7 +29,7 @@ import com.examatlas.R;
 import com.examatlas.fragment.AdminBlogCreateDeleteFragment;
 import com.examatlas.fragment.AdminCoursesCreateDeleteFragment;
 import com.examatlas.fragment.AdminCreateCategoryFragment;
-import com.examatlas.fragment.AdminCreateLiveCoursesClassesFragment;
+import com.examatlas.fragment.AdminCreateLiveCoursesFragment;
 import com.examatlas.fragment.AdminCreateSubCategoryFragment;
 import com.examatlas.fragment.AdminCreateSubjectFragment;
 import com.examatlas.fragment.AdminCreateCurrentAffairFragment;
@@ -387,8 +387,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         currentFragment = new AdminEBooksCreateDeleteFragment();
                         drawerDialog.dismiss();
                     } else if (contentItemsSelected.equals("Live Classes")){
-                        loadFragment(new AdminCreateLiveCoursesClassesFragment());
-                        currentFragment = new AdminCreateLiveCoursesClassesFragment();
+                        loadFragment(new AdminCreateLiveCoursesFragment());
+                        currentFragment = new AdminCreateLiveCoursesFragment();
                         drawerDialog.dismiss();
                     }
                 }

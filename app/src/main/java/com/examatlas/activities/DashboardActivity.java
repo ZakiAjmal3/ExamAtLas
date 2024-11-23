@@ -142,6 +142,10 @@ public class DashboardActivity extends AppCompatActivity {
                 .commit();
         currentFragment = fragment;
     }
+    public void loadCurrentAffairActivity(){
+        Intent intent = new Intent(this, CurrentAffairsActivity.class);
+        startActivity(intent);
+    }
 //    public void loadCourse() {
 //        currentFrag = "TEST";
 //        loadFragment(new HomeFragment());
@@ -151,7 +155,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     Dialog drawerDialog;
     LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks, layoutLiveClasses,
-            layoutEbook, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy,
+            layoutEbook,layoutCurrentAffairs, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy,
             layoutTerms, layoutOrderHistory, layoutFaq, layoutServices;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
@@ -168,6 +172,7 @@ public class DashboardActivity extends AppCompatActivity {
         layoutBlogs = drawerDialog.findViewById(R.id.layoutBlogs);
         layoutPurchaseBooks = drawerDialog.findViewById(R.id.layoutPurchaseBooks);
         layoutEbook = drawerDialog.findViewById(R.id.layoutEbook);
+        layoutCurrentAffairs = drawerDialog.findViewById(R.id.layoutCurrentAffairs);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
         txtUsername = drawerDialog.findViewById(R.id.txtUsername);
@@ -296,6 +301,13 @@ public class DashboardActivity extends AppCompatActivity {
             public void onClick(View view) {
                 drawerDialog.dismiss();
                 Intent intent = new Intent(DashboardActivity.this, BookOrderHistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutCurrentAffairs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, CurrentAffairsActivity.class);
                 startActivity(intent);
             }
         });

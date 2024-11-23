@@ -99,8 +99,6 @@ public class AdminCreateSubCategoryFragment extends Fragment {
         subCategoryModelArrayList.clear();
         getAllSubCategory();
 
-
-
         createBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

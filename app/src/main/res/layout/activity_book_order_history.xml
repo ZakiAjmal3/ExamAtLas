@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/imgMenu"
-            android:text="CROWN"
+            android:text="EXAMATLAS"
             android:textSize="20dp"
             android:textColor="@color/white"
             android:textAlignment="center"

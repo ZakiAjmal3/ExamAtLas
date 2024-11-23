@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="160dp"
     android:layout_height="match_parent"
     android:layout_margin="5dp"
@@ -10,8 +11,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
         android:foreground="?android:attr/selectableItemBackgroundBorderless">
 
     <com.google.android.material.card.MaterialCardView
@@ -49,29 +48,13 @@
             android:shadowDx="2"
             android:shadowDy="2"
             android:shadowRadius="1"
-            android:layout_centerHorizontal="true"/>
-<!--        <ScrollView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_below="@id/txtTitle"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:layout_marginBottom="10dp"-->
-<!--            android:layout_marginLeft="10dp"-->
-<!--            android:layout_marginRight="10dp">-->
-<!--            <WebView-->
-<!--                android:id="@+id/txtContent"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:fontFamily="@font/poppins"-->
-<!--                android:text="JSSC : Jharkhand Staff Selection Commission"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="10sp" />-->
-<!--        </ScrollView>-->
+            android:layout_centerHorizontal="true"/>.
         <LinearLayout
             android:id="@+id/layout1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="bottom"
+            android:layout_below="@id/txtTitle"
             android:orientation="horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
@@ -100,6 +83,22 @@
                 android:textColor="#4CAF50"
                 android:textSize="10sp" />
         </LinearLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/layout1"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+            <WebView
+                android:id="@+id/txtContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="JSSC : Jharkhand Staff Selection Commission"
+                android:textColor="@color/black"
+                android:textSize="10sp" />
+        </ScrollView>
     </RelativeLayout>
-
 </com.google.android.material.card.MaterialCardView>
