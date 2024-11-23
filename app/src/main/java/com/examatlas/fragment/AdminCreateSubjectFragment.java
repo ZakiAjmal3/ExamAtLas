@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.SearchView;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -54,7 +55,7 @@ public class AdminCreateSubjectFragment extends Fragment {
     SearchView searchView;
     RecyclerView showSubjectRecycler;
     RelativeLayout noDataLayout;
-    ProgressBar progressBar;
+    ProgressBar progressBar,nextItemLoadingProgressBar;
     AdminShowAllSubjectAdapter subjectAdapter;
     AdminShowAllSubjectModel subjectModel;
     ArrayList<AdminShowAllSubjectModel> subjectModelArrayList = new ArrayList<>();
@@ -66,6 +67,7 @@ public class AdminCreateSubjectFragment extends Fragment {
     private int totalPages = 1,currentPage = 1;
     private final int itemsPerPage = 10;
     private boolean isLoading = false;
+    private NestedScrollView nestedSV;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -78,6 +80,8 @@ public class AdminCreateSubjectFragment extends Fragment {
         showSubjectRecycler = view.findViewById(R.id.showAllSubjectRecycler);
         noDataLayout = view.findViewById(R.id.noDataLayout);
         progressBar = view.findViewById(R.id.showAllSubjectProgressBar);
+        nextItemLoadingProgressBar = view.findViewById(R.id.nextItemLoadingProgressBar);
+        nestedSV = view.findViewById(R.id.nestScrollView);
 
         sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
@@ -93,19 +97,21 @@ public class AdminCreateSubjectFragment extends Fragment {
                 openDialogBoxCreateSubject();
             }
         });
-        showSubjectRecycler.setItemAnimator(null);
-        showSubjectRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                // Check if we are at the bottom of the RecyclerView
-                int totalItemCount = showSubjectRecycler.getLayoutManager().getItemCount();
-                int lastVisibleItem = ((LinearLayoutManager) showSubjectRecycler.getLayoutManager()).findLastVisibleItemPosition();
-
-                if (totalItemCount <= (lastVisibleItem + 2) && !isLoading && currentPage < totalPages) {
-                    isLoading = true;
-                    getAllSubject();  // Load next page
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // on scroll change we are checking when users scroll as bottom.
+                if (scrollY == v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
+                    // in this method we are incrementing page number,
+                    // making progress bar visible and calling get data method.
+                    currentPage++;
+                    // on below line we are making our progress bar visible.
+                    if (currentPage <= totalPages) {
+                        nextItemLoadingProgressBar.setVisibility(View.VISIBLE);
+                        // on below line we are again calling
+                        // a method to load data in our array list.
+                        getAllSubject();
+                    }
                 }
             }
         });
@@ -268,7 +274,6 @@ public class AdminCreateSubjectFragment extends Fragment {
     }
 
     public void getAllSubject() {
-
         String subjectURLPage = subjectURL + "?search=" + searchQuery + "&page=" + currentPage + "&per_page=" + itemsPerPage;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, subjectURLPage, null,
                 new Response.Listener<JSONObject>() {
@@ -303,14 +308,11 @@ public class AdminCreateSubjectFragment extends Fragment {
                                     showSubjectRecycler.setVisibility(View.GONE);
                                     progressBar.setVisibility(View.GONE);
                                 } else {
-                                    if (subjectAdapter == null) {
-                                        subjectAdapter = new AdminShowAllSubjectAdapter( subjectModelArrayList,AdminCreateSubjectFragment.this);
-                                        showSubjectRecycler.setAdapter(subjectAdapter);
-                                    } else {
-                                        subjectAdapter.notifyDataSetChanged();
-                                    }
+                                    subjectAdapter = new AdminShowAllSubjectAdapter( subjectModelArrayList,AdminCreateSubjectFragment.this);
+                                    showSubjectRecycler.setAdapter(subjectAdapter);
                                 }
                                 isLoading = false;
+                                nextItemLoadingProgressBar.setVisibility(View.GONE);
                             } else {
                                 Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_SHORT).show();
                             }

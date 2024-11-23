@@ -82,7 +82,7 @@ public class JoinLiveClassActivity extends AppCompatActivity {
             }
         });
     }
-        public Meeting getMeeting() {
+    public Meeting getMeeting() {
         return meeting;
     }
     public String getCourseId() {

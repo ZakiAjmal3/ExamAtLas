@@ -3,6 +3,8 @@ package com.examatlas.activities;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -26,6 +28,7 @@ import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
+import com.hbb20.CountryCodePicker;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,21 +37,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
-    TextView txtSignUp, txtForgotPass;
+    TextView txtSignUp,signWithEmailTxt, txtForgotPass;
     LinearLayout parentLayout;
     ProgressBar progressBar;
     EditText edtNumber, edtPassword;
     MaterialButton btnLogin;
     private ImageView eyePassword;
     private boolean isPasswordVisible = false;
-    private final String serverUrl = Constant.BASE_URL + "auth/loginUser";
+    private final String serverUrl = Constant.BASE_URL + "auth/login";
     SessionManager sessionManager;
+    private CountryCodePicker ccp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         txtSignUp = findViewById(R.id.adminNextBtn);
+        signWithEmailTxt = findViewById(R.id.txtSignWithEmail);
         txtForgotPass = findViewById(R.id.txtForgotPass);
         btnLogin = findViewById(R.id.btnLogin);
         progressBar = findViewById(R.id.progressBar);
@@ -56,13 +62,14 @@ public class LoginActivity extends AppCompatActivity {
         edtPassword = findViewById(R.id.edtPassword);
         eyePassword = findViewById(R.id.eyePassword);
         parentLayout = findViewById(R.id.parentLayout);
+        ccp = findViewById(R.id.ccp);
 
         sessionManager = new SessionManager(this);
-
+        String countryCode = ccp.getSelectedCountryCodeWithPlus();
         txtSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+                startActivity(new Intent(LoginActivity.this, SignUpActivity1.class));
             }
         });
 
@@ -87,10 +94,16 @@ public class LoginActivity extends AppCompatActivity {
                 edtPassword.setSelection(edtPassword.getText().length()); // Move cursor to the end
             }
         });
+        signWithEmailTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LoginActivity.this,LoginWithEmailActivity.class));
+            }
+        });
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String number = edtNumber.getText().toString().trim();
+                String number = String.valueOf(edtNumber.getText());
                 String password = edtPassword.getText().toString().trim();
 
                 JSONObject jsonObject = new JSONObject();
@@ -128,10 +141,17 @@ public class LoginActivity extends AppCompatActivity {
                                         String role = userDataJson.getString("role");
                                         String createdAt = userDataJson.getString("createdAt");
                                         String updatedAt = userDataJson.getString("updatedAt");
-                                        sessionManager.saveLoginDetails(user_id,name,email,mobile,role,authToken,createdAt,updatedAt);
-                                        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                                        startActivity(intent);
-                                        finish();
+                                        if (role.equalsIgnoreCase("user")){
+                                            sessionManager.saveLoginDetails(user_id,name,email,mobile,role,authToken,createdAt,updatedAt);
+                                            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }else if (role.equalsIgnoreCase("admin")){
+                                            sessionManager.saveLoginDetails(user_id,name,email,mobile,role,authToken,createdAt,updatedAt);
+                                            Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
                                     }
                                 } catch (JSONException e) {
                                     Toast.makeText(LoginActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -144,6 +164,7 @@ public class LoginActivity extends AppCompatActivity {
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {
+                                Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                                 // Parse the error response
                                 String jsonError = new String(error.networkResponse.data);
                                 JSONObject jsonObject = new JSONObject(jsonError);

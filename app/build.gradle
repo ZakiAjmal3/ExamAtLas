@@ -46,6 +46,9 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.razorpay:checkout:1.6.40'
     implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'com.hbb20:ccp:2.7.1'
+    implementation 'io.github.chaosleung:pinview:1.4.4'
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation libs.recyclerview
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

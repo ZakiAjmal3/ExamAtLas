@@ -6,6 +6,7 @@
     <color name="bottom_grey">#F4F4F4</color>
     <color name="white">#FFFFFFFF</color>
     <color name="seed">#15b0fd</color>
+    <color name="seed2">#4ABEFF</color>
     <color name="green">#0C9700</color>
     <color name="md_theme_light_primary">#006493</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
@@ -68,6 +69,7 @@
     <color name="md_theme_dark_outlineVariant">#41474D</color>
     <color name="md_theme_dark_scrim">#000000</color>
     <color name="dark_grey">#776F6F</color>
+    <color name="darker_grey">#423D3D</color>
     <color name="mat_yellow">#F1B501</color>
     <color name="red_orange">#FF4500</color>
 </resources>

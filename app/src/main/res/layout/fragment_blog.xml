@@ -11,10 +11,24 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_gravity="center"
-            android:id="@+id/blogRecycler"
+        <TextView
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="Blogs"
+            android:layout_gravity="center"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:letterSpacing="0.1"
+            android:shadowColor="#000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="1" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/blogRecycler"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/custom_blog_layout_with_wide_width"
             />

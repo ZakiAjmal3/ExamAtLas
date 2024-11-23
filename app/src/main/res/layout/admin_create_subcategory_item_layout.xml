@@ -26,19 +26,25 @@
             android:layout_alignParentEnd="true"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             />
-        <TextView
-            android:id="@+id/categoryTxt"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/categoryNameLT"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Category:"
-            android:textSize="16sp"
-            android:textColor="@color/dark_grey"
-            android:textStyle="bold"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_below="@id/editTitleBtn" />
+            android:orientation="horizontal"
+            android:layout_below="@id/editTitleBtn" >
+            <TextView
+                android:id="@+id/categoryTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category name:"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"
+                />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/titleTxt"
             android:layout_width="wrap_content"
@@ -48,54 +54,11 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="15dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_below="@id/categoryTxt"
+            android:layout_below="@id/categoryNameLT"
             android:layout_centerHorizontal="true" />
-        <WebView
-            android:id="@+id/descriptionTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description"
-            android:textSize="12sp"
-            android:textColor="@color/black"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_below="@id/titleTxt"
-            android:layout_centerHorizontal="true"/>
-        <LinearLayout
-            android:id="@+id/layout1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:orientation="horizontal"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="15dp"
-            android:layout_below="@id/descriptionTxt"
-            >
-
-            <TextView
-                android:id="@+id/txtAuthor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:text="TAGS:"
-                android:textColor="@color/dark_grey"
-                android:textSize="10sp" />
-
-            <TextView
-                android:id="@+id/tagTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:fontFamily="@font/poppins"
-                android:text="Tag Text"
-                android:textColor="@color/seed"
-                android:textSize="10sp" />
-        </LinearLayout>
 
     </RelativeLayout>
 

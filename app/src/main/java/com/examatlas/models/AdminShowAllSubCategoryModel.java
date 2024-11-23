@@ -1,17 +1,18 @@
 package com.examatlas.models;
 
 public class AdminShowAllSubCategoryModel {
-    String categoryId,categoryName,categoryDescription,categoryTags,subCategoryId,subCategoryName,subCategoryDescription,subCategoryTags;
+    String categoryId,categoryName,subCategoryId,subCategoryName,icActive;
+    int totalRows,totalPages,currentPages;
 
-    public AdminShowAllSubCategoryModel(String categoryId, String categoryName, String categoryDescription, String categoryTags, String subCategoryId, String subCategoryName, String subCategoryDescription, String subCategoryTags) {
+    public AdminShowAllSubCategoryModel(String categoryId, String categoryName, String subCategoryId, String subCategoryName, String icActive, int totalRows, int totalPages, int currentPages) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
-        this.categoryDescription = categoryDescription;
-        this.categoryTags = categoryTags;
         this.subCategoryId = subCategoryId;
         this.subCategoryName = subCategoryName;
-        this.subCategoryDescription = subCategoryDescription;
-        this.subCategoryTags = subCategoryTags;
+        this.icActive = icActive;
+        this.totalRows = totalRows;
+        this.totalPages = totalPages;
+        this.currentPages = currentPages;
     }
 
     public String getCategoryId() {
@@ -30,22 +31,6 @@ public class AdminShowAllSubCategoryModel {
         this.categoryName = categoryName;
     }
 
-    public String getCategoryDescription() {
-        return categoryDescription;
-    }
-
-    public void setCategoryDescription(String categoryDescription) {
-        this.categoryDescription = categoryDescription;
-    }
-
-    public String getCategoryTags() {
-        return categoryTags;
-    }
-
-    public void setCategoryTags(String categoryTags) {
-        this.categoryTags = categoryTags;
-    }
-
     public String getSubCategoryId() {
         return subCategoryId;
     }
@@ -62,19 +47,35 @@ public class AdminShowAllSubCategoryModel {
         this.subCategoryName = subCategoryName;
     }
 
-    public String getSubCategoryDescription() {
-        return subCategoryDescription;
+    public String getIcActive() {
+        return icActive;
     }
 
-    public void setSubCategoryDescription(String subCategoryDescription) {
-        this.subCategoryDescription = subCategoryDescription;
+    public void setIcActive(String icActive) {
+        this.icActive = icActive;
     }
 
-    public String getSubCategoryTags() {
-        return subCategoryTags;
+    public int getTotalRows() {
+        return totalRows;
     }
 
-    public void setSubCategoryTags(String subCategoryTags) {
-        this.subCategoryTags = subCategoryTags;
+    public void setTotalRows(int totalRows) {
+        this.totalRows = totalRows;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public int getCurrentPages() {
+        return currentPages;
+    }
+
+    public void setCurrentPages(int currentPages) {
+        this.currentPages = currentPages;
     }
 }

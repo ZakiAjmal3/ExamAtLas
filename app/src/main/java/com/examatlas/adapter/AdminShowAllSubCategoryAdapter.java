@@ -82,15 +82,14 @@ public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminSh
 
         holder.setHighlightedText(holder.categoryName, currentCategory.getCategoryName() + ":", currentQuery);
         holder.setHighlightedText(holder.subCategoryName, currentCategory.getSubCategoryName(), currentQuery);
-        holder.setHighlightedText(holder.tags, currentCategory.getSubCategoryTags(), currentQuery);
 
-        holder.editSubjectBtn.setOnClickListener(new View.OnClickListener() {
+        holder.editSubCategoryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openEditCategoryDialogBox(currentCategory,position);
             }
         });
-        holder.deleteSubjectBtn.setOnClickListener(new View.OnClickListener() {
+        holder.deleteSubCategoryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new MaterialAlertDialogBuilder(context.getContext())
@@ -109,26 +108,6 @@ public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminSh
                         }).show();
             }
         });
-        // Enable JavaScript (optional, depending on your content)
-        WebSettings webSettings = holder.description.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-
-        String htmlContentTxt = subCategoryModelArrayList.get(position).getSubCategoryDescription();
-
-        // Inject CSS to control the image size
-        String injectedCss = "<style>"
-                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
-                + "img { width: 100%; height: auto; }" // Adjust image size as needed
-                + "</style>";
-        String fullHtmlContent = injectedCss + htmlContentTxt;
-
-        // Disable scrolling and over-scrolling
-        holder.description.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
-        holder.description.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
-
-        // Load the modified HTML content
-        holder.description.loadData(fullHtmlContent, "text/html", "UTF-8");
-
     }
 
     private void deleteSubCategory(AdminShowAllSubCategoryModel adminShowAllCategoryModel) {
@@ -187,44 +166,23 @@ public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminSh
 
         EditText titleEditTxt = dialog.findViewById(R.id.titleEditTxt);
         titleEditTxt.setText(currentCategory.getSubCategoryName());
-        EditText descriptionEditText = dialog.findViewById(R.id.descriptionEditText);
-        descriptionEditText.setText(currentCategory.getSubCategoryDescription());
-        EditText tagsEditTxt = dialog.findViewById(R.id.tagsEditText);
-
-        ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList = new ArrayList<>();
-        AdminTagsForDataALLAdapter adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
-        RecyclerView tagsRecyclerView = dialog.findViewById(R.id.tagsRecycler);
-        tagsRecyclerView.setVisibility(View.VISIBLE);
-        tagsRecyclerView.setLayoutManager(new GridLayoutManager(context.requireContext(), 2));
-        tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
-
-        String[] tagsArray = currentCategory.getSubCategoryTags().split(",");
-        for (String tag : tagsArray) {
-            adminTagsForDataALLModelArrayList.add(new AdminTagsForDataALLModel(tag.trim()));
-        }
-        adminTagsForDataALLAdapter.notifyDataSetChanged();
-
-        tagsEditTxt.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEND || (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                String tagText = tagsEditTxt.getText().toString().trim();
-                if (!tagText.isEmpty()) {
-                    adminTagsForDataALLModelArrayList.add(new AdminTagsForDataALLModel(tagText));
-                    adminTagsForDataALLAdapter.notifyItemInserted(adminTagsForDataALLModelArrayList.size() - 1);
-                    tagsEditTxt.setText("");
-                    tagsRecyclerView.setVisibility(View.VISIBLE);
-                }
-                return true;
-            }
-            return false;
-        });
+        EditText slugEditTxt = dialog.findViewById(R.id.slugEditText);
+        slugEditTxt.setText(currentCategory.getSubCategoryName());
 
         Button submitBtn = dialog.findViewById(R.id.btnSubmit);
         ImageView crossBtn = dialog.findViewById(R.id.btnCross);
 
+        String[] categoryNameList = new String[subCategoryModelArrayList.size() + 1]; // +1 for "Select Category"
+        categoryNameList[0] = "Select Category";
+        for (int i = 0; i < subCategoryModelArrayList.size(); i++) {
+            categoryNameList[i + 1] = subCategoryModelArrayList.get(i).getCategoryName();
+        }
+        ((AdminCreateSubCategoryFragment) context).setupCategorySpinner(categorySpinner,titleEditTxt,slugEditTxt,categoryNameList,currentCategory);
+
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendUpdateSubjectDetails(currentCategory,titleEditTxt.getText().toString().trim(),descriptionEditText.getText().toString().trim(),adminTagsForDataALLModelArrayList,dialog,position);
+                sendUpdateSubjectDetails(currentCategory,titleEditTxt.getText().toString().trim(),slugEditTxt.getText().toString().trim(),dialog,position);
             }
         });
         crossBtn.setOnClickListener(new View.OnClickListener() {
@@ -233,7 +191,6 @@ public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminSh
                 dialog.dismiss();
             }
         });
-        ((AdminCreateSubCategoryFragment) context).setupCategorySpinner(categorySpinner,titleEditTxt,descriptionEditText,tagsEditTxt,currentCategory);
         dialog.show();
         WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -258,7 +215,7 @@ public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminSh
 
     }
 
-    private void sendUpdateSubjectDetails(AdminShowAllSubCategoryModel currentCategory, String name, String description, ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, Dialog dialog, int position) {
+    private void sendUpdateSubjectDetails(AdminShowAllSubCategoryModel currentCategory, String name, String slug, Dialog dialog, int position) {
         String updateURL = Constant.BASE_URL + "category/createSubCategory";
         // Create JSON object to send in the request
         JSONObject categoryObject = new JSONObject();
@@ -266,14 +223,7 @@ public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminSh
             categoryObject.put("id", currentCategory.getSubCategoryId());
             categoryObject.put("categoryId", currentCategory.getCategoryId());
             categoryObject.put("subCategoryName", name);
-            categoryObject.put("description", description);
-
-            // Convert tags to a JSONArray
-            JSONArray tagsArray = new JSONArray();
-            for (AdminTagsForDataALLModel tag : adminTagsForDataALLModelArrayList) {
-                tagsArray.put(tag.getTagName()); // Assuming `getTag()` returns the tag string
-            }
-            categoryObject.put("tags", tagsArray);
+            categoryObject.put("slug", slug);
 
         } catch (JSONException e) {
             Log.e("JSON_ERROR", "Error creating JSON object: " + e.getMessage());
@@ -287,7 +237,7 @@ public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminSh
                             if (status) {
                                 String message = response.getString("message");
                                 Toast.makeText(context.getContext(),message, Toast.LENGTH_SHORT).show();
-                                updateSubjectInList(currentCategory, name,description);
+                                updateSubjectInList(currentCategory, name,slug);
                                 ((AdminCreateSubCategoryFragment) context).getAllSubCategory();
                                 notifyItemChanged(position);
                                 dialog.dismiss();
@@ -326,12 +276,12 @@ public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminSh
         MySingletonFragment.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
 
-    private void updateSubjectInList(AdminShowAllSubCategoryModel currentCategory, String name, String description) {
+    private void updateSubjectInList(AdminShowAllSubCategoryModel currentCategory, String name,String slug) {
         // Find the subject in the list
         for (int i = 0; i < subCategoryModelArrayList.size(); i++) {
             if (subCategoryModelArrayList.get(i).getSubCategoryId().equals(currentCategory.getSubCategoryId())) {
                 // Update the title of the subject in the list
-                subCategoryModelArrayList.get(i).setCategoryName(name);
+                subCategoryModelArrayList.get(i).setSubCategoryName(name);
 //                subCategoryModelArrayList.get(i).de(description);
                 notifyItemChanged(i);
                 break;
@@ -352,28 +302,24 @@ public class AdminShowAllSubCategoryAdapter extends RecyclerView.Adapter<AdminSh
         } else {
             String lowerCaseQuery = query.toLowerCase();
             for (AdminShowAllSubCategoryModel categoryModel : originalSubCategoryModelArrayList) {
-//                if (categoryModel.getCategoryName().toLowerCase().contains(lowerCaseQuery) || categoryModel.getTags().contains(lowerCaseQuery) ||categoryModel.getDescription().toLowerCase().contains(lowerCaseQuery)) {
-//                    subCategoryModelArrayList.add(categoryModel); // Add matching eBook to the filtered list
-//                }
+                if (categoryModel.getCategoryName().toLowerCase().contains(lowerCaseQuery) || categoryModel.getSubCategoryName().toLowerCase().contains(lowerCaseQuery)) {
+                    subCategoryModelArrayList.add(categoryModel); // Add matching eBook to the filtered list
+                }
             }
         }
         notifyDataSetChanged(); // Notify adapter of data change
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView categoryName,subCategoryName,tags;
-        ImageView editSubjectBtn, deleteSubjectBtn;
-        WebView description;
-
+        TextView categoryName,subCategoryName;
+        ImageView editSubCategoryBtn,deleteSubCategoryBtn;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             categoryName = itemView.findViewById(R.id.categoryTxt);
             subCategoryName = itemView.findViewById(R.id.titleTxt);
-            description = itemView.findViewById(R.id.descriptionTxt);
-            tags = itemView.findViewById(R.id.tagTxt);
-            editSubjectBtn = itemView.findViewById(R.id.editTitleBtn);
-            deleteSubjectBtn = itemView.findViewById(R.id.deleteSubjectBtn);
+            editSubCategoryBtn = itemView.findViewById(R.id.editTitleBtn);
+            deleteSubCategoryBtn = itemView.findViewById(R.id.deleteSubjectBtn);
         }
 
         public void setHighlightedText(TextView textView, String text, String query) {

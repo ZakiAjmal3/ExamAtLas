@@ -77,6 +77,10 @@ public class LiveCourseClassesListAdapter extends RecyclerView.Adapter<LiveCours
         holder.timeAndDateTxt.setText(formatedTimeAndDate);
         holder.scheduleTxtDisplay.setText(liveCoursesClassesListModelArrayList.get(position).getScheduledTime());
 
+        if (liveCoursesClassesListModelArrayList.get(position).getStatus().equalsIgnoreCase("completed")){
+            holder.joinNowBtn.setVisibility(View.GONE);
+        }
+
         holder.joinNowBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -103,8 +103,15 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
                                     String addedBy = jsonObject.getString("addedBy");
                                     String scheduledTime = jsonObject.getString("scheduleTime");
                                     String classStatus = jsonObject.getString("status");
-                                    String startedAt = jsonObject.getString("startedAt");
-                                    LiveCoursesClassesListModel liveCoursesClassesListModel = new LiveCoursesClassesListModel(classID, courseID, title, meetingID, time, date, addedBy, scheduledTime, classStatus, startedAt, null);
+                                    String startedAt,endedAt;
+                                    if (classStatus.equalsIgnoreCase("completed")) {
+                                        startedAt = jsonObject.getString("startedAt");
+                                        endedAt = jsonObject.getString("endedAt");
+                                    }else {
+                                        startedAt = null;
+                                        endedAt = null;
+                                    }
+                                    LiveCoursesClassesListModel liveCoursesClassesListModel = new LiveCoursesClassesListModel(classID, courseID, title, meetingID, time, date, addedBy, scheduledTime, classStatus, startedAt,endedAt, null);
                                     liveCoursesClassesListModelArrayList.add(liveCoursesClassesListModel);
                                 }
 

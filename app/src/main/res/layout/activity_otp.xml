@@ -14,7 +14,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="250dp"
-        android:src="@drawable/otp" />
+        android:src="@drawable/newlogo" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,20 +25,64 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/txtOtp"
+    <RelativeLayout
+        android:id="@+id/otpSentRelativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins"
-        android:text="Enter The Verification Code Below\nYour OTP Is: "
-        android:textAlignment="center"
-        android:textColor="@color/dark_grey"
-        android:textSize="12sp" />
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_centerHorizontal="true">
+        <TextView
+            android:id="@+id/sent1Txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="OTP sent to "
+            android:textColor="@color/dark_grey"
+            android:textSize="14sp"
+            android:layout_marginTop="2dp"
+            />
+        <TextView
+            android:id="@+id/numberTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="9122118362 "
+            android:textColor="@color/dark_grey"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@id/sent1Txt"/>
+        <TextView
+            android:id="@+id/inTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" in "
+            android:textColor="@color/dark_grey"
+            android:textSize="14sp"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@id/numberTxt"/>
+        <ImageView
+            android:id="@+id/whatsappIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_whatsapp"
+            android:layout_toRightOf="@id/inTxt"/>
+        <TextView
+            android:id="@+id/whatsappTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" WhatsApp"
+            android:textColor="@color/dark_grey"
+            android:textSize="14sp"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@id/whatsappIcon"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:padding="10dp">

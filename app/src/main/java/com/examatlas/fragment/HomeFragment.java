@@ -1,11 +1,14 @@
 package com.examatlas.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -22,6 +25,7 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
+import com.examatlas.activities.DashboardActivity;
 import com.examatlas.adapter.BlogAdapter;
 import com.examatlas.adapter.CurrentAffairsAdapter;
 import com.examatlas.adapter.LiveCoursesAdapter;
@@ -33,6 +37,7 @@ import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
 import com.examatlas.utils.MySingletonFragment;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +50,6 @@ import java.util.Map;
 
 public class HomeFragment extends Fragment {
     RecyclerView liveClassesRecycler, testimonialRecycler, blogsRecycler, currentAffairRecycler;
-    ProgressBar homeProgress,blogProgressBar,currentAffairProgress,liveClassesProgress;
     SessionManager sessionManager;
     ImageSlider slider;
     ArrayList<BlogModel> blogModelArrayList;
@@ -58,6 +62,8 @@ public class HomeFragment extends Fragment {
     private final String liveClassURL = Constant.BASE_URL + "liveclass/getAllLiveClass";
     private final String currentAffairsURL = Constant.BASE_URL + "currentAffair/getAllCA";
     String token;
+    ShimmerFrameLayout shimmerBlogLayout, shimmerCALayout;
+    TextView blogTxt, CATxt,viewAllBlogTxt;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -65,11 +71,16 @@ public class HomeFragment extends Fragment {
         liveClassesRecycler = view.findViewById(R.id.examRecycler);
         currentAffairRecycler = view.findViewById(R.id.currentAffairRecycler);
         blogsRecycler = view.findViewById(R.id.blogsRecycler);
-        homeProgress = view.findViewById(R.id.homeProgress);
+        shimmerBlogLayout = view.findViewById(R.id.shimmer_blog_container);
+        shimmerBlogLayout.startShimmer();
+        shimmerCALayout = view.findViewById(R.id.shimmer_CA_container);
+        shimmerCALayout.startShimmer();
+        blogTxt = view.findViewById(R.id.blogTxt);
+        CATxt = view.findViewById(R.id.CATxt);
+
+        viewAllBlogTxt = view.findViewById(R.id.viewAllBlogTxt);
         slider = view.findViewById(R.id.slider);
-        blogProgressBar = view.findViewById(R.id.blogProgress);
-        currentAffairProgress = view.findViewById(R.id.currentAffairProgress);
-        liveClassesProgress = view.findViewById(R.id.liveClassesProgress);
+//        currentAffairProgress = view.findViewById(R.id.currentAffairProgress);
         ArrayList<SlideModel> sliderArrayList = new ArrayList<>();
         blogModelArrayList = new ArrayList<>();
         liveCoursesModelArrayList = new ArrayList<>();
@@ -84,17 +95,35 @@ public class HomeFragment extends Fragment {
 
         liveClassesRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         blogsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        currentAffairRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));liveClassesRecycler.setVisibility(View.GONE);
-        liveClassesProgress.setVisibility(View.VISIBLE);
-        blogsRecycler.setVisibility(View.GONE);
-        blogProgressBar.setVisibility(View.VISIBLE);
+        currentAffairRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        liveClassesRecycler.setVisibility(View.GONE);
+        blogsRecycler.setVisibility(View.VISIBLE);
         currentAffairRecycler.setVisibility(View.GONE);
-        currentAffairProgress.setVisibility(View.VISIBLE);
         token = sessionManager.getUserData().get("authToken");
 
-        getLiveClasses();
-        getBlogList();
-        getCurrentAffairs();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //        getLiveClasses();
+                getBlogList();
+                getCurrentAffairs();
+            }
+        },1500);
+
+        viewAllBlogTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Check if the context is an instance of HomeFragment
+                    // Cast context to DashboardActivity and load the BlogFragment
+                    Activity activity = getActivity();
+                    if (activity instanceof DashboardActivity) {
+                        DashboardActivity dashboardActivity = (DashboardActivity) activity;
+                        dashboardActivity.loadFragment(new BlogFragment());
+                        dashboardActivity.bottom_navigation.setSelectedItemId(R.id.blogs);
+                        dashboardActivity.bottom_navigation.setSelected(true);
+                }
+            }
+        });
         return view;
     }
 
@@ -105,7 +134,6 @@ public class HomeFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             liveClassesRecycler.setVisibility(View.VISIBLE);
-                            liveClassesProgress.setVisibility(View.GONE);
                             boolean status = response.getBoolean("status");
 
                             if (status) {
@@ -116,8 +144,13 @@ public class HomeFragment extends Fragment {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String classID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
+                                    String subTitle = jsonObject2.getString("subTitle");
                                     String description = jsonObject2.getString("description");
-                                    String teacherName = jsonObject2.getString("teacher");
+                                    String teacherName = null;
+                                    if (jsonObject2.has("teacher"))
+                                        teacherName = jsonObject2.getString("teacher");
+                                    String language = jsonObject2.getString("language");
+                                    String price = jsonObject2.getString("price");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -175,7 +208,16 @@ public class HomeFragment extends Fragment {
                                     ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
 //                                    for (int j = 0; j<jsonImageArray.length();j++){
 //                                    }
-                                    LiveCoursesModel liveCoursesModel = new LiveCoursesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
+                                    String courseContent = jsonObject2.getString("courseContent");
+                                    String isActive = jsonObject2.getString("is_active");
+
+                                    JSONArray jsonRatingArray = jsonObject2.getJSONArray("ratings");
+                                    ArrayList<BookImageModels> ratingArrayList = new ArrayList<>();
+//                                    for (int j = 0; j<jsonImageArray.length();j++){
+//                                    }
+                                    String finalPrice = jsonObject2.getString("finalPrice");
+
+                                    LiveCoursesModel liveCoursesModel = new LiveCoursesModel(classID, title,subTitle, description,language,price, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,courseContent,isActive,finalPrice,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList,ratingArrayList);
                                     liveCoursesModelArrayList.add(liveCoursesModel);
                                 }
                                 if (liveCoursesAdapter == null) {
@@ -197,7 +239,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                Log.e("Live Classes Error", error.getMessage());
+//                Log.e("Live Classes Error", error.getMessage());
             }
         }) {
             @Override
@@ -219,7 +261,9 @@ public class HomeFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             blogsRecycler.setVisibility(View.VISIBLE);
-                            blogProgressBar.setVisibility(View.GONE);
+                            shimmerBlogLayout.stopShimmer();
+                            shimmerBlogLayout.setVisibility(View.GONE);
+                            blogTxt.setVisibility(View.VISIBLE);
                             boolean status = response.getBoolean("status");
 
                             if (status) {
@@ -305,7 +349,9 @@ public class HomeFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             currentAffairRecycler.setVisibility(View.VISIBLE);
-                            currentAffairProgress.setVisibility(View.GONE);
+                            shimmerCALayout.stopShimmer();
+                            shimmerCALayout.setVisibility(View.GONE);
+                            CATxt.setVisibility(View.VISIBLE);
                             boolean status = response.getBoolean("status");
 
                             if (status) {
@@ -326,7 +372,6 @@ public class HomeFragment extends Fragment {
 //                                    String image = jsonObject.getString("image");
 //                                    String createdDate = jsonObject.getString("createdAt");
 
-
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
                                     JSONArray tagsArray = jsonObject.getJSONArray("tags");
@@ -345,7 +390,7 @@ public class HomeFragment extends Fragment {
 
                                 // If you have already created the adapter, just notify the change
                                 if (currentAffairAdapter == null) {
-                                    currentAffairAdapter = new CurrentAffairsAdapter(currentAffairsModelArrayList, HomeFragment.this);
+                                    currentAffairAdapter = new CurrentAffairsAdapter(currentAffairsModelArrayList, HomeFragment.this,null);
                                     currentAffairRecycler.setAdapter(currentAffairAdapter);
                                 } else {
                                     currentAffairAdapter.notifyDataSetChanged();
@@ -372,7 +417,7 @@ public class HomeFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
 //                Log.e("CurrentAffairsFetchError", errorMessage);
             }
         }) {

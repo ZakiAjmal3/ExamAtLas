@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:layout_margin="5dp"
     android:foreground="?android:attr/selectableItemBackgroundBorderless">
@@ -26,6 +26,18 @@
             android:layout_alignParentEnd="true"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             />
+        <ImageView
+            android:id="@+id/categoryImageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:text="Description"
+            android:textSize="12sp"
+            android:src="@drawable/image2"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_below="@id/editTitleBtn"
+            android:layout_centerHorizontal="true"/>
         <TextView
             android:id="@+id/titleTxt"
             android:layout_width="wrap_content"
@@ -38,19 +50,7 @@
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_below="@id/editTitleBtn"
-            android:layout_centerHorizontal="true"/>
-        <WebView
-            android:id="@+id/descriptionTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description"
-            android:textSize="12sp"
-            android:textColor="@color/black"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_below="@id/titleTxt"
+            android:layout_below="@id/categoryImageView"
             android:layout_centerHorizontal="true"/>
         <LinearLayout
             android:id="@+id/layout1"
@@ -61,7 +61,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginBottom="15dp"
-            android:layout_below="@id/descriptionTxt"
+            android:layout_below="@id/titleTxt"
             >
 
             <TextView

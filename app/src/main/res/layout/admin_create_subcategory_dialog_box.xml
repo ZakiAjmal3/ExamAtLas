@@ -54,7 +54,7 @@
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title"
+            android:text="Sub-Category Name"
             android:textSize="16dp"
             android:textColor="@color/black"
             android:textStyle="bold"
@@ -62,7 +62,7 @@
             android:layout_marginTop="20dp"
             android:layout_below="@id/categorySpinner"/>
 
-        <EditText
+            <EditText
             android:id="@+id/titleEditTxt"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -71,15 +71,14 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/box_layout_with_border"
-            android:hint="Title"
+            android:hint="Enter Sub-Category Name"
             android:padding="10dp"
             android:enabled="false"/>
-
         <TextView
-            android:id="@+id/txtDescription"
+            android:id="@+id/txtSlug"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Description"
+            android:text="Slug"
             android:textSize="16dp"
             android:textColor="@color/black"
             android:textStyle="bold"
@@ -87,55 +86,18 @@
             android:layout_marginTop="15dp"
             android:layout_below="@id/titleEditTxt"/>
         <EditText
-            android:id="@+id/descriptionEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/box_layout_with_border"
-            android:layout_below="@id/txtDescription"
-            android:inputType="textMultiLine"
-            android:minLines="5"
-            android:gravity="start|top"
-            android:hint="Description"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:enabled="false"/>
-        <TextView
-            android:id="@+id/txtTags"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tags"
-            android:textSize="16dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:layout_below="@id/descriptionEditText"/>
-        <EditText
-            android:id="@+id/tagsEditText"
+            android:id="@+id/slugEditText"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/box_layout_with_border"
-            android:layout_below="@id/txtTags"
-            android:hint="Tags"
+            android:layout_below="@id/txtSlug"
+            android:inputType="textMultiLine"
+            android:gravity="start|top"
+            android:hint="Slug"
             android:padding="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:imeOptions="actionSend"
-            android:enabled="false"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tagsRecycler"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tagsEditText"
-            android:visibility="gone"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            />
+            android:layout_marginRight="30dp"/>
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmit"
             android:layout_width="match_parent"
@@ -149,7 +111,7 @@
             android:layout_marginTop="30dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_below="@id/tagsRecycler"
+            android:layout_below="@id/slugEditText"
             />
 
     </RelativeLayout>

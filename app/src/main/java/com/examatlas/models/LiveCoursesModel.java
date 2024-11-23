@@ -5,23 +5,86 @@ import com.examatlas.models.extraModels.BookImageModels;
 import java.util.ArrayList;
 
 public class LiveCoursesModel {
-    String courseID,title,description,teacherName,tags,categoryId,subCategoryId,subjectId,startDate,endDate;
-    ArrayList studentArrayList,liveClassArrayList;
+    String courseID,title,subTitle,description,teacherName,language,price,tags,categoryId,subCategoryId,subjectId,courseContent,isActive,finalPrice,startDate,endDate;
+    ArrayList studentArrayList,liveClassArrayList,ratingArrayList;
     ArrayList<BookImageModels> imageArrayList;
-    public LiveCoursesModel(String courseID, String title, String description, String teacherName, String tags, String categoryId, String subCategoryId, String subjectId, String startDate, String endDate, ArrayList<BookImageModels> imageArrayList, ArrayList studentArrayList, ArrayList liveClassArrayList) {
+    public LiveCoursesModel(String courseID, String title, String subTitle, String description, String language, String price, String teacherName, String tags, String categoryId, String subCategoryId, String subjectId, String courseContent, String isActive, String finalPrice, String startDate, String endDate, ArrayList<BookImageModels> imageArrayList, ArrayList studentArrayList, ArrayList liveClassArrayList, ArrayList ratingArrayList) {
         this.courseID = courseID;
         this.title = title;
+        this.subTitle = subTitle;
         this.description = description;
         this.teacherName = teacherName;
+        this.language = language;
+        this.price = price;
         this.tags = tags;
         this.categoryId = categoryId;
         this.subCategoryId = subCategoryId;
         this.subjectId = subjectId;
+        this.courseContent = courseContent;
+        this.isActive = isActive;
+        this.finalPrice = finalPrice;
         this.startDate = startDate;
         this.endDate = endDate;
         this.imageArrayList = imageArrayList;
         this.studentArrayList = studentArrayList;
         this.liveClassArrayList = liveClassArrayList;
+        this.ratingArrayList = ratingArrayList;
+    }
+
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getCourseContent() {
+        return courseContent;
+    }
+
+    public void setCourseContent(String courseContent) {
+        this.courseContent = courseContent;
+    }
+
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
+    }
+
+    public String getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(String finalPrice) {
+        this.finalPrice = finalPrice;
+    }
+
+    public ArrayList getRatingArrayList() {
+        return ratingArrayList;
+    }
+
+    public void setRatingArrayList(ArrayList ratingArrayList) {
+        this.ratingArrayList = ratingArrayList;
     }
 
     public String getCategoryId() {

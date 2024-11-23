@@ -63,7 +63,7 @@ public class AdminLoginActivity extends AppCompatActivity {
         txtSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(AdminLoginActivity.this, AdminSignUpActivity.class));
+                startActivity(new Intent(AdminLoginActivity.this, SignUpActivity1.class));
             }
         });
 

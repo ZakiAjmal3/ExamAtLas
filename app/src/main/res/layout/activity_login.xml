@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -59,21 +60,39 @@
             android:textColor="@color/black"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/edtNumber"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/edt_bg"
-            android:drawableEnd="@drawable/call"
-            android:fontFamily="@font/poppins"
-            android:hint="Enter Mobile Number"
-            android:inputType="numberDecimal"
-            android:maxLength="10"
-            android:paddingStart="20dp"
-            android:paddingEnd="10dp"
-            android:textColor="@color/black"
-            android:textColorHint="#A39E9E"
-            android:textSize="14sp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:gravity="center_vertical">
+
+            <!-- Country Code Picker -->
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/ccp"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                app:ccp_showFlag="false"
+                app:ccp_showNameCode="false"
+                app:ccp_showPhoneCode="true" />
+            <!-- Mobile Number EditText -->
+            <EditText
+                android:id="@+id/edtNumber"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/edt_bg"
+                android:drawableEnd="@drawable/call"
+                android:fontFamily="@font/poppins"
+                android:hint="Enter Mobile Number"
+                android:inputType="numberDecimal"
+                android:maxLength="10"
+                android:paddingStart="20dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/black"
+                android:textColorHint="#A39E9E"
+                android:textSize="14sp" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -111,17 +130,32 @@
                 android:src="@drawable/eye_open"
                 android:padding="10dp" />
         </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
         <TextView
+            android:id="@+id/txtSignWithEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/poppins"
+            android:padding="5dp"
+            android:text="SignIn with Email"
+            android:textColor="@color/seed"
+            android:textStyle="bold" />
+            <TextView
             android:id="@+id/txtForgotPass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="5dp"
             android:fontFamily="@font/poppins"
             android:padding="5dp"
             android:text="Forgot Password ?"
             android:textColor="@color/seed"
             android:textStyle="bold" />
+        </RelativeLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"

@@ -1,16 +1,27 @@
 package com.examatlas.models;
 
+import com.examatlas.models.extraModels.BookImageModels;
+
 import java.util.ArrayList;
 
 public class AdminShowAllCategoryModel {
-    String id,categoryName,description,isActive,tags;
+    String id,categoryName, slug,isActive,imageUrl;
 
-    public AdminShowAllCategoryModel(String id, String categoryName, String description, String isActive,String tags) {
+    public AdminShowAllCategoryModel(String id, String categoryName, String slug, String isActive, String imageUrl) {
         this.id = id;
         this.categoryName = categoryName;
-        this.description = description;
+        this.slug = slug;
         this.isActive = isActive;
-        this.tags = tags;
+        this.imageUrl = imageUrl;
+
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getId() {
@@ -29,12 +40,12 @@ public class AdminShowAllCategoryModel {
         this.categoryName = categoryName;
     }
 
-    public String getDescription() {
-        return description;
+    public String getSlug() {
+        return slug;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     public String getIsActive() {
@@ -43,13 +54,5 @@ public class AdminShowAllCategoryModel {
 
     public void setIsActive(String isActive) {
         this.isActive = isActive;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
     }
 }

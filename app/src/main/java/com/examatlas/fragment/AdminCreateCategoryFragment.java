@@ -1,10 +1,21 @@
 package com.examatlas.fragment;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -21,9 +32,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,7 +58,9 @@ import com.examatlas.adapter.AdminShowAllCategoryAdapter;
 import com.examatlas.adapter.AdminTagsForDataALLAdapter;
 import com.examatlas.models.AdminShowAllCategoryModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
+import com.examatlas.utils.MultipartRequest;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
@@ -48,6 +69,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +82,7 @@ public class AdminCreateCategoryFragment extends Fragment {
     SearchView searchView;
     RecyclerView showCategoryRecycler;
     RelativeLayout noDataLayout;
-    ProgressBar progressBar;
+    ProgressBar progressBar,nextItemLoadingProgressBar;
     AdminShowAllCategoryAdapter categoryAdapter;
     AdminShowAllCategoryModel categoryModel;
     ArrayList<AdminShowAllCategoryModel> categoryModelArrayList = new ArrayList<>();
@@ -69,6 +94,12 @@ public class AdminCreateCategoryFragment extends Fragment {
     private int totalPages = 1,currentPage = 1;
     private final int itemsPerPage = 10;
     private boolean isLoading = false;
+    private ActivityResultLauncher<Intent> galleryLauncher;
+    private ActivityResultLauncher<Intent> cameraLauncher;
+    private static final int REQUEST_CAMERA_PERMISSION = 1001;
+    private Uri image_uri;
+    private File imageFile;
+    private NestedScrollView nestedSV;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,6 +113,8 @@ public class AdminCreateCategoryFragment extends Fragment {
         showCategoryRecycler = view.findViewById(R.id.showAllCategoryRecycler);
         noDataLayout = view.findViewById(R.id.noDataLayout);
         progressBar = view.findViewById(R.id.showAllCategoryProgressBar);
+        nextItemLoadingProgressBar = view.findViewById(R.id.nextItemLoadingProgressBar);
+        nestedSV = view.findViewById(R.id.nestScrollView);
 
         sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
@@ -97,19 +130,21 @@ public class AdminCreateCategoryFragment extends Fragment {
                 openDialogBoxCreateSubject();
             }
         });
-        showCategoryRecycler.setItemAnimator(null);
-        showCategoryRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                // Check if we are at the bottom of the RecyclerView
-                int totalItemCount = showCategoryRecycler.getLayoutManager().getItemCount();
-                int lastVisibleItem = ((LinearLayoutManager) showCategoryRecycler.getLayoutManager()).findLastVisibleItemPosition();
-
-                if (totalItemCount <= (lastVisibleItem + 2) && !isLoading && currentPage < totalPages) {
-                    isLoading = true;
-                    getAllCategory();  // Load next page
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // on scroll change we are checking when users scroll as bottom.
+                if (scrollY == v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
+                    // in this method we are incrementing page number,
+                    // making progress bar visible and calling get data method.
+                    currentPage++;
+                    // on below line we are making our progress bar visible.
+                    if (currentPage <= totalPages) {
+                        nextItemLoadingProgressBar.setVisibility(View.VISIBLE);
+                        // on below line we are again calling
+                        // a method to load data in our array list.
+                        getAllCategory();
+                    }
                 }
             }
         });
@@ -151,36 +186,29 @@ public class AdminCreateCategoryFragment extends Fragment {
                 return true;
             }
         });
+        // Setup ActivityResultLaunchers
+        setupActivityResultLaunchers();
 
         return view;
     }
 
     private Dialog createCategoryDialogBox;
-    private EditText titleEditTxt,descriptionEditTxt,tagsEditTxt;
+    private EditText titleEditTxt, slugEditTxt;
     private Button submitBtn;
-    private ImageView crossBtn;
-    private RecyclerView tagsRecyclerView;
-    private AdminTagsForDataALLAdapter adminTagsForDataALLAdapter;
-    private AdminTagsForDataALLModel adminTagsForDataALLModel;
-    private ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList;
+    private ImageView crossBtn,uploadImageBtn;
+    private TextView uploadImageName;
+
     private void openDialogBoxCreateSubject() {
 
         createCategoryDialogBox = new Dialog(requireContext());
         createCategoryDialogBox.setContentView(R.layout.admin_create_category_dialog_box);
 
         titleEditTxt = createCategoryDialogBox.findViewById(R.id.titleEditTxt);
-        descriptionEditTxt = createCategoryDialogBox.findViewById(R.id.descriptionEditText);
+        slugEditTxt = createCategoryDialogBox.findViewById(R.id.slugEditText);
         submitBtn = createCategoryDialogBox.findViewById(R.id.btnSubmit);
         crossBtn = createCategoryDialogBox.findViewById(R.id.btnCross);
-
-        tagsRecyclerView = createCategoryDialogBox.findViewById(R.id.tagsRecycler);
-        adminTagsForDataALLModelArrayList = new ArrayList<>();
-        tagsRecyclerView = createCategoryDialogBox.findViewById(R.id.tagsRecycler);
-        tagsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
-        adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
-        tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
-
-        tagsEditTxt = createCategoryDialogBox.findViewById(R.id.tagsEditText);
+        uploadImageBtn = createCategoryDialogBox.findViewById(R.id.uploadImage);
+        uploadImageName = createCategoryDialogBox.findViewById(R.id.txtNoFileChosen);
 
         crossBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,27 +216,17 @@ public class AdminCreateCategoryFragment extends Fragment {
                 createCategoryDialogBox.dismiss();
             }
         });
-
+        uploadImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery();
+            }
+        });
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendCategoryDetails(titleEditTxt.getText().toString().trim(),descriptionEditTxt.getText().toString().trim(),adminTagsForDataALLModelArrayList,createCategoryDialogBox);
+                sendCategoryDetails(titleEditTxt.getText().toString().trim(), slugEditTxt.getText().toString().trim(),createCategoryDialogBox);
             }
-        });
-
-        tagsEditTxt.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEND ||
-                    (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                String tagText = tagsEditTxt.getText().toString().trim();
-                if (!tagText.isEmpty()) {
-                    adminTagsForDataALLModelArrayList.add(new AdminTagsForDataALLModel(tagText));
-                    adminTagsForDataALLAdapter.notifyItemInserted(adminTagsForDataALLModelArrayList.size() - 1);
-                    tagsEditTxt.setText(""); // Clear the EditText
-                    tagsRecyclerView.setVisibility(View.VISIBLE); // Show RecyclerView
-                }
-                return true; // Indicate that we've handled the event
-            }
-            return false; // Pass the event on
         });
 
         createCategoryDialogBox.show();
@@ -234,67 +252,226 @@ public class AdminCreateCategoryFragment extends Fragment {
         createCategoryDialogBox.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
     }
-
-    private void sendCategoryDetails(String title, String description, ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, Dialog createCategoryDialogBox) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("categoryName", title);
-            jsonObject.put("description", description);
-
-            // Create a JSONArray for the tags
-            JSONArray tagsArray = new JSONArray();
-            for (AdminTagsForDataALLModel tag : adminTagsForDataALLModelArrayList) {
-                tagsArray.put(tag.getTagName()); // Assuming getTagText() returns the tag's text
+    private void setupActivityResultLaunchers() {
+        galleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    image_uri = data.getData();
+                    handleImageUri(image_uri);
+                }
             }
-            jsonObject.put("tags", tagsArray); // Add the tags array to the JSON object
-        } catch (JSONException e) {
+        });
+
+        cameraLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
+                if (bitmap != null) {
+                    handleBitmap(bitmap);
+                }
+            }
+        });
+    }
+    private void handleImageUri(Uri uri) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+            handleBitmap(bitmap);// Process the Bitmap as you did in handleBitmap()
+            uploadImageBtn.setImageBitmap(bitmap);
+            // Extract the image name from the URI
+            String imageName = getFileName(uri);
+            // Set the image name to the TextView (uploadImageName)
+            uploadImageName.setText(imageName);
+        } catch (IOException e) {
             e.printStackTrace();
-            return;
+        }
+    }
+    private String getFileName(Uri uri) {
+        String fileName = null;
+
+        // If the URI is a content URI (which is usually the case for gallery images)
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = requireActivity().getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                // Get the column index for the display name (filename)
+                int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (columnIndex != -1) {
+                    fileName = cursor.getString(columnIndex);
+                }
+                cursor.close();
+            }
+        }
+        // If the URI is a file URI
+        else if (uri.getScheme().equals("file")) {
+            fileName = uri.getLastPathSegment(); // Get the last part of the path (filename)
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, createCategoryURL, jsonObject,
-                new Response.Listener<JSONObject>() {
+        return fileName != null ? fileName : "Unknown";
+    }
+    private void handleBitmap(Bitmap bitmap) {
+        // Resize image
+        bitmap = getResizedBitmap(bitmap, 400);
+        uploadImageBtn.setImageBitmap(bitmap);
+
+        // Convert Bitmap to File
+        imageFile = bitmapToFile(bitmap);  // Store the imageFile globally
+
+        // Encode the image to Base64 for further use
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        // Extract the file name from the imageFile (created from Bitmap)
+        String imageName = getFileNameFromFile(imageFile);
+
+        // Set the image name to the TextView (uploadImageName)
+        uploadImageName.setText(imageName);
+
+    }
+    private String getFileNameFromFile(File file) {
+        // Extract the file name from the imageFile (file name is the last segment of the path)
+        return file != null ? file.getName() : "Unknown";
+    }
+    private File bitmapToFile(Bitmap bitmap) {
+        File file = new File(getContext().getCacheDir(), "uploaded_image.jpg");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+    private void openGallery() {
+        final CharSequence[] options = {"Open Camera", "Choose from Gallery", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Add RC!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Open Camera")) {
+                    // Check for camera permission before opening the camera
+                    if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        // If permission is granted, open the camera
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        cameraLauncher.launch(intent); // Use cameraLauncher
+                    } else {
+                        // If permission is not granted, request it
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+                    }
+                } else if (options[item].equals("Choose from Gallery")) {
+                    // Open gallery to choose image
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    galleryLauncher.launch(Intent.createChooser(intent, "Select Image")); // Use galleryLauncher
+                } else if (options[item].equals("Cancel")) {
+                    // Cancel the dialog
+                    dialog.dismiss();
+                    Toast.makeText(getContext(), "RC Uploading Cancelled", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    // Handle the result of the permission request
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, now open the camera
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                cameraLauncher.launch(intent); // Use cameraLauncher
+            } else {
+                // Permission denied, show a message to the user
+                Toast.makeText(getContext(), "Camera permission is required to capture images.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+    private void sendCategoryDetails(String title, String description, Dialog createCategoryDialogBox) {
+        // Prepare form data
+        Map<String, String> params = new HashMap<>();
+        params.put("categoryName", title);
+        params.put("slug", description);
+
+        // Create a Map for files (if imageFile exists)
+        Map<String, File> files = new HashMap<>();
+
+        // If an image file is selected, add it to the files map
+        if (imageFile != null && imageFile.exists()) {
+            files.put("image", imageFile);
+        }
+
+        // Create and send the multipart request
+        MultipartRequest multipartRequest = new MultipartRequest(createCategoryURL, params, files,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                         try {
-                            boolean status = response.getBoolean("status");
+                            JSONObject responseObject = new JSONObject(response);
+                            boolean status = responseObject.getBoolean("status");
                             if (status) {
-                                String message = response.getString("message");
+                                String message = responseObject.getString("message");
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                                getAllCategory();
+                                // Create a new category object with the response data
+                                JSONObject data = responseObject.getJSONObject("data"); // Assuming the new category is returned in the response
+                                String id = data.getString("_id");
+                                String categoryName = data.getString("categoryName");
+                                String slug = data.getString("slug");
+                                String isActive = data.getString("is_active");
+
+                                JSONObject imageObj = data.getJSONObject("image");
+                                String imageUrl = imageObj.getString("url");
+
+                                // Add the newly created category to the categoryModelArrayList
+                                AdminShowAllCategoryModel newCategory = new AdminShowAllCategoryModel(id, categoryName, slug, isActive, imageUrl);
+                                categoryModelArrayList.add(newCategory); // Add to the existing list
+
+                                // Notify the adapter that the data has changed
+                                categoryAdapter.notifyDataSetChanged();
+                                // Dismiss the dialog
                                 createCategoryDialogBox.dismiss();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMessage = "Error: " + error.toString();
-                if (error.networkResponse != null) {
-                    try {
-                        String responseData = new String(error.networkResponse.data, "UTF-8");
-                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                        errorMessage += "\nResponse Data: " + responseData;
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                String responseData = new String(error.networkResponse.data, "UTF-8");
+                                errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                                errorMessage += "\nResponse Data: " + responseData;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                        Log.e("CategoryFetchError", errorMessage);
                     }
-                }
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
-                Log.e("BlogFetchError", errorMessage);
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + authToken);
-                return headers;
-            }
-        };
+                }, authToken);
 
-        MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
+        // Add the request to the queue
+        MySingletonFragment.getInstance(this).addToRequestQueue(multipartRequest);
     }
 
     public void getAllCategory() {
@@ -322,22 +499,12 @@ public class AdminCreateCategoryFragment extends Fragment {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String id = jsonObject2.getString("_id");
                                     String categoryName = jsonObject2.getString("categoryName");
-                                    String description = jsonObject2.getString("description");
+                                    String description = jsonObject2.getString("slug");
                                     String is_active = jsonObject2.getString("is_active");
+                                    JSONObject imageObj = jsonObject2.getJSONObject("image");
+                                    String imageUrl = imageObj.getString("url");
 
-                                    // Use StringBuilder for tags
-                                    StringBuilder tags = new StringBuilder();
-                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
-                                    for (int j = 0; j < jsonArray1.length(); j++) {
-                                        String singleTag = jsonArray1.getString(j);
-                                        tags.append(singleTag).append(", ");
-                                    }
-                                    // Remove trailing comma and space if any
-                                    if (tags.length() > 0) {
-                                        tags.setLength(tags.length() - 2);
-                                    }
-
-                                    categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,tags.toString());
+                                    categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,imageUrl);
                                     categoryModelArrayList.add(categoryModel);
                                 }
 //                                updateUI();
@@ -346,14 +513,11 @@ public class AdminCreateCategoryFragment extends Fragment {
                                     showCategoryRecycler.setVisibility(View.GONE);
                                     progressBar.setVisibility(View.GONE);
                                 } else {
-                                    if (categoryAdapter == null) {
-                                        categoryAdapter = new AdminShowAllCategoryAdapter( categoryModelArrayList,AdminCreateCategoryFragment.this);
-                                        showCategoryRecycler.setAdapter(categoryAdapter);
-                                    } else {
-                                        categoryAdapter.notifyDataSetChanged();
-                                    }
+                                    categoryAdapter = new AdminShowAllCategoryAdapter( categoryModelArrayList,AdminCreateCategoryFragment.this);
+                                    showCategoryRecycler.setAdapter(categoryAdapter);
                                 }
                                 isLoading = false;
+                                nextItemLoadingProgressBar.setVisibility(View.GONE);
                             } else {
                                 Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_SHORT).show();
                             }

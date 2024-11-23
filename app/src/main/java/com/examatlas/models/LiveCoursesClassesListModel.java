@@ -3,10 +3,10 @@ package com.examatlas.models;
 import java.util.ArrayList;
 
 public class LiveCoursesClassesListModel {
-    String classID,courseID,title,meetingID,time,date,addedBy,scheduledTime,status,startedAt;
+    String classID,courseID,title,meetingID,time,date,addedBy,scheduledTime,status,startedAt,endedAt;
     ArrayList<String> students;
 
-    public LiveCoursesClassesListModel(String classID, String courseID, String title, String meetingID, String time, String date, String addedBy, String scheduledTime, String status, String startedAt, ArrayList<String> students) {
+    public LiveCoursesClassesListModel(String classID, String courseID, String title, String meetingID, String time, String date, String addedBy, String scheduledTime, String status, String startedAt, String endedAt, ArrayList<String> students) {
         this.classID = classID;
         this.courseID = courseID;
         this.title = title;
@@ -17,7 +17,16 @@ public class LiveCoursesClassesListModel {
         this.scheduledTime = scheduledTime;
         this.status = status;
         this.startedAt = startedAt;
+        this.endedAt = endedAt;
         this.students = students;
+    }
+
+    public String getEndedAt() {
+        return endedAt;
+    }
+
+    public void setEndedAt(String endedAt) {
+        this.endedAt = endedAt;
     }
 
     public String getClassID() {

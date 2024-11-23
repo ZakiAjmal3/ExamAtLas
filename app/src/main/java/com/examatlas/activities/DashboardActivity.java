@@ -78,7 +78,7 @@ public class DashboardActivity extends AppCompatActivity {
                 } else if (item.getItemId() == R.id.live) {
                     currentFrag = "LIVE";
                     topBar.setVisibility(View.VISIBLE);
-                    loadFragment(new LiveCoursesFragment());
+//                    loadFragment(new LiveCoursesFragment());
                 } else if (item.getItemId() == R.id.course) {
                     currentFrag = "COURSE";
                     topBar.setVisibility(View.VISIBLE);
@@ -142,6 +142,10 @@ public class DashboardActivity extends AppCompatActivity {
                 .commit();
         currentFragment = fragment;
     }
+    public void loadCurrentAffairActivity(){
+        Intent intent = new Intent(this, CurrentAffairsActivity.class);
+        startActivity(intent);
+    }
 //    public void loadCourse() {
 //        currentFrag = "TEST";
 //        loadFragment(new HomeFragment());
@@ -151,7 +155,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     Dialog drawerDialog;
     LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks, layoutLiveClasses,
-            layoutEbook, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy,
+            layoutEbook,layoutCurrentAffairs, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy,
             layoutTerms, layoutOrderHistory, layoutFaq, layoutServices;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
@@ -168,6 +172,7 @@ public class DashboardActivity extends AppCompatActivity {
         layoutBlogs = drawerDialog.findViewById(R.id.layoutBlogs);
         layoutPurchaseBooks = drawerDialog.findViewById(R.id.layoutPurchaseBooks);
         layoutEbook = drawerDialog.findViewById(R.id.layoutEbook);
+        layoutCurrentAffairs = drawerDialog.findViewById(R.id.layoutCurrentAffairs);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
         txtUsername = drawerDialog.findViewById(R.id.txtUsername);
@@ -218,18 +223,18 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        layoutLiveClasses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerDialog.dismiss();
-                if (!currentFrag.equals("LIVE")) {
-                    currentFrag = "LIVE";
-                    loadFragment(new LiveCoursesFragment());
-                    bottom_navigation.setSelectedItemId(R.id.live);
-                    bottom_navigation.setSelected(true);
-                }
-            }
-        });
+//        layoutLiveClasses.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerDialog.dismiss();
+//                if (!currentFrag.equals("LIVE")) {
+//                    currentFrag = "LIVE";
+//                    loadFragment(new LiveCoursesFragment());
+//                    bottom_navigation.setSelectedItemId(R.id.live);
+//                    bottom_navigation.setSelected(true);
+//                }
+//            }
+//        });
 
         layoutEbook.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -255,47 +260,54 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        layoutAboutUs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerDialog.dismiss();
-                Intent intent = new Intent(DashboardActivity.this, WebViewActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("title", "About Us");
-                intent.putExtra("url", "https://examatlas.com");
-                startActivity(intent);
-            }
-        });
+//        layoutAboutUs.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerDialog.dismiss();
+//                Intent intent = new Intent(DashboardActivity.this, WebViewActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                intent.putExtra("title", "About Us");
+//                intent.putExtra("url", "https://examatlas.com");
+//                startActivity(intent);
+//            }
+//        });
 
-        layoutPrivacy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerDialog.dismiss();
-                Intent intent = new Intent(DashboardActivity.this, WebViewActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("title", "Privacy Policy");
-                intent.putExtra("url", "https://examatlas.com");
-                startActivity(intent);
-            }
-        });
+//        layoutPrivacy.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerDialog.dismiss();
+//                Intent intent = new Intent(DashboardActivity.this, WebViewActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                intent.putExtra("title", "Privacy Policy");
+//                intent.putExtra("url", "https://examatlas.com");
+//                startActivity(intent);
+//            }
+//        });
 
-        layoutTerms.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerDialog.dismiss();
-                Intent intent = new Intent(DashboardActivity.this, WebViewActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("title", "Terms & Conditions");
-                intent.putExtra("url", "https://examatlas.com");
-                startActivity(intent);
-            }
-        });
+//        layoutTerms.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerDialog.dismiss();
+//                Intent intent = new Intent(DashboardActivity.this, WebViewActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                intent.putExtra("title", "Terms & Conditions");
+//                intent.putExtra("url", "https://examatlas.com");
+//                startActivity(intent);
+//            }
+//        });
 
         layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
                 Intent intent = new Intent(DashboardActivity.this, BookOrderHistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutCurrentAffairs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, CurrentAffairsActivity.class);
                 startActivity(intent);
             }
         });

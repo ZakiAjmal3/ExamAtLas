@@ -35,11 +35,13 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
 import com.examatlas.R;
+import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.fragment.AdminCreateCategoryFragment;
-import com.examatlas.fragment.AdminCreateSubCategoryFragment;
 import com.examatlas.models.AdminShowAllCategoryModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
+import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
@@ -80,7 +82,12 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         holder.itemView.setTag(currentCategory);
 
         holder.setHighlightedText(holder.title, currentCategory.getCategoryName(), currentQuery);
-        holder.setHighlightedText(holder.tags, currentCategory.getTags(), currentQuery);
+
+        String imageUrl = categoryModelArrayList.get(position).getImageUrl();
+        Glide.with(context.getContext())
+                .load(imageUrl)
+                .error(R.drawable.image2)
+                .into(holder.description);
 
         holder.editSubjectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,26 +114,6 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
                         }).show();
             }
         });
-
-        // Enable JavaScript (optional, depending on your content)
-        WebSettings webSettings = holder.description.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-
-        String htmlContentTxt = categoryModelArrayList.get(position).getDescription();
-
-        // Inject CSS to control the image size
-        String injectedCss = "<style>"
-                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
-                + "img { width: 100%; height: auto; }" // Adjust image size as needed
-                + "</style>";
-        String fullHtmlContent = injectedCss + htmlContentTxt;
-
-        // Disable scrolling and over-scrolling
-        holder.description.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
-        holder.description.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
-
-        // Load the modified HTML content
-        holder.description.loadData(fullHtmlContent, "text/html", "UTF-8");
 
     }
 
@@ -185,8 +172,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         EditText titleEditTxt = dialog.findViewById(R.id.titleEditTxt);
         titleEditTxt.setText(currentCategory.getCategoryName());
         EditText descriptionEditText = dialog.findViewById(R.id.descriptionEditText);
-        descriptionEditText.setText(currentCategory.getDescription());
-        EditText tagsEditTxt = dialog.findViewById(R.id.tagsEditText);
+        descriptionEditText.setText(currentCategory.getSlug());
 
         ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList = new ArrayList<>();
         AdminTagsForDataALLAdapter adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
@@ -194,26 +180,6 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         tagsRecyclerView.setVisibility(View.VISIBLE);
         tagsRecyclerView.setLayoutManager(new GridLayoutManager(context.requireContext(), 2));
         tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
-
-        String[] tagsArray = currentCategory.getTags().split(",");
-        for (String tag : tagsArray) {
-            adminTagsForDataALLModelArrayList.add(new AdminTagsForDataALLModel(tag.trim()));
-        }
-        adminTagsForDataALLAdapter.notifyDataSetChanged();
-
-        tagsEditTxt.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEND || (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                String tagText = tagsEditTxt.getText().toString().trim();
-                if (!tagText.isEmpty()) {
-                    adminTagsForDataALLModelArrayList.add(new AdminTagsForDataALLModel(tagText));
-                    adminTagsForDataALLAdapter.notifyItemInserted(adminTagsForDataALLModelArrayList.size() - 1);
-                    tagsEditTxt.setText("");
-                    tagsRecyclerView.setVisibility(View.VISIBLE);
-                }
-                return true;
-            }
-            return false;
-        });
 
         Button submitBtn = dialog.findViewById(R.id.btnSubmit);
         ImageView crossBtn = dialog.findViewById(R.id.btnCross);
@@ -327,7 +293,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
             if (categoryModelArrayList.get(i).getId().equals(currentCategory.getId())) {
                 // Update the title of the subject in the list
                 categoryModelArrayList.get(i).setCategoryName(name);
-                categoryModelArrayList.get(i).setDescription(description);
+                categoryModelArrayList.get(i).setSlug(description);
                 notifyItemChanged(i);
                 break;
             }
@@ -347,7 +313,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         } else {
             String lowerCaseQuery = query.toLowerCase();
             for (AdminShowAllCategoryModel categoryModel : originalCategoryModelArrayList) {
-                if (categoryModel.getCategoryName().toLowerCase().contains(lowerCaseQuery) || categoryModel.getTags().contains(lowerCaseQuery) ||categoryModel.getDescription().toLowerCase().contains(lowerCaseQuery)) {
+                if (categoryModel.getCategoryName().toLowerCase().contains(lowerCaseQuery) || categoryModel.getSlug().toLowerCase().contains(lowerCaseQuery)) {
                     categoryModelArrayList.add(categoryModel); // Add matching eBook to the filtered list
                 }
             }
@@ -356,16 +322,15 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title,tags;
+        TextView title;
         ImageView editSubjectBtn, deleteSubjectBtn;
-        WebView description;
+        ImageView description;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             title = itemView.findViewById(R.id.titleTxt);
-            description = itemView.findViewById(R.id.descriptionTxt);
-            tags = itemView.findViewById(R.id.tagTxt);
+            description = itemView.findViewById(R.id.categoryImageView);
             editSubjectBtn = itemView.findViewById(R.id.editTitleBtn);
             deleteSubjectBtn = itemView.findViewById(R.id.deleteSubjectBtn);
         }

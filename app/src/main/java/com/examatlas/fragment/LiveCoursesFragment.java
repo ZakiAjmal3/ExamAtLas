@@ -80,8 +80,12 @@ public class LiveCoursesFragment extends Fragment {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String classID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
+                                    String subTitle = jsonObject2.getString("subTitle");
                                     String description = jsonObject2.getString("description");
-                                    String teacherName = jsonObject2.getString("teacher");
+                                    String teacherName = null;
+                                    if (jsonObject2.has("teacher"))
+                                        teacherName = jsonObject2.getString("teacher");                                    String language = jsonObject2.getString("language");
+                                    String price = jsonObject2.getString("price");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -99,31 +103,32 @@ public class LiveCoursesFragment extends Fragment {
                                     String subjectId = jsonObject2.getString("subjectId");
 
                                     ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
-                                    Object imagesObject = jsonObject2.get("images"); // Get the "images" field as an Object
 
-                                    if (imagesObject instanceof JSONArray) {
-                                        // If it's a JSONArray, iterate through the array
-                                        JSONArray jsonImageArray = (JSONArray) imagesObject;
-                                        for (int j = 0; j < jsonImageArray.length(); j++) {
-                                            JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
+                                    // Check if "images" is a JSONArray or JSONObject
+                                    if (jsonObject2.has("images")) {
+                                        Object imagesObj = jsonObject2.get("images");
+                                        if (imagesObj instanceof JSONArray) {
+                                            // If images is a JSONArray
+                                            JSONArray jsonImageArray = (JSONArray) imagesObj;
+                                            for (int j = 0; j < jsonImageArray.length(); j++) {
+                                                JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
+                                                BookImageModels bookImageModels = new BookImageModels(
+                                                        jsonImageObject.getString("url"),
+                                                        jsonImageObject.getString("filename")
+                                                );
+                                                bookImageArrayList.add(bookImageModels);
+                                            }
+                                        } else if (imagesObj instanceof JSONObject) {
+                                            // If images is a JSONObject
+                                            JSONObject jsonImageObject = (JSONObject) imagesObj;
                                             BookImageModels bookImageModels = new BookImageModels(
                                                     jsonImageObject.getString("url"),
                                                     jsonImageObject.getString("filename")
                                             );
                                             bookImageArrayList.add(bookImageModels);
                                         }
-                                    } else if (imagesObject instanceof JSONObject) {
-                                        // If it's a JSONObject, treat it as a single image object
-                                        JSONObject jsonImageObject = (JSONObject) imagesObject;
-                                        BookImageModels bookImageModels = new BookImageModels(
-                                                jsonImageObject.getString("url"),
-                                                jsonImageObject.getString("filename")
-                                        );
-                                        bookImageArrayList.add(bookImageModels);
-                                    } else {
-                                        // Handle case where "images" is neither an array nor an object (invalid data)
-                                        Log.e("JSON_ERROR", "\"images\" is neither an array nor an object");
                                     }
+
                                     String startDate = "",endDate = "";
                                     if (jsonObject2.has("startDate")) {
                                         startDate = jsonObject2.getString("startDate");
@@ -138,7 +143,16 @@ public class LiveCoursesFragment extends Fragment {
                                     ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
 //                                    for (int j = 0; j<jsonImageArray.length();j++){
 //                                    }
-                                    LiveCoursesModel liveCoursesModel = new LiveCoursesModel(classID, title, description, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList);
+                                    String courseContent = jsonObject2.getString("courseContent");
+                                    String isActive = jsonObject2.getString("is_active");
+
+                                    JSONArray jsonRatingArray = jsonObject2.getJSONArray("ratings");
+                                    ArrayList<BookImageModels> ratingArrayList = new ArrayList<>();
+//                                    for (int j = 0; j<jsonImageArray.length();j++){
+//                                    }
+                                    String finalPrice = jsonObject2.getString("finalPrice");
+
+                                    LiveCoursesModel liveCoursesModel = new LiveCoursesModel(classID, title,subTitle, description,language,price, teacherName, tags.toString(),categoryId,subCategoryId,subjectId,courseContent,isActive,finalPrice,startDate,endDate,bookImageArrayList,studentsArrayList,liveClassesArrayList,ratingArrayList);
                                     liveCoursesModelArrayList.add(liveCoursesModel);
                                 }
                                 if (liveCoursesAdapter == null) {

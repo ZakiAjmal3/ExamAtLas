@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/nestScrollView">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <TextView
         android:id="@+id/txtBlog"
         android:layout_width="wrap_content"
@@ -64,7 +68,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/searchView"
-        android:visibility="gone"
+        android:layout_marginBottom="20dp"
+        android:visibility="visible"
         android:layout_margin="15dp"/>
     <ProgressBar
         android:id="@+id/showAllSubjectProgressBar"
@@ -131,4 +136,12 @@
         </LinearLayout>
 
     </RelativeLayout>
-</RelativeLayout>
+    <ProgressBar
+        android:id="@+id/nextItemLoadingProgressBar"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
+    </RelativeLayout>
+</androidx.core.widget.NestedScrollView>

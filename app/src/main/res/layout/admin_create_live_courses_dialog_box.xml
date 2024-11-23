@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/box_layout_with_border_and_color"
+        android:paddingBottom="30dp">
+        <TextView
+            android:id="@+id/txtAddData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Course"
+            android:textSize="25dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"/>
+        <ImageView
+            android:id="@+id/btnCross"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_cross"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"/>
+        <TextView
+            android:id="@+id/txtCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/txtAddData"/>
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/txtCategory"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/box_layout_with_border"
+            android:hint="Title"
+            android:padding="10dp" />
+        <TextView
+            android:id="@+id/txtSubCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sub-Category"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/categorySpinner"/>
+        <Spinner
+            android:id="@+id/subCategorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/txtSubCategory"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/box_layout_with_border"
+            android:hint="Title"
+            android:padding="10dp" />
+        <ProgressBar
+            android:id="@+id/subCategoryProgressBar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/txtSubCategory"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            android:indeterminate="true" />
+        <TextView
+            android:id="@+id/txtSubject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose Subject"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/subCategorySpinner"/>
+        <Spinner
+            android:id="@+id/subjectSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/txtSubject"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/box_layout_with_border"
+            android:hint="Title"
+            android:padding="10dp" />
+        <ProgressBar
+            android:id="@+id/subjectProgressBar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/txtSubject"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            android:indeterminate="true" />
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Course Title"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/subjectSpinner"/>
+
+        <EditText
+            android:id="@+id/titleEditTxt"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/txtTitle"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/box_layout_with_border"
+            android:hint="Course Title"
+            android:padding="10dp" />
+        <TextView
+            android:id="@+id/txtSubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Course Sub-Title"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/titleEditTxt"/>
+
+        <EditText
+            android:id="@+id/subTitleEditTxt"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/txtSubTitle"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/box_layout_with_border"
+            android:hint="Course Sub-Title"
+            android:padding="10dp" />
+
+        <TextView
+            android:id="@+id/txtTeacherName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Teacher's Name"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/subTitleEditTxt"/>
+        <EditText
+            android:id="@+id/teacherNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtTeacherName"
+            android:hint="Teacher Name"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Language of Course"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/teacherNameEditText"/>
+        <EditText
+            android:id="@+id/languageEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtLanguage"
+            android:hint="Language of Course"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtPriceCourse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price of Course"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/languageEditText"/>
+        <EditText
+            android:id="@+id/priceOfCourseEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtPriceCourse"
+            android:hint="Price of Course"
+            android:inputType="number"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtFinalPriceCourse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Final Price"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/priceOfCourseEditText"/>
+        <EditText
+            android:id="@+id/finalPriceOfCourseEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtFinalPriceCourse"
+            android:hint="Final Price of Course"
+            android:inputType="number"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtStartDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Date"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/finalPriceOfCourseEditText"/>
+        <TextView
+            android:id="@+id/dateDisplayText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtStartDate"
+            android:hint="DD-MM-YYYY"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtEndDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="End Date"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/dateDisplayText"/>
+        <TextView
+            android:id="@+id/endDateText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtEndDate"
+            android:hint="DD-MM-YYYY"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/endDateText"/>
+        <EditText
+            android:id="@+id/descriptionEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtDescription"
+            android:hint="Description"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtCourseContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Course Content"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/descriptionEditText"/>
+        <EditText
+            android:id="@+id/courseContentEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtCourseContent"
+            android:hint="Content"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtTags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tags"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/courseContentEditText"/>
+        <EditText
+            android:id="@+id/tagsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtTags"
+            android:hint="Tags"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:imeOptions="actionSend"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tagsRecycler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tagsEditText"
+            android:visibility="gone"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            />
+        <TextView
+            android:id="@+id/txtUploadImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload Image"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/tagsRecycler"/>
+        <!--        <TextView-->
+        <!--            android:id="@+id/txtChooseImage"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="Upload Image"-->
+        <!--            android:textSize="16dp"-->
+        <!--            android:textColor="@color/black"-->
+        <!--            android:layout_marginLeft="20dp"-->
+        <!--            android:layout_marginTop="10dp"-->
+        <!--            android:paddingTop="5dp"-->
+        <!--            android:paddingBottom="5dp"-->
+        <!--            android:paddingLeft="10dp"-->
+        <!--            android:paddingRight="10dp"-->
+        <!--            android:background="@drawable/box_layout_with_border_and_color"-->
+        <!--            android:layout_below="@id/txtUploadImage"/>-->
+        <ImageView
+            android:id="@+id/uploadImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_image"
+            android:background="@drawable/rounded_corner_with_border3"
+            android:padding="6dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/txtUploadImage"
+            />
+        <TextView
+            android:id="@+id/txtNoFileChosen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No file chosen"
+            android:textSize="14dp"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_below="@id/txtUploadImage"
+            android:layout_toRightOf="@id/uploadImage"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/seed"
+            android:fontFamily="@font/poppins"
+            android:text="Submit"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/uploadImage"
+            />
+    </RelativeLayout>
+</ScrollView>
