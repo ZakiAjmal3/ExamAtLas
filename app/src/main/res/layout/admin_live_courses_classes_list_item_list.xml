@@ -65,7 +65,6 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"/>
         <ImageView
-            android:id="@+id/deleteClassBtn"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/ic_delete"

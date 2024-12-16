@@ -57,7 +57,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/categorySpinner"/>
         <Spinner
             android:id="@+id/subCategorySpinner"
@@ -70,46 +69,6 @@
             android:background="@drawable/box_layout_with_border"
             android:hint="Title"
             android:padding="10dp" />
-        <ProgressBar
-            android:id="@+id/subCategoryProgressBar"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/txtSubCategory"
-            android:layout_marginTop="20dp"
-            android:visibility="gone"
-            android:indeterminate="true" />
-        <TextView
-            android:id="@+id/txtSubject"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Choose Subject"
-            android:textSize="16dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/subCategorySpinner"/>
-        <Spinner
-            android:id="@+id/subjectSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@id/txtSubject"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="30dp"
-            android:background="@drawable/box_layout_with_border"
-            android:hint="Title"
-            android:padding="10dp" />
-        <ProgressBar
-            android:id="@+id/subjectProgressBar"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/txtSubject"
-            android:layout_marginTop="20dp"
-            android:visibility="gone"
-            android:indeterminate="true" />
         <TextView
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
@@ -119,8 +78,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/subjectSpinner"/>
 
         <EditText
             android:id="@+id/titleEditTxt"
@@ -142,7 +99,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/titleEditTxt"/>
 
         <EditText
@@ -166,7 +122,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/subTitleEditTxt"/>
         <EditText
             android:id="@+id/teacherNameEditText"
@@ -188,7 +143,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/teacherNameEditText"/>
         <EditText
             android:id="@+id/languageEditText"
@@ -210,7 +164,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/languageEditText"/>
         <EditText
             android:id="@+id/priceOfCourseEditText"
@@ -225,29 +178,6 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"/>
         <TextView
-            android:id="@+id/txtFinalPriceCourse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Final Price"
-            android:textSize="16dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/priceOfCourseEditText"/>
-        <EditText
-            android:id="@+id/finalPriceOfCourseEditText"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/box_layout_with_border"
-            android:layout_below="@id/txtFinalPriceCourse"
-            android:hint="Final Price of Course"
-            android:inputType="number"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"/>
-        <TextView
             android:id="@+id/txtStartDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -256,8 +186,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/finalPriceOfCourseEditText"/>
         <TextView
             android:id="@+id/dateDisplayText"
             android:layout_width="match_parent"
@@ -265,7 +193,6 @@
             android:background="@drawable/box_layout_with_border"
             android:layout_below="@id/txtStartDate"
             android:hint="DD-MM-YYYY"
-            android:padding="15dp"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"/>
@@ -278,7 +205,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/dateDisplayText"/>
         <TextView
             android:id="@+id/endDateText"
@@ -287,7 +213,6 @@
             android:background="@drawable/box_layout_with_border"
             android:layout_below="@id/txtEndDate"
             android:hint="DD-MM-YYYY"
-            android:padding="15dp"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"/>
@@ -300,7 +225,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/endDateText"/>
         <EditText
             android:id="@+id/descriptionEditText"
@@ -322,7 +246,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/descriptionEditText"/>
         <EditText
             android:id="@+id/courseContentEditText"
@@ -344,7 +267,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/courseContentEditText"/>
         <EditText
             android:id="@+id/tagsEditText"
@@ -378,7 +300,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/tagsRecycler"/>
         <!--        <TextView-->
         <!--            android:id="@+id/txtChooseImage"-->

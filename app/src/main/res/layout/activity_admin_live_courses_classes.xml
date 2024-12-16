@@ -10,7 +10,6 @@
         android:id="@+id/liveCoursesClassesListToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/seed"
         android:elevation="15dp">
         <RelativeLayout
             android:layout_width="match_parent"
@@ -32,19 +31,8 @@
                 android:layout_marginStart="10dp"
                 android:layout_centerVertical="true"
                 />
-            <TextView
-                android:id="@+id/scheduleClassTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Schedule a Class"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:layout_marginEnd="15dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                /> <!-- Adjust margin here -->
-
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
     <ProgressBar
