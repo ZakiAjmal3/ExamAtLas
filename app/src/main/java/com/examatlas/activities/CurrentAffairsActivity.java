@@ -94,7 +94,8 @@ public class CurrentAffairsActivity extends AppCompatActivity {
                                     String title = jsonObject.getString("title");
                                     String keyword = jsonObject.getString("keyword");
                                     String content = jsonObject.getString("content");
-//                                    String image = jsonObject.getString("image");
+                                    JSONObject image = jsonObject.getJSONObject("image");
+                                    String url = image.getString("url");
 //                                    String createdDate = jsonObject.getString("createdAt");
 
 
@@ -110,7 +111,7 @@ public class CurrentAffairsActivity extends AppCompatActivity {
                                         tags.setLength(tags.length() - 2); // Adjust to remove the last comma and space
                                     }
 
-                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID, title, keyword, content, tags.toString(),totalRows, totalPages,currentPage);
+                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID,url, title, keyword, content, tags.toString(),totalRows, totalPages,currentPage);
                                     currentAffairsModelArrayList.add(currentAffairModel);
                                 }
                                 // If you have already created the adapter, just notify the change

@@ -78,6 +78,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
+            android:layout_below="@id/subCategorySpinner"/>
 
         <EditText
             android:id="@+id/titleEditTxt"
@@ -186,6 +187,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
+            android:layout_below="@id/priceOfCourseEditText"/>
         <TextView
             android:id="@+id/dateDisplayText"
             android:layout_width="match_parent"

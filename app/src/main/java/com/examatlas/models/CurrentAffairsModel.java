@@ -1,10 +1,11 @@
 package com.examatlas.models;
 
 public class CurrentAffairsModel {
-    String cfID,cfTitle,cfKeyword,cfContent,cfTags,totalRows,totalPages,currentPage;
+    String cfID,cfImageURL,cfTitle,cfKeyword,cfContent,cfTags,totalRows,totalPages,currentPage;
 
-    public CurrentAffairsModel(String cfID, String cfTitle, String cfKeyword, String cfContent, String cfTags,String totalRows,String totalPages,String currentPage) {
+    public CurrentAffairsModel(String cfID,String cfImageURL, String cfTitle, String cfKeyword, String cfContent, String cfTags,String totalRows,String totalPages,String currentPage) {
         this.cfID = cfID;
+        this.cfImageURL = cfImageURL;
         this.cfTitle = cfTitle;
         this.cfKeyword = cfKeyword;
         this.cfContent = cfContent;
@@ -12,6 +13,14 @@ public class CurrentAffairsModel {
         this.totalRows = totalRows;
         this.totalPages = totalPages;
         this.currentPage = currentPage;
+    }
+
+    public String getCfImageURL() {
+        return cfImageURL;
+    }
+
+    public void setCfImageURL(String cfImageURL) {
+        this.cfImageURL = cfImageURL;
     }
 
     public String getTotalRows() {

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SignUpActivity5CategorySelect extends AppCompatActivity implements SignUp5CategoryAdapter.OnCategoryClickListener {
     private final String categoryURL = Constant.BASE_URL + "category/getCategory";
@@ -139,7 +140,7 @@ public class SignUpActivity5CategorySelect extends AppCompatActivity implements 
                                 }
 
                                 sessionManager.saveLoginDetails2(user_id,firstName,lastName,email,state,city,role,isActive,step,authToken,createdAt,updatedAt,null);
-                                if (getIntent().getStringExtra("task").equals("signUp")) {
+                                if (Objects.equals(getIntent().getStringExtra("task"), "signUp")) {
                                     Intent intent = new Intent(SignUpActivity5CategorySelect.this, LoginActivity.class);
                                     startActivity(intent);
                                     finish();
@@ -210,7 +211,6 @@ public class SignUpActivity5CategorySelect extends AppCompatActivity implements 
                                     AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(id, categoryName, slug, is_active, imageUrl);
                                     categoryModelArrayList.add(categoryModel);
                                 }
-
                                 if (categoryModelArrayList.isEmpty()) {
                                     categoryRecyclerView.setVisibility(View.GONE);
                                 } else {

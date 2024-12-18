@@ -235,13 +235,19 @@ public class OtpActivity extends AppCompatActivity {
                                             Log.d("Organisation", "Organisation ID: " + organisationId);
                                         }
                                         sessionManager.saveLoginDetails2(user_id, firstName, lastName, email, state, city, role, isActive, step, authToken, createdAt, updatedAt, null);
-                                        if (isActive.equals("true")) {
-                                            Intent intent = new Intent(OtpActivity.this, DashboardActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        } else if (step.equals("1")) {
-                                            Intent intent = new Intent(OtpActivity.this, SignUpActivity5CategorySelect.class);
-                                            intent.putExtra("task", task);
+                                        if (role.equalsIgnoreCase("student")) {
+                                            if (isActive.equals("true")) {
+                                                Intent intent = new Intent(OtpActivity.this, DashboardActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            } else if (step.equals("1")) {
+                                                Intent intent = new Intent(OtpActivity.this, SignUpActivity5CategorySelect.class);
+                                                intent.putExtra("task", task);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        }else {
+                                            Intent intent = new Intent(OtpActivity.this, AdminDashboardActivity.class);
                                             startActivity(intent);
                                             finish();
                                         }

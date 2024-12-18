@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.BlogSingleViewActivity">
+    tools:context=".activities.CurrentAffairsSingleViewActivity">
 
     <RelativeLayout
         android:id="@+id/topBar"
@@ -45,7 +45,7 @@
             android:shadowDx="2"
             android:shadowDy="2"
             android:shadowRadius="1"
-            android:text="Blog Detail"
+            android:text="Current Affair Details"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="normal" />
@@ -60,7 +60,7 @@
         >
 
         <ImageView
-            android:id="@+id/blogIMG"
+            android:id="@+id/cAIMG"
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:scaleType="fitCenter"
@@ -74,11 +74,11 @@
         android:background="@color/dark_grey"
         android:layout_below="@id/imageCardView"/>
     <TextView
-        android:id="@+id/txtBlogTitle"
+        android:id="@+id/txtCATitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins"
-        android:text="Blog Title"
+        android:text="Current Affair Title"
         android:textColor="@color/white"
         android:background="@color/seed"
         android:layout_below="@id/view1"
@@ -93,13 +93,13 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/dark_grey"
-        android:layout_below="@id/txtBlogTitle"/>
+        android:layout_below="@id/txtCATitle"/>
     <WebView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins"
-        android:layout_below="@id/txtBlogTitle"
+        android:layout_below="@id/txtCATitle"
         android:text="CONTENT"
         android:textColor="@color/dark_grey"
         android:textSize="10sp"

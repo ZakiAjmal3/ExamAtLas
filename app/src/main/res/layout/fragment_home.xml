@@ -113,6 +113,7 @@
                         android:layout_marginTop="10dp"
                         android:fontFamily="@font/poppins"
                         android:text="View All"
+                        android:padding="5dp"
                         android:layout_alignParentEnd="true"
                         android:textColor="@color/seed2"
                         android:textSize="12sp"
@@ -137,20 +138,20 @@
                         <androidx.cardview.widget.CardView
                             android:id="@+id/img2"
                             android:layout_width="wrap_content"
-                            android:layout_height="100dp"
+                            android:layout_height="120dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="10dp"
                             >
                             <ImageView
                                 android:layout_width="150dp"
-                                android:layout_height="150dp"
+                                android:layout_height="120dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
                         <androidx.cardview.widget.CardView
                             android:layout_width="wrap_content"
-                            android:layout_height="100dp"
+                            android:layout_height="120dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="10dp"
@@ -158,7 +159,7 @@
                             android:layout_marginLeft="20dp">
                             <ImageView
                                 android:layout_width="150dp"
-                                android:layout_height="150dp"
+                                android:layout_height="120dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
@@ -169,21 +170,40 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     />
-                <TextView
-                    android:id="@+id/CATxt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="@font/poppins"
-                    android:text="Current Affairs"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:textStyle="normal"
-                    android:letterSpacing="0.1"
-                    android:shadowColor="#000000"
-                    android:shadowDx="2"
-                    android:shadowDy="2"
-                    android:shadowRadius="1" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/CATxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Current Affairs"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:letterSpacing="0.1"
+                        android:shadowColor="#000000"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="1" />
+                    <TextView
+                        android:id="@+id/viewAllCATxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="View All"
+                        android:padding="5dp"
+                        android:layout_alignParentEnd="true"
+                        android:textColor="@color/seed2"
+                        android:textSize="12sp"
+                        android:textStyle="normal"
+                        android:layout_marginRight="10dp"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        />
+                </RelativeLayout>
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/shimmer_CA_container"
                     android:layout_width="wrap_content"

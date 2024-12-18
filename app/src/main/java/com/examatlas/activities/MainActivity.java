@@ -16,43 +16,51 @@ import com.examatlas.utils.SessionManager;
 public class MainActivity extends AppCompatActivity {
     SessionManager sessionManager;
     ImageView logo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        sessionManager = new SessionManager(MainActivity.this);
 
+        sessionManager = new SessionManager(MainActivity.this);
         logo = findViewById(R.id.logo);
 
+        // Delay for animation
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                // Start the animation
                 Animation logo_object = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.main_activity_logo_rotation);
                 logo.startAnimation(logo_object);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sessionManager.IsLoggedIn()) {
-                            if (sessionManager.getUserData().get("role").equalsIgnoreCase("user")) {
-                                Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
-                                Log.e("Dashboard","Dashboard");
-                                startActivity(intent);
-                                finish();
-                            } else if (sessionManager.getUserData().get("role").equalsIgnoreCase("admin")) {
-                                Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
-                                Log.e("AdminDashboard","AdminDashboard");
-                                startActivity(intent);
-                                finish();
-                            }
-                        } else {
-                            Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
-                            Log.e("SecondActivity","SecondActivity");
-                            startActivity(intent);
-                            finish();
-                        }// Use the same duration as the animation
-                    }
-                }, 1600);
             }
-        },0);
+        }, 0);  // Animation delay (if any)
+
+        // Post delay to navigate to the next screen after animation
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (sessionManager.IsLoggedIn()) {
+                    String role = sessionManager.getUserData().get("role");
+                    Intent intent;
+                    if (role.equalsIgnoreCase("student")) {
+                        intent = new Intent(MainActivity.this, DashboardActivity.class);
+                        Log.e("Dashboard", "User logged in, navigating to Dashboard");
+                    } else if (role.equalsIgnoreCase("admin")) {
+                        intent = new Intent(MainActivity.this, AdminDashboardActivity.class);
+                        Log.e("AdminDashboard", "Admin logged in, navigating to Admin Dashboard");
+                    } else {
+                        intent = new Intent(MainActivity.this, DashboardActivity.class);
+                        Log.e("RoleError", "Role not recognized, navigating to Dashboard");
+                    }
+                    startActivity(intent);
+                    finish();  // Finish the MainActivity to prevent back navigation
+                } else {
+                    Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
+                    Log.e("NotLoggedIn", "User not logged in, navigating to Dashboard");
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        }, 1600);  // Match the duration of the logo animation
     }
 }

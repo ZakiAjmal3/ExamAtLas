@@ -7,6 +7,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="seed">#15b0fd</color>
     <color name="seed2">#4ABEFF</color>
+    <color name="dark_seed">#001EC7</color>
     <color name="green">#0C9700</color>
     <color name="md_theme_light_primary">#006493</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>

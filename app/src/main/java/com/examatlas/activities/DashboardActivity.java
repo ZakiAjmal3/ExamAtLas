@@ -155,7 +155,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     Dialog drawerDialog;
     LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks, layoutLiveClasses,
-            layoutEbook,layoutCurrentAffairs, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy,
+            layoutEbook,layoutCurrentAffairs, layoutLogout,layoutLogin, layoutShare, layoutAboutUs, layoutPrivacy,
             layoutTerms, layoutOrderHistory, layoutFaq, layoutServices;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
@@ -174,6 +174,7 @@ public class DashboardActivity extends AppCompatActivity {
         layoutEbook = drawerDialog.findViewById(R.id.layoutEbook);
         layoutCurrentAffairs = drawerDialog.findViewById(R.id.layoutCurrentAffairs);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
+        layoutLogin = drawerDialog.findViewById(R.id.layoutLogin);
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
         txtUsername = drawerDialog.findViewById(R.id.txtUsername);
         txtUserEmail = drawerDialog.findViewById(R.id.txtUserEmail);
@@ -186,8 +187,18 @@ public class DashboardActivity extends AppCompatActivity {
 //        layoutFaq = drawerDialog.findViewById(R.id.layoutFaq);
 //        layoutServices = drawerDialog.findViewById(R.id.layoutServices);
 
-        txtUsername.setText(sessionManager.getUserData().get("name"));
+        String firstName = sessionManager.getUserData().get("firstName");
+        String lastName = sessionManager.getUserData().get("lastName");
+        txtUsername.setText(firstName + " " + lastName);
         txtUserEmail.setText(sessionManager.getUserData().get("email"));
+
+        if (sessionManager.IsLoggedIn()){
+            layoutLogout.setVisibility(View.VISIBLE);
+            layoutLogin.setVisibility(View.GONE);
+        }else {
+            layoutLogout.setVisibility(View.GONE);
+            layoutLogin.setVisibility(View.VISIBLE);
+        }
 
         layoutHome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -249,6 +260,14 @@ public class DashboardActivity extends AppCompatActivity {
             public void onClick(View view) {
                 drawerDialog.dismiss();
                 quitDialog();
+            }
+        });
+        layoutLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerDialog.dismiss();
+                startActivity(new Intent(DashboardActivity.this, LoginActivity.class));
+                finish();
             }
         });
 

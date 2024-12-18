@@ -24,6 +24,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".activities.CurrentAffairsSingleViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.BlogSingleViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.BookOrderHistoryActivity"
             android:exported="false" />
         <activity
@@ -36,13 +42,34 @@
             android:name=".activities.AdminForgotPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.AdminSignUpActivity"
+            android:name=".activities.AdminLiveCoursesClassesActivity"
             android:exported="false" />
         <activity
             android:name=".activities.AdminLoginActivity"
             android:exported="false" />
         <activity
             android:name=".activities.AdminDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.LoginWithEmailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SignUpActivity5CategorySelect"
+            android:exported="false" />
+        <activity
+            android:name=".activities.CurrentAffairsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SignUpActivity4LanguageSelect"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SignUpActivity3CompleteProfile"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SignUpActivity2DetailsInput"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SignUpActivity1"
             android:exported="false" />
         <activity
             android:name=".activities.LiveCoursesClassesListActivity"
@@ -74,9 +101,6 @@
             android:exported="false" />
         <activity
             android:name=".activities.OtpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.SignUpActivity"
             android:exported="false" />
         <activity
             android:name=".activities.LoginActivity"

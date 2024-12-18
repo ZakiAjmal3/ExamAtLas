@@ -21,9 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.AdminLiveCourseClassesListAdapter;
-import com.examatlas.adapter.LiveCourseClassesListAdapter;
 import com.examatlas.models.AdminLiveCoursesClassesListModel;
-import com.examatlas.models.LiveCoursesClassesListModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -77,7 +75,7 @@ public class AdminLiveCoursesClassesActivity extends AppCompatActivity {
         super.onResume();
         getLiveClassesList(); // Always refresh data when the activity is resumed
     }
-
+    private void getLiveClassesList() {
         progressBar.setVisibility(View.VISIBLE);
         noDataLayout.setVisibility(View.GONE);
         classesListRecyclerView.setVisibility(View.GONE);
@@ -103,15 +101,15 @@ public class AdminLiveCoursesClassesActivity extends AppCompatActivity {
                                     String addedBy = jsonObject.getString("addedBy");
                                     String scheduledTime = jsonObject.getString("scheduleTime");
                                     String classStatus = jsonObject.getString("status");
-                                    String startedAt,endedAt;
+                                    String startedAt, endedAt;
                                     if (classStatus.equalsIgnoreCase("completed")) {
                                         startedAt = jsonObject.getString("startedAt");
                                         endedAt = jsonObject.getString("endedAt");
-                                    }else {
+                                    } else {
                                         startedAt = null;
                                         endedAt = null;
                                     }
-                                    AdminLiveCoursesClassesListModel liveCoursesClassesListModel = new AdminLiveCoursesClassesListModel(classID, courseID, title, meetingID, time, date, addedBy, scheduledTime, classStatus, startedAt,endedAt, null);
+                                    AdminLiveCoursesClassesListModel liveCoursesClassesListModel = new AdminLiveCoursesClassesListModel(classID, courseID, title, meetingID, time, date, addedBy, scheduledTime, classStatus, startedAt, endedAt, null);
                                     liveCoursesClassesListModelArrayList.add(liveCoursesClassesListModel);
                                 }
 
@@ -162,28 +160,29 @@ public class AdminLiveCoursesClassesActivity extends AppCompatActivity {
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
-    private void showNoDataLayout() {
-        classesListRecyclerView.setVisibility(View.GONE);
-        progressBar.setVisibility(View.GONE);
-        noDataLayout.setVisibility(View.VISIBLE);
-    }
+private void showNoDataLayout() {
+    classesListRecyclerView.setVisibility(View.GONE);
+    progressBar.setVisibility(View.GONE);
+    noDataLayout.setVisibility(View.VISIBLE);
+}
 
-    private void showErrorToast(String message) {
-        if (message != null && !message.isEmpty()) {
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show(); // Fallback message
-        }
+private void showErrorToast(String message) {
+    if (message != null && !message.isEmpty()) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    } else {
+        Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show(); // Fallback message
     }
-    public String getCourseId() {
-        return courseId;
+}
+public String getCourseId() {
+    return courseId;
+}
+
+@Override
+public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == android.R.id.home) {
+        onBackPressed();
+        return true;
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    return super.onOptionsItemSelected(item);
+}
 }

@@ -24,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,11 +60,13 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
     ProgressBar liveClassesProgress;
     AdminShowAllLiveCoursesAdapter liveCoursesAdapter;
     RecyclerView liveClassesRecycler;
+    ArrayList<AdminCategoryModel> categoryModelArrayList;
     ArrayList<AdminShowAllLiveCoursesModel> liveCoursesModelArrayList = new ArrayList<>();
     private final String liveClassURL = Constant.BASE_URL + "liveclass/getAllLiveClass";
     SessionManager sessionManager;
     String authToken;
     Button createCourseBtn;
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -101,6 +104,10 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
     private AdminTagsForDataALLAdapter adminTagsForDataALLAdapter;
     private AdminTagsForDataALLModel adminTagsForDataALLModel;
     private ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList;
+    Spinner categorySpinner,subCategorySpinner,subjectSpinner;
+    EditText courseTitleEditText,courseSubTitleEditText,teacherNameEditText,languageEditText,priceOfCourseEditText,
+            descriptionEditText,courseContentEditText,tagsEditTxt;
+    String categoryId;
     @SuppressLint("ClickableViewAccessibility")
     private void openCreateSendLiveCourseDialog() {
         dialog = new Dialog(getContext());
@@ -122,11 +129,11 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         tagsRecyclerView = dialog.findViewById(R.id.tagsRecycler);
         adminTagsForDataALLModelArrayList = new ArrayList<>();
         tagsRecyclerView = dialog.findViewById(R.id.tagsRecycler);
-        tagsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
+        tagsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
         tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
 
-        setupCategorySpinner(categorySpinner,null);
+        setupCategorySpinner(categorySpinner, null);
 
         dialog.findViewById(android.R.id.content).setOnTouchListener((v, event) -> {
             if (categoryId == null) {
@@ -138,7 +145,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         courseTitleEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (categoryId == null){
+                if (categoryId == null) {
                     Toast.makeText(getContext(), "Please Select a Category first", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -146,7 +153,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         courseSubTitleEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (categoryId == null){
+                if (categoryId == null) {
                     Toast.makeText(getContext(), "Please Select a Category first", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -154,7 +161,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         teacherNameEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (categoryId == null){
+                if (categoryId == null) {
                     Toast.makeText(getContext(), "Please Select a Category first", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -162,7 +169,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         languageEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (categoryId == null){
+                if (categoryId == null) {
                     Toast.makeText(getContext(), "Please Select a Category first", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -170,7 +177,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         priceOfCourseEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (categoryId == null){
+                if (categoryId == null) {
                     Toast.makeText(getContext(), "Please Select a Category first", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -178,7 +185,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         descriptionEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (categoryId == null){
+                if (categoryId == null) {
                     Toast.makeText(getContext(), "Please Select a Category first", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -186,7 +193,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         courseContentEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (categoryId == null){
+                if (categoryId == null) {
                     Toast.makeText(getContext(), "Please Select a Category first", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -194,7 +201,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         tagsEditTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (categoryId == null){
+                if (categoryId == null) {
                     Toast.makeText(getContext(), "Please Select a Category first", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -303,16 +310,14 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
     }
-    public void setupCategorySpinner(Spinner categorySpinners,AdminCategoryModel currentCategory){
+    public void setupCategorySpinner(Spinner categorySpinners,AdminCategoryModel currentCategory) {
         // Assuming `subCategoryModelArrayList` contains the categories data
         ArrayList<String> categoryNameList = new ArrayList<>();
         categoryNameList.add("Select Category"); // First item is "Select Category"
 
         // Populate category names from your subCategoryModelArrayList
-            categoryNameList.add(category.getCategoryName());
-        }
+        categoryNameList.add(currentCategory.getCategoryName());
 
         // Set the adapter for the Spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categoryNameList);
@@ -390,7 +395,15 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String classID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
+                                    String subTitle = jsonObject2.getString("subTitle");
                                     String description = jsonObject2.getString("description");
+                                    String teacher = jsonObject2.getString("teacher");
+                                    String price = jsonObject2.getString("price");
+                                    String categoryId = jsonObject2.getString("categoryId");
+                                    String subCategoryId = jsonObject2.getString("subCategoryId");
+                                    String subjectId = jsonObject2.getString("subjectId");
+                                    String courseContent = jsonObject2.getString("courseContent");
+                                    String finalPrice = jsonObject2.getString("finalPrice");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -402,29 +415,19 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                                     if (tags.length() > 0) {
                                         tags.setLength(tags.length() - 2);
                                     }
-
-                                    String categoryId = jsonObject2.getString("categoryId");
-                                    String subCategoryId = jsonObject2.getString("subCategoryId");
-                                    String subjectId = jsonObject2.getString("subjectId");
+                                    JSONArray jsonImageArray = jsonObject2.getJSONArray("images");
 
                                     ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
 
-                                            for (int j = 0; j < jsonImageArray.length(); j++) {
-                                                JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
-                                                BookImageModels bookImageModels = new BookImageModels(
-                                                        jsonImageObject.getString("url"),
-                                                        jsonImageObject.getString("filename")
-                                                );
-                                                bookImageArrayList.add(bookImageModels);
-                                            }
-                                            BookImageModels bookImageModels = new BookImageModels(
-                                                    jsonImageObject.getString("url"),
-                                                    jsonImageObject.getString("filename")
-                                            );
-                                            bookImageArrayList.add(bookImageModels);
+                                    for (int j = 0; j < jsonImageArray.length(); j++) {
+                                        JSONObject jsonImageObject = jsonImageArray.getJSONObject(j);
+                                        BookImageModels bookImageModels = new BookImageModels(
+                                                jsonImageObject.getString("url"),
+                                                jsonImageObject.getString("filename"));
+                                        bookImageArrayList.add(bookImageModels);
                                     }
 
-                                    String startDate = "",endDate = "";
+                                    String startDate = "", endDate = "";
                                     if (jsonObject2.has("startDate")) {
                                         startDate = jsonObject2.getString("startDate");
                                         endDate = jsonObject2.getString("endDate");
@@ -438,6 +441,8 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                                     ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
 //                                    for (int j = 0; j<jsonImageArray.length();j++){
 //                                    }
+                                    AdminShowAllLiveCoursesModel liveCoursesModel = new AdminShowAllLiveCoursesModel(classID, title,subTitle, description,teacher,tags.toString(), categoryId, subCategoryId, subjectId,price,finalPrice,courseContent, startDate, endDate,bookImageArrayList, null, null);
+
                                     liveCoursesModelArrayList.add(liveCoursesModel);
                                 }
                                 if (liveCoursesAdapter == null) {
@@ -449,18 +454,28 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                             } else {
                                 String message = response.getString("message");
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                                Log.e("onResponse",response.toString());
+                                Log.e("onResponse", response.toString());
                             }
                         } catch (JSONException e) {
                             Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                            Log.e("catch",e.toString());
+                            Log.e("catch", e.toString());
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                Log.e("onErrorResponse",error.toString());
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        String responseData = new String(error.networkResponse.data, "UTF-8");
+                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                        errorMessage += "\nResponse Data: " + responseData;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                Log.e("BlogFetchError", errorMessage);
             }
         }) {
             @Override
@@ -472,7 +487,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
             }
         };
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
-    }
+                }
     public  void getCategory(){
         String categoryURL = Constant.BASE_URL + "category/getCategory";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, categoryURL, null,

@@ -101,6 +101,7 @@ public class AdminLiveCourseClassesListAdapter extends RecyclerView.Adapter<Admi
 //        MySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
 //    }
 
+    }
     @Override
     public int getItemCount() {
         return liveCoursesClassesListModelArrayList.size();
@@ -118,6 +119,7 @@ public class AdminLiveCourseClassesListAdapter extends RecyclerView.Adapter<Admi
         }
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView timeAndDateTxt,classTitleTxt,liveTxt,scheduleTxtDisplay;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             timeAndDateTxt = itemView.findViewById(R.id.timeAndDateTxt);

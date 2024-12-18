@@ -94,6 +94,8 @@ public class BlogFragment extends Fragment {
                                     String title = jsonObject2.getString("title");
                                     String keyword = jsonObject2.getString("keyword");
                                     String content = jsonObject2.getString("content");
+                                    JSONObject image = jsonObject2.getJSONObject("image");
+                                    String url = image.getString("url");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -107,7 +109,7 @@ public class BlogFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    BlogModel blogModel = new BlogModel(blogID, title, keyword, content, tags.toString(), totalRows,totalPages,currentPage);
+                                    BlogModel blogModel = new BlogModel(blogID,url, title, keyword, content, tags.toString(), totalRows,totalPages,currentPage);
                                     blogModelArrayList.add(blogModel);
                                 }
                                 // If you have already created the adapter, just notify the change
