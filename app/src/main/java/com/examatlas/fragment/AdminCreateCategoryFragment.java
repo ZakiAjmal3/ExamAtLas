@@ -85,7 +85,7 @@ public class AdminCreateCategoryFragment extends Fragment {
     ProgressBar progressBar,nextItemLoadingProgressBar;
     AdminShowAllCategoryAdapter categoryAdapter;
     AdminShowAllCategoryModel categoryModel;
-    ArrayList<AdminShowAllCategoryModel> categoryModelArrayList = new ArrayList<>();
+    ArrayList<AdminShowAllCategoryModel> categoryModelArrayList;
     private final String categoryURL = Constant.BASE_URL + "category/getCategory";
     private final String createCategoryURL = Constant.BASE_URL + "category/createCategory";
     SessionManager sessionManager;
@@ -121,7 +121,6 @@ public class AdminCreateCategoryFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         showCategoryRecycler.setLayoutManager(linearLayoutManager);
-        categoryModelArrayList.clear();
         getAllCategory();
 
         createBtn.setOnClickListener(new View.OnClickListener() {
@@ -406,8 +405,8 @@ public class AdminCreateCategoryFragment extends Fragment {
     private void sendCategoryDetails(String title, String description, Dialog createCategoryDialogBox) {
         // Prepare form data
         Map<String, String> params = new HashMap<>();
-        params.put("categoryName", title);
-        params.put("slug", description);
+        params.put("categoryName", title);   // Send the category name
+        params.put("slug", description);     // Send the slug
 
         // Create a Map for files (if imageFile exists)
         Map<String, File> files = new HashMap<>();
@@ -428,33 +427,44 @@ public class AdminCreateCategoryFragment extends Fragment {
                             if (status) {
                                 String message = responseObject.getString("message");
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                                // Create a new category object with the response data
-                                JSONObject data = responseObject.getJSONObject("data"); // Assuming the new category is returned in the response
-                                String id = data.getString("_id");
-                                String categoryName = data.getString("categoryName");
-                                String slug = data.getString("slug");
-                                String isActive = data.getString("is_active");
 
-                                JSONObject imageObj = data.getJSONObject("image");
-                                String imageUrl = imageObj.getString("url");
+                                // Handle the response data
+                                JSONObject data = responseObject.getJSONObject("data"); // New category details
+                                String id = data.getString("_id");                     // Category ID
+                                String categoryName = data.getString("categoryName");  // Category name
+                                String slug = data.getString("slug");                  // Category slug
+                                String isActive = data.getString("is_active");         // Category active status
 
-                                // Add the newly created category to the categoryModelArrayList
-                                AdminShowAllCategoryModel newCategory = new AdminShowAllCategoryModel(id, categoryName, slug, isActive, imageUrl);
+                                // Image handling
+                                JSONObject imageObj = data.optJSONObject("image");
+                                String imageUrl = (imageObj != null) ? imageObj.optString("url", "") : ""; // Handle image URL
+
+                                // Create a new category object and add it to the list
+                                AdminShowAllCategoryModel newCategory = new AdminShowAllCategoryModel(
+                                        id, categoryName, slug, isActive, imageUrl
+                                );
                                 categoryModelArrayList.add(newCategory); // Add to the existing list
 
                                 // Notify the adapter that the data has changed
                                 categoryAdapter.notifyDataSetChanged();
-                                // Dismiss the dialog
+
+                                // Dismiss the dialog box
                                 createCategoryDialogBox.dismiss();
+                            } else {
+                                // Handle error message if status is false
+                                String errorMessage = responseObject.getString("message");
+                                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                            Toast.makeText(getContext(), "An error occurred while processing the response.", Toast.LENGTH_LONG).show();
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        // Handle the error response
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {
@@ -474,6 +484,7 @@ public class AdminCreateCategoryFragment extends Fragment {
         MySingletonFragment.getInstance(this).addToRequestQueue(multipartRequest);
     }
 
+
     public void getAllCategory() {
         String subjectURLPage = categoryURL  + "?search=" + searchQuery + "&page=" + currentPage + "&per_page=" + itemsPerPage;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, subjectURLPage, null,
@@ -487,6 +498,7 @@ public class AdminCreateCategoryFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
+                                categoryModelArrayList = new ArrayList<>();
                                 JSONObject jsonObject = response.getJSONObject("pagination");
 
                                 int totalRows = Integer.parseInt(jsonObject.getString("totalRows"));

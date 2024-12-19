@@ -1,6 +1,7 @@
 package com.examatlas.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,10 +23,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.BlogAdapter;
+import com.examatlas.adapter.BlogAdapterForShowingAllBlogs;
 import com.examatlas.models.BlogModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,36 +42,44 @@ public class BlogFragment extends Fragment {
 
     RecyclerView blogRecycler;
     RelativeLayout noDataLayout;
-    ProgressBar blogProgress;
     ArrayList<BlogModel> blogModelArrayList;
-    BlogAdapter blogAdapter;
+    BlogAdapterForShowingAllBlogs blogAdapter;
     private final String blogURL = Constant.BASE_URL + "blog/getAllBlogs";
 //    private final String blogURL = Constant.BASE_URL2 + "course/getAllCourse";
     String token;
     SessionManager sessionManager;
+    ShimmerFrameLayout shimmer_blog_container;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_blog, container, false);
 
+        shimmer_blog_container = view.findViewById(R.id.shimmer_blog_container);
 
         noDataLayout = view.findViewById(R.id.noDataLayout);
-        blogProgress = view.findViewById(R.id.blogProgress);
         blogRecycler = view.findViewById(R.id.blogRecycler);
-//        blogRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        blogRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        getBlogList();
+        blogRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+//        blogRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         blogModelArrayList = new ArrayList<>();
 
         sessionManager = new SessionManager(getContext());
 
         token = sessionManager.getUserData().get("authToken");
 
+        shimmer_blog_container.setVisibility(View.VISIBLE);
+        shimmer_blog_container.startShimmer();
+        blogRecycler.setVisibility(View.GONE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getBlogList();
+            }
+        },1000);
+
         return view;
     }
     private void getBlogList() {
-        blogProgress.setVisibility(View.VISIBLE);
         // Create a JsonObjectRequest for the GET request
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, blogURL, null,
                 new Response.Listener<JSONObject>() {
@@ -76,7 +87,8 @@ public class BlogFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             blogRecycler.setVisibility(View.VISIBLE);
-                            blogProgress.setVisibility(View.GONE);
+                            shimmer_blog_container.stopShimmer();
+                            shimmer_blog_container.setVisibility(View.GONE);
                             boolean status = response.getBoolean("status");
 
                             if (status) {
@@ -115,10 +127,12 @@ public class BlogFragment extends Fragment {
                                 // If you have already created the adapter, just notify the change
                                 if (blogModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
-                                    blogProgress.setVisibility(View.GONE);
+                                    blogRecycler.setVisibility(View.GONE);
+                                    shimmer_blog_container.stopShimmer();
+                                    shimmer_blog_container.setVisibility(View.GONE);
                                 } else {
                                     if (blogAdapter == null) {
-                                        blogAdapter = new BlogAdapter(blogModelArrayList, BlogFragment.this);
+                                        blogAdapter = new BlogAdapterForShowingAllBlogs(blogModelArrayList, BlogFragment.this);
                                         blogRecycler.setAdapter(blogAdapter);
                                     } else {
                                         blogAdapter.notifyDataSetChanged();

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.activities.AdminLiveCoursesClassesActivity;
 import com.examatlas.activities.DashboardActivity;
@@ -73,9 +75,11 @@ public class AdminShowAllLiveCoursesAdapter extends RecyclerView.Adapter<AdminSh
         holder.tags.setText(liveCoursesModelArrayList.get(position).getTags());
         holder.teacherName.setText(liveCoursesModelArrayList.get(position).getTeacherName());
 
-        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentClasss.getImageArrayList());
-        holder.cfImage.setAdapter(bookImageAdapter);
-
+        String imgURL = liveCoursesModelArrayList.get(position).getImageURL();
+        Glide.with(context)
+                .load(imgURL)
+                .error(R.drawable.image1)
+                .into(holder.cfImage);
 //        // Enable JavaScript (optional, depending on your content)
 //        WebSettings webSettings = holder.description.getSettings();
 //        webSettings.setJavaScriptEnabled(true);
@@ -105,7 +109,7 @@ public class AdminShowAllLiveCoursesAdapter extends RecyclerView.Adapter<AdminSh
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title, tags, teacherName;
-        ViewPager2 cfImage;
+        ImageView cfImage;
         WebView description;
 
         public ViewHolder(@NonNull View itemView) {

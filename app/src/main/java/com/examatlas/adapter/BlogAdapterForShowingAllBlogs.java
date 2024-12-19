@@ -26,75 +26,32 @@ import com.examatlas.models.BlogModel;
 import java.util.ArrayList;
 
 
-public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.ViewHolder> {
+public class BlogAdapterForShowingAllBlogs extends RecyclerView.Adapter<BlogAdapterForShowingAllBlogs.ViewHolder> {
     private ArrayList<BlogModel> blogModelArrayList;
     Fragment context;
 
-    public BlogAdapter(ArrayList<BlogModel> blogModelArrayList, Fragment context) {
+    public BlogAdapterForShowingAllBlogs(ArrayList<BlogModel> blogModelArrayList, Fragment context) {
         this.blogModelArrayList = blogModelArrayList;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public BlogAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BlogAdapterForShowingAllBlogs.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = null;
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_blog_layout_with_wide_width,parent,false);
+        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_blog_layout,parent,false);
         return new ViewHolder(view);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
-    public void onBindViewHolder(@NonNull BlogAdapter.ViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NonNull BlogAdapterForShowingAllBlogs.ViewHolder holder, int position) {
         holder.itemView.setTag(blogModelArrayList.get(position));
         holder.tags.setText(blogModelArrayList.get(position).getTags());
         String titleStr = blogModelArrayList.get(position).getTitle();
 
 // Set the title text first to measure the number of lines
         holder.title.setText(titleStr);
-
-        holder.title.post(new Runnable() {
-            @Override
-            public void run() {
-                // Get the Layout object from the TextView to measure lines
-                Layout layout = holder.title.getLayout();
-
-                // Check the number of lines
-                int lineCount = layout.getLineCount();
-
-                // Ensure there are at least two lines
-                if (lineCount >= 2) {
-                    String firstTwoLinesText = "";
-
-                    // Get the start and end positions for the first two lines
-                    int startLine = 0; // The first line
-                    int endLine = 1;   // The second line
-
-                    // Extract the first line
-                    int startPos1 = layout.getLineStart(startLine);
-                    int endPos1 = layout.getLineEnd(startLine);
-                    firstTwoLinesText += holder.title.getText().subSequence(startPos1, endPos1);
-
-                    // Extract the second line
-                    int startPos2 = layout.getLineStart(endLine);
-                    int endPos2 = layout.getLineEnd(endLine);
-                    firstTwoLinesText += " " + holder.title.getText().subSequence(startPos2, endPos2);
-
-                    // Truncate the last three characters and add "..."
-                    if (firstTwoLinesText.length() > 3) {
-                        firstTwoLinesText = firstTwoLinesText.substring(0, firstTwoLinesText.length() - 3) + "...";
-                    }
-
-                    // Set the text to the title with the first two lines and ellipsis
-                    holder.title.setText(firstTwoLinesText);
-                } else {
-                    // If there are fewer than 2 lines, just set the text normally
-                    holder.title.setText(titleStr);
-                }
-            }
-        });
-
 
         Glide.with(context)
                 .load(blogModelArrayList.get(position).getImageURL())

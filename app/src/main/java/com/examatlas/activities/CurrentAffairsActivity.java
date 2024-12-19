@@ -1,6 +1,7 @@
 package com.examatlas.activities;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,11 +23,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.CurrentAffairsAdapter;
+import com.examatlas.adapter.CurrentAffairsShowingAllAdapter;
 import com.examatlas.fragment.HomeFragment;
 import com.examatlas.models.CurrentAffairsModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,12 +42,11 @@ import java.util.Map;
 public class CurrentAffairsActivity extends AppCompatActivity {
     ImageView backBtn;
     RecyclerView currentAffairRecycler;
-    ProgressBar cFProgressBar;
     ArrayList<CurrentAffairsModel> currentAffairsModelArrayList;
-    CurrentAffairsAdapter currentAffairAdapter;
+    CurrentAffairsShowingAllAdapter currentAffairAdapter;
     SessionManager sessionManager;
     String authToken,currentAffairsURL = Constant.BASE_URL + "currentAffair/getAllCA";
-
+    ShimmerFrameLayout shimmerFrameLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,14 +54,20 @@ public class CurrentAffairsActivity extends AppCompatActivity {
 
         backBtn = findViewById(R.id.backBtn);
         currentAffairRecycler = findViewById(R.id.currentAffairsRecycler);
-        cFProgressBar = findViewById(R.id.cFProgress);
+        currentAffairRecycler.setVisibility(View.GONE);
+        shimmerFrameLayout = findViewById(R.id.shimmer_blog_container);
+        shimmerFrameLayout.startShimmer();
         sessionManager = new SessionManager(this);
         authToken = sessionManager.getUserData().get("authToken");
         currentAffairsModelArrayList = new ArrayList<>();
-        currentAffairAdapter = new CurrentAffairsAdapter(currentAffairsModelArrayList,null,CurrentAffairsActivity.this);
-        currentAffairRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        getCurrentAffairs();
+        currentAffairRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getCurrentAffairs();
+            }
+        },1000);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,7 +84,8 @@ public class CurrentAffairsActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             currentAffairRecycler.setVisibility(View.VISIBLE);
-                            cFProgressBar.setVisibility(View.GONE);
+                            shimmerFrameLayout.stopShimmer();
+                            shimmerFrameLayout.setVisibility(View.GONE);
                             boolean status = response.getBoolean("status");
 
                             if (status) {
@@ -115,7 +124,7 @@ public class CurrentAffairsActivity extends AppCompatActivity {
                                     currentAffairsModelArrayList.add(currentAffairModel);
                                 }
                                 // If you have already created the adapter, just notify the change
-                                currentAffairAdapter = new CurrentAffairsAdapter(currentAffairsModelArrayList, null,CurrentAffairsActivity.this);
+                                currentAffairAdapter = new CurrentAffairsShowingAllAdapter(currentAffairsModelArrayList, null,CurrentAffairsActivity.this);
                                 currentAffairRecycler.setAdapter(currentAffairAdapter);
                             } else {
                                 // Handle the case where status is false

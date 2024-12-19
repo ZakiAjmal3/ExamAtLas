@@ -1,11 +1,13 @@
 package com.examatlas.activities;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +23,7 @@ import com.examatlas.R;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +39,8 @@ public class CurrentAffairsSingleViewActivity extends AppCompatActivity {
     String cAID;
     SessionManager sessionManager;
     String token;
+    ShimmerFrameLayout shimmerFrameLayout;
+    RelativeLayout mainContainer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +50,11 @@ public class CurrentAffairsSingleViewActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.backBtn);
         cATitle = findViewById(R.id.txtCATitle);
         webviewContent = findViewById(R.id.content);
+
+        shimmerFrameLayout = findViewById(R.id.shimmer_blog_container);
+        shimmerFrameLayout.startShimmer();
+        mainContainer = findViewById(R.id.mainContainer);
+        mainContainer.setVisibility(View.GONE);
 
         sessionManager = new SessionManager(this);
         token = sessionManager.getUserData().get("authToken");
@@ -56,8 +66,12 @@ public class CurrentAffairsSingleViewActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-        getCA();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getCA();
+            }
+        },1000);
     }
 
     private void getCA() {
@@ -106,6 +120,9 @@ public class CurrentAffairsSingleViewActivity extends AppCompatActivity {
 
                                 // Load the modified HTML content
                                 webviewContent.loadData(fullHtmlContent, "text/html", "UTF-8");
+                                shimmerFrameLayout.stopShimmer();
+                                shimmerFrameLayout.setVisibility(View.GONE);
+                                mainContainer.setVisibility(View.VISIBLE);
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());

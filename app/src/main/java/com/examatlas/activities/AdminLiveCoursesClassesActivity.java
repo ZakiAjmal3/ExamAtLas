@@ -48,6 +48,7 @@ public class AdminLiveCoursesClassesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_admin_live_courses_classes);
 
         sessionManager = new SessionManager(this);
         authToken = sessionManager.getUserData().get("authToken");

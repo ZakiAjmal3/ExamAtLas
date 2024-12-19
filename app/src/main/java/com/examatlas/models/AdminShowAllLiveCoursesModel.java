@@ -5,10 +5,10 @@ import com.examatlas.models.extraModels.BookImageModels;
 import java.util.ArrayList;
 
 public class AdminShowAllLiveCoursesModel {
-    String courseID,title,subTitle,description,teacherName,tags,categoryId,subCategoryId,subjectId,price,finalPrice,courseContent,startDate,endDate;
-    ArrayList<BookImageModels> imageArrayList,studentArrayList,liveClassArrayList;
+    String courseID,title,subTitle,description,imageURL,teacherName,tags,categoryId,subCategoryId,subjectId,price,finalPrice,courseContent,startDate,endDate;
+    ArrayList<BookImageModels> studentArrayList,liveClassArrayList;
 
-    public AdminShowAllLiveCoursesModel(String courseID, String title, String subTitle, String description, String teacherName, String tags, String categoryId, String subCategoryId, String subjectId, String price, String finalPrice, String courseContent, String startDate, String endDate, ArrayList<BookImageModels> imageArrayList, ArrayList<BookImageModels> studentArrayList, ArrayList<BookImageModels> liveClassArrayList) {
+    public AdminShowAllLiveCoursesModel(String courseID, String title, String subTitle, String description, String imageURL, String teacherName, String tags, String categoryId, String subCategoryId, String subjectId, String price, String finalPrice, String courseContent, String startDate, String endDate, ArrayList<BookImageModels> studentArrayList, ArrayList<BookImageModels> liveClassArrayList) {
         this.courseID = courseID;
         this.title = title;
         this.subTitle = subTitle;
@@ -24,16 +24,16 @@ public class AdminShowAllLiveCoursesModel {
         this.startDate = startDate;
         this.endDate = endDate;
         this.studentArrayList = studentArrayList;
-        this.imageArrayList = imageArrayList;
+        this.imageURL = imageURL;
         this.liveClassArrayList = liveClassArrayList;
     }
 
-    public ArrayList<BookImageModels> getImageArrayList() {
-        return imageArrayList;
+    public String getImageURL() {
+        return imageURL;
     }
 
-    public void setImageArrayList(ArrayList<BookImageModels> imageArrayList) {
-        this.imageArrayList = imageArrayList;
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public String getSubTitle() {

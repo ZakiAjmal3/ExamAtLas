@@ -121,7 +121,6 @@ public class AdminShowAllSubjectAdapter extends RecyclerView.Adapter<AdminShowAl
                                 Toast.makeText(context.getContext(), message, Toast.LENGTH_SHORT).show();
                                 subjectModelArrayList.remove(adminShowAllSubjectModel);
                                 notifyDataSetChanged();
-                                ((AdminCreateSubjectFragment) context).getAllSubject();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());

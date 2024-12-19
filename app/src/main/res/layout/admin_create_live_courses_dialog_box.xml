@@ -70,6 +70,27 @@
             android:hint="Title"
             android:padding="10dp" />
         <TextView
+            android:id="@+id/txtSubject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sub-Category"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@id/subCategorySpinner"/>
+        <Spinner
+            android:id="@+id/subjectSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/txtSubject"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/box_layout_with_border"
+            android:hint="Title"
+            android:padding="10dp" />
+        <TextView
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -78,7 +99,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_below="@id/subCategorySpinner"/>
+            android:layout_below="@id/subjectSpinner"/>
 
         <EditText
             android:id="@+id/titleEditTxt"
@@ -179,6 +200,28 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"/>
         <TextView
+            android:id="@+id/txtFinalPriceCourse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Final Price"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@id/priceOfCourseEditText"/>
+        <EditText
+            android:id="@+id/finalPriceOfCourseEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtFinalPriceCourse"
+            android:hint="Price of Course"
+            android:inputType="number"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
             android:id="@+id/txtStartDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -187,7 +230,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_below="@id/priceOfCourseEditText"/>
+            android:layout_below="@id/finalPriceOfCourseEditText"/>
         <TextView
             android:id="@+id/dateDisplayText"
             android:layout_width="match_parent"
@@ -195,6 +238,7 @@
             android:background="@drawable/box_layout_with_border"
             android:layout_below="@id/txtStartDate"
             android:hint="DD-MM-YYYY"
+            android:padding="12dp"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"/>
@@ -215,6 +259,7 @@
             android:background="@drawable/box_layout_with_border"
             android:layout_below="@id/txtEndDate"
             android:hint="DD-MM-YYYY"
+            android:padding="12dp"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"/>

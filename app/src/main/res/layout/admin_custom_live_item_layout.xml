@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="160dp"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="5dp"
     app:cardBackgroundColor="@color/white"
@@ -9,6 +10,8 @@
     android:foreground="?android:attr/selectableItemBackgroundBorderless"
     >
     <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:paddingBottom="10dp">
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/imageCardView"
@@ -17,11 +20,11 @@
             app:cardCornerRadius="5dp"
             app:cardElevation="2dp"
             app:strokeWidth="0dp">
-            <androidx.viewpager2.widget.ViewPager2
+            <ImageView
                 android:id="@+id/imgLiveCourse"
                 android:layout_width="match_parent"
                 android:layout_height="110dp"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 android:src="@drawable/noimage" />
 
         </com.google.android.material.card.MaterialCardView>

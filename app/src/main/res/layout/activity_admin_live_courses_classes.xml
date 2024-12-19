@@ -10,6 +10,7 @@
         android:id="@+id/liveCoursesClassesListToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="@color/seed"
         android:elevation="15dp">
         <RelativeLayout
             android:layout_width="match_parent"
@@ -31,8 +32,6 @@
                 android:layout_marginStart="10dp"
                 android:layout_centerVertical="true"
                 />
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
     <ProgressBar

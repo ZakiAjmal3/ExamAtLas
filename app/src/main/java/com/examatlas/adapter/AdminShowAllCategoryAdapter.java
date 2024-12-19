@@ -66,7 +66,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         this.originalCategoryModelArrayList = new ArrayList<>(categoryModelArrayList);
         this.categoryModelArrayList = new ArrayList<>(originalCategoryModelArrayList);
         this.context = context;
-        sessionManager = new SessionManager(context.getContext());
+        sessionManager = new SessionManager(context.getActivity());
         authToken = sessionManager.getUserData().get("authToken");
     }
     @NonNull
