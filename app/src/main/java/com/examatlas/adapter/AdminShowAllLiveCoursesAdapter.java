@@ -32,11 +32,13 @@ import com.examatlas.activities.JoinLiveClassActivity;
 import com.examatlas.activities.LiveCoursesClassesListActivity;
 import com.examatlas.activities.LoginActivity;
 import com.examatlas.adapter.extraAdapter.BookImageAdapter;
+import com.examatlas.fragment.AdminBlogCreateDeleteFragment;
 import com.examatlas.models.AdminShowAllLiveCoursesModel;
 import com.examatlas.models.LiveCoursesClassesListModel;
 import com.examatlas.models.LiveCoursesModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
+import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
 
 import org.json.JSONException;
@@ -53,10 +55,13 @@ import java.util.Map;
 public class AdminShowAllLiveCoursesAdapter extends RecyclerView.Adapter<AdminShowAllLiveCoursesAdapter.ViewHolder> {
     private ArrayList<AdminShowAllLiveCoursesModel> liveCoursesModelArrayList;
     Fragment context;
-
+    SessionManager sessionManager;
+    String authToken;
     public AdminShowAllLiveCoursesAdapter(ArrayList<AdminShowAllLiveCoursesModel> liveCoursesModelArrayList, Fragment context) {
         this.liveCoursesModelArrayList = liveCoursesModelArrayList;
         this.context = context;
+        sessionManager = new SessionManager(context.getContext());
+        authToken = sessionManager.getUserData().get("authToken");
     }
 
     @NonNull
@@ -70,47 +75,75 @@ public class AdminShowAllLiveCoursesAdapter extends RecyclerView.Adapter<AdminSh
     public void onBindViewHolder(@NonNull AdminShowAllLiveCoursesAdapter.ViewHolder holder, int position) {
         AdminShowAllLiveCoursesModel currentClasss = liveCoursesModelArrayList.get(position);
         holder.itemView.setTag(currentClasss);
-        holder.itemView.setTag(liveCoursesModelArrayList.get(position));
         holder.title.setText(liveCoursesModelArrayList.get(position).getTitle());
         holder.tags.setText(liveCoursesModelArrayList.get(position).getTags());
-        holder.teacherName.setText(liveCoursesModelArrayList.get(position).getTeacherName());
 
         String imgURL = liveCoursesModelArrayList.get(position).getImageURL();
         Glide.with(context)
                 .load(imgURL)
                 .error(R.drawable.image1)
                 .into(holder.cfImage);
-//        // Enable JavaScript (optional, depending on your content)
-//        WebSettings webSettings = holder.description.getSettings();
-//        webSettings.setJavaScriptEnabled(true);
-//
-//        String htmlContentTxt = liveCoursesModelArrayList.get(position).getDescription();
-//
-//        // Inject CSS to control the image size
-//        String injectedCss = "<style>"
-//                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
-//                + "img { width: 100%; height: auto; }" // Adjust image size as needed
-//                + "</style>";
-//        String fullHtmlContent = injectedCss + htmlContentTxt;
-//
-//        // Disable scrolling and over-scrolling
-//        holder.description.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
-//        holder.description.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
-//
-//        // Load the modified HTML content
-//        holder.description.loadData(fullHtmlContent, "text/html", "UTF-8");
-
+        holder.deleteCourseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteLiveCourse(currentClasss);
+            }
+        });
     }
 
+    private void deleteLiveCourse(AdminShowAllLiveCoursesModel currentClasss) {
+        String deleteURL = Constant.BASE_URL + "liveclass/deleteClass/" + currentClasss.getCourseID();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, deleteURL, null,
+                new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    boolean status = response.getBoolean("status");
+                    if (status) {
+                        Toast.makeText(context.getContext(), "Blog Deleted Successfully", Toast.LENGTH_SHORT).show();
+                        liveCoursesModelArrayList.remove(currentClasss);
+                        notifyDataSetChanged();
+                    }
+                } catch (JSONException e) {
+                    Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                }
+            }
+            }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        String responseData = new String(error.networkResponse.data, "UTF-8");
+                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                        errorMessage += "\nResponse Data: " + responseData;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Toast.makeText(context.getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                Log.e("BlogFetchError", errorMessage);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
+                return headers;
+            }
+        };
+        MySingletonFragment.getInstance(context).addToRequestQueue(jsonObjectRequest);
+    }
     @Override
     public int getItemCount() {
         return liveCoursesModelArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView title, tags, teacherName;
-        ImageView cfImage;
-        WebView description;
+        TextView title, tags;
+        ImageView cfImage,deleteCourseBtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -118,8 +151,7 @@ public class AdminShowAllLiveCoursesAdapter extends RecyclerView.Adapter<AdminSh
             title = itemView.findViewById(R.id.txtFullName);
 //            description = itemView.findViewById(R.id.txtDesc);
             tags = itemView.findViewById(R.id.txtTag);
-            teacherName = itemView.findViewById(R.id.txtTeacherName);
-
+            deleteCourseBtn = itemView.findViewById(R.id.deleteCourseBtn);
             itemView.setOnClickListener((View.OnClickListener) this);
         }
         @Override

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,32 +113,45 @@ public class AdminLiveClassesViewerFragment extends Fragment {
 
         btnHls.setOnClickListener(v -> {
             if (!hlsEnabled) {
-                JSONObject config = new JSONObject();
-                JSONObject layout = new JSONObject();
-                JsonUtils.jsonPut(layout, "type", "SPOTLIGHT");
-                JsonUtils.jsonPut(layout, "priority", "PIN");
-                JsonUtils.jsonPut(layout, "gridSize", 4);
-                JsonUtils.jsonPut(config, "layout", layout);
-                JsonUtils.jsonPut(config, "orientation", "portrait");
-                JsonUtils.jsonPut(config, "theme", "DARK");
-                JsonUtils.jsonPut(config, "quality", "high");
+                try {
+                    JSONObject config = new JSONObject();
+                    JSONObject layout = new JSONObject();
+                    JsonUtils.jsonPut(layout, "type", "SPOTLIGHT");
+                    JsonUtils.jsonPut(layout, "priority", "PIN");
+                    JsonUtils.jsonPut(layout, "gridSize", 4);
+                    JsonUtils.jsonPut(config, "layout", layout);
+                    JsonUtils.jsonPut(config, "orientation", "portrait");
+                    JsonUtils.jsonPut(config, "theme", "DARK");
+                    JsonUtils.jsonPut(config, "quality", "high");
 
-                // Create SummaryConfig instance with appropriate parameters
-                boolean someBooleanValue = true; // Adjust as needed
-                String someStringValue = "your_summary_string"; // Replace with an appropriate string
-                SummaryConfig summaryConfig = new SummaryConfig(someBooleanValue, someStringValue);
+                    // Create SummaryConfig instance with appropriate parameters
+                    boolean someBooleanValue = true; // Adjust as needed
+                    String someStringValue = "your_summary_string"; // Replace with an appropriate string
+                    SummaryConfig summaryConfig = new SummaryConfig(someBooleanValue, someStringValue);
 
-                // Create an instance of PostTranscriptionConfig
-                PostTranscriptionConfig transcriptionConfig = new PostTranscriptionConfig(someBooleanValue, summaryConfig, someStringValue);
+                    // Create an instance of PostTranscriptionConfig
+                    PostTranscriptionConfig transcriptionConfig = new PostTranscriptionConfig(someBooleanValue, summaryConfig, someStringValue);
 
-                meeting.startHls(config, transcriptionConfig); // Pass both parameters
-                hlsEnabled = true; // Update the state
+                    // Starting HLS stream
+                    meeting.startHls(config, transcriptionConfig);
+                    hlsEnabled = true; // Update the state
+                    Toast.makeText(mContext, "HLS Started", Toast.LENGTH_SHORT).show();
+                    Log.d("HLS", "HLS stream started with config: " + config.toString());
+                } catch (Exception e) {
+                    Log.e("HLS", "Error starting HLS: ", e);
+                    Toast.makeText(mContext, "Error starting HLS", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                meeting.stopHls();
-                hlsEnabled = false; // Update the state
+                try {
+                    meeting.stopHls();
+                    hlsEnabled = false; // Update the state
+                    Toast.makeText(mContext, "HLS Stopped", Toast.LENGTH_SHORT).show();
+                    Log.d("HLS", "HLS stream stopped");
+                } catch (Exception e) {
+                    Log.e("HLS", "Error stopping HLS: ", e);
+                    Toast.makeText(mContext, "Error stopping HLS", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
-
     }
 }

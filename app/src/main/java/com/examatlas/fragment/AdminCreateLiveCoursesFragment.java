@@ -120,6 +120,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
 
         sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
+        Log.e("Auth Token",authToken);
 
         categoryModelArrayList = new ArrayList<>();
         getLiveClasses();
@@ -142,10 +143,10 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
     private AdminTagsForDataALLModel adminTagsForDataALLModel;
     private ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList;
     Spinner categorySpinner,subCategorySpinner,subjectSpinner;
-    EditText courseTitleEditText,courseSubTitleEditText,teacherNameEditText,languageEditText,priceOfCourseEditText,finalPriceOfCourseEditText,
+    EditText courseTitleEditText,courseSubTitleEditText,languageEditText,priceOfCourseEditText,finalPriceOfCourseEditText,
             descriptionEditText,courseContentEditText,tagsEditTxt;
     String categoryId,subCategoryId,subjectId,startDateISO,endDateISO;
-    ImageView uploadImageBtn;
+    ImageView uploadImageBtn,crossBtn;
     TextView uploadImageName;
     Button submitBTN;
     @SuppressLint("ClickableViewAccessibility")
@@ -159,13 +160,13 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         subCategorySpinner = dialog.findViewById(R.id.subCategorySpinner);
         subjectSpinner = dialog.findViewById(R.id.subjectSpinner);
 
+        crossBtn = dialog.findViewById(R.id.crossBtn);
         uploadImageBtn = dialog.findViewById(R.id.uploadImage);
         uploadImageName = dialog.findViewById(R.id.txtNoFileChosen);
         submitBTN = dialog.findViewById(R.id.btnSubmit);
 
         courseTitleEditText = dialog.findViewById(R.id.titleEditTxt);
         courseSubTitleEditText = dialog.findViewById(R.id.subTitleEditTxt);
-        teacherNameEditText = dialog.findViewById(R.id.teacherNameEditText);
         languageEditText = dialog.findViewById(R.id.languageEditText);
         priceOfCourseEditText = dialog.findViewById(R.id.priceOfCourseEditText);
         finalPriceOfCourseEditText = dialog.findViewById(R.id.finalPriceOfCourseEditText);
@@ -198,14 +199,6 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
             }
         });
         courseSubTitleEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (categoryId == null) {
-                    Toast.makeText(getContext(), "Please Select a Category first", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        teacherNameEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (categoryId == null) {
@@ -358,6 +351,13 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
             }
         });
 
+        crossBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
         dialog.show();
         WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -390,6 +390,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
         params.put("description", descriptionEditText.getText().toString().trim());
         params.put("language", languageEditText.getText().toString().trim());
         params.put("price", priceOfCourseEditText.getText().toString().trim());
+        params.put("finalPrice", finalPriceOfCourseEditText.getText().toString().trim());
         params.put("categoryId",categoryId);
         params.put("subCategoryId", subCategoryId);
         params.put("subjectId", subjectId);
@@ -425,6 +426,8 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                             if (status) {
                                 String message = responseObject.getString("message");
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                                liveCoursesModelArrayList.clear();
+                                getLiveClasses();
                                 dialog.dismiss();
                             } else {
                                 // Handle error message if status is false
@@ -490,7 +493,6 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                     courseContentEditText.setEnabled(true);
                     courseTitleEditText.setEnabled(true);
                     courseSubTitleEditText.setEnabled(true);
-                    teacherNameEditText.setEnabled(true);
                     languageEditText.setEnabled(true);
                     priceOfCourseEditText.setEnabled(true);
                     startDateDisplayText.setEnabled(true);
@@ -506,7 +508,6 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                     courseContentEditText.setEnabled(false);
                     courseTitleEditText.setEnabled(false);
                     courseSubTitleEditText.setEnabled(false);
-                    teacherNameEditText.setEnabled(false);
                     languageEditText.setEnabled(false);
                     priceOfCourseEditText.setEnabled(false);
                     startDateDisplayText.setEnabled(false);
@@ -521,7 +522,6 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                 courseContentEditText.setEnabled(false);
                 courseTitleEditText.setEnabled(false);
                 courseSubTitleEditText.setEnabled(false);
-                teacherNameEditText.setEnabled(false);
                 languageEditText.setEnabled(false);
                 priceOfCourseEditText.setEnabled(false);
                 startDateDisplayText.setEnabled(false);
@@ -770,12 +770,6 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                                     String title = jsonObject2.getString("title");
                                     String subTitle = jsonObject2.getString("subTitle");
                                     String description = jsonObject2.getString("description");
-                                    String teacher;
-                                    if (jsonObject2.has("teacher")) {
-                                        teacher = jsonObject2.getString("teacher");
-                                    }else {
-                                        teacher = null;
-                                    }
                                     String price = jsonObject2.getString("price");
                                     String categoryId = jsonObject2.getString("categoryId");
                                     String subCategoryId = jsonObject2.getString("subCategoryId");
@@ -809,7 +803,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                                     ArrayList<BookImageModels> liveClassesArrayList = new ArrayList<>();
 //                                    for (int j = 0; j<jsonImageArray.length();j++){
 //                                    }
-                                    AdminShowAllLiveCoursesModel liveCoursesModel = new AdminShowAllLiveCoursesModel(classID, title,subTitle, description,imageURL,teacher,tags.toString(), categoryId, subCategoryId, subjectId,price,finalPrice,courseContent, startDate, endDate, null, null);
+                                    AdminShowAllLiveCoursesModel liveCoursesModel = new AdminShowAllLiveCoursesModel(classID, title,subTitle, description,imageURL,tags.toString(), categoryId, subCategoryId, subjectId,price,finalPrice,courseContent, startDate, endDate, null, null);
 
                                     liveCoursesModelArrayList.add(liveCoursesModel);
                                 }

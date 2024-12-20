@@ -5,15 +5,14 @@ import com.examatlas.models.extraModels.BookImageModels;
 import java.util.ArrayList;
 
 public class AdminShowAllLiveCoursesModel {
-    String courseID,title,subTitle,description,imageURL,teacherName,tags,categoryId,subCategoryId,subjectId,price,finalPrice,courseContent,startDate,endDate;
+    String courseID,title,subTitle,description,imageURL,tags,categoryId,subCategoryId,subjectId,price,finalPrice,courseContent,startDate,endDate;
     ArrayList<BookImageModels> studentArrayList,liveClassArrayList;
 
-    public AdminShowAllLiveCoursesModel(String courseID, String title, String subTitle, String description, String imageURL, String teacherName, String tags, String categoryId, String subCategoryId, String subjectId, String price, String finalPrice, String courseContent, String startDate, String endDate, ArrayList<BookImageModels> studentArrayList, ArrayList<BookImageModels> liveClassArrayList) {
+    public AdminShowAllLiveCoursesModel(String courseID, String title, String subTitle, String description, String imageURL, String tags, String categoryId, String subCategoryId, String subjectId, String price, String finalPrice, String courseContent, String startDate, String endDate, ArrayList<BookImageModels> studentArrayList, ArrayList<BookImageModels> liveClassArrayList) {
         this.courseID = courseID;
         this.title = title;
         this.subTitle = subTitle;
         this.description = description;
-        this.teacherName = teacherName;
         this.tags = tags;
         this.categoryId = categoryId;
         this.subCategoryId = subCategoryId;
@@ -90,14 +89,6 @@ public class AdminShowAllLiveCoursesModel {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getTeacherName() {
-        return teacherName;
-    }
-
-    public void setTeacherName(String teacherName) {
-        this.teacherName = teacherName;
     }
 
     public String getTags() {

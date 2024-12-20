@@ -58,7 +58,7 @@ public class AdminJoinLiveClassActivity extends AppCompatActivity {
         }
     }
     public void joinMeeting() {
-        String mode = "CONFERENCE ";
+        String mode = "CONFERENCE";
         boolean streamEnable = mode.equals("CONFERENCE");
 
         // initialize VideoSDK
@@ -70,7 +70,7 @@ public class AdminJoinLiveClassActivity extends AppCompatActivity {
         // Initialize VideoSDK Meeting
         meeting = VideoSDK.initMeeting(
                 AdminJoinLiveClassActivity.this, meetingID, userName,
-                true, true, null, "CONFERENCE ", true, null, null);
+                true, true, null, "CONFERENCE", true, null, null);
 
         // join Meeting
         meeting.join();
