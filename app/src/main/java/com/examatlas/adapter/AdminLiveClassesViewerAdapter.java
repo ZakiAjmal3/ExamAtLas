@@ -1,5 +1,6 @@
 package com.examatlas.adapter;
 
+import android.opengl.Matrix;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +99,7 @@ public class AdminLiveClassesViewerAdapter extends RecyclerView.Adapter<AdminLiv
         Participant participant = participantList.get(position);
 
         holder.tvName.setText(participant.getDisplayName());
-
+        holder.participantView.setMirror(true);
         // adding the initial video stream for the participant into the 'VideoView'
         for (Map.Entry<String, Stream> entry : participant.getStreams().entrySet()) {
             Stream stream = entry.getValue();

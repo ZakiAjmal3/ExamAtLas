@@ -2,11 +2,12 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
-    android:layout_width="160dp"
-    android:layout_height="match_parent"
+    android:layout_width="105dp"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
+    app:cardCornerRadius="6dp"
     app:cardBackgroundColor="@color/white"
-    app:cardElevation="5dp"
+    app:cardElevation="2dp"
     app:strokeWidth="1dp">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -25,7 +26,7 @@
             android:id="@+id/imgAffair"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:scaleType="fitCenter"
+            android:scaleType="fitXY"
             android:src="@drawable/image1" />
 
     </com.google.android.material.card.MaterialCardView>
@@ -38,7 +39,6 @@
             android:layout_below="@id/imageCardView"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:textAlignment="center"
             android:layout_marginTop="5dp"
             android:text="Blog Title"
             android:textColor="@color/black"
@@ -48,8 +48,7 @@
             android:shadowColor="#000000"
             android:shadowDx="1"
             android:shadowDy="1"
-            android:shadowRadius="0.5"
-            android:layout_centerHorizontal="true"/>
+            android:shadowRadius="0.5" />
         <LinearLayout
             android:id="@+id/layout1"
             android:layout_width="wrap_content"
@@ -59,7 +58,7 @@
             android:orientation="horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginTop="10dp">
+            android:layout_marginBottom="5dp">
 
             <TextView
                 android:id="@+id/txtAuthor"
@@ -70,7 +69,6 @@
                 android:textColor="@color/dark_grey"
                 android:textStyle="bold"
                 android:textSize="10sp"
-                android:paddingLeft="5dp"
                 />
 
             <TextView
@@ -83,21 +81,5 @@
                 android:textColor="#4CAF50"
                 android:textSize="10sp" />
         </LinearLayout>
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/layout1"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp">
-            <WebView
-                android:id="@+id/txtContent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:text="JSSC : Jharkhand Staff Selection Commission"
-                android:textColor="@color/black"
-                android:textSize="10sp" />
-        </ScrollView>
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

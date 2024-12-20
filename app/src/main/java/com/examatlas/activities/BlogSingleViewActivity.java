@@ -1,11 +1,13 @@
 package com.examatlas.activities;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +23,7 @@ import com.examatlas.R;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +39,8 @@ public class BlogSingleViewActivity extends AppCompatActivity {
     String blogID;
     SessionManager sessionManager;
     String token;
+    ShimmerFrameLayout shimmer_blog_container;
+    RelativeLayout mainContainer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +50,8 @@ public class BlogSingleViewActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.backBtn);
         blogTitle = findViewById(R.id.txtBlogTitle);
         webviewContent = findViewById(R.id.content);
+        shimmer_blog_container = findViewById(R.id.shimmer_blog_container);
+        mainContainer = findViewById(R.id.mainContainer);
 
         sessionManager = new SessionManager(this);
         token = sessionManager.getUserData().get("authToken");
@@ -58,7 +65,17 @@ public class BlogSingleViewActivity extends AppCompatActivity {
             }
         });
 
-        getBlogList();
+        mainContainer.setVisibility(View.GONE);
+        shimmer_blog_container.setVisibility(View.VISIBLE);
+        shimmer_blog_container.startShimmer();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getBlogList();
+            }
+        },1000);
+
     }
 
     private void getBlogList() {
@@ -107,6 +124,9 @@ public class BlogSingleViewActivity extends AppCompatActivity {
 
                                 // Load the modified HTML content
                                 webviewContent.loadData(fullHtmlContent, "text/html", "UTF-8");
+                                shimmer_blog_container.stopShimmer();
+                                shimmer_blog_container.setVisibility(View.GONE);
+                                mainContainer.setVisibility(View.VISIBLE);
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());

@@ -51,7 +51,51 @@
             android:padding="10dp" />
 
         <TextView
-            android:id="@+id/txtKeyword"
+            android:id="@+id/txtDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/titleEditTxt"/>
+        <TextView
+            android:id="@+id/dateDisplayText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtDate"
+            android:hint="DD-MM-YYYY"
+            android:padding="13dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/dateDisplayText"/>
+        <TextView
+            android:id="@+id/timeDisplayText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtTime"
+            android:hint="07:30:56"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
+            android:id="@+id/txtDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Description"
@@ -59,123 +103,44 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
-            android:layout_below="@id/titleEditTxt"/>
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/timeDisplayText"/>
         <EditText
-            android:id="@+id/keywordEditText"
+            android:id="@+id/descriptionEditText"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/box_layout_with_border"
-            android:layout_below="@id/txtKeyword"
+            android:layout_below="@id/txtDescription"
             android:hint="Description"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"/>
-        <TextView
-            android:id="@+id/txtCategory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Teacher Name"
-            android:textSize="16dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
-            android:layout_below="@id/keywordEditText"/>
-        <EditText
-            android:id="@+id/categoryEditText"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/box_layout_with_border"
-            android:layout_below="@id/txtCategory"
-            android:hint="Teacher Name"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"/>
-        <TextView
-            android:id="@+id/txtTags"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tags"
-            android:textSize="16dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
-            android:layout_below="@id/categoryEditText"/>
-        <EditText
-            android:id="@+id/tagsEditText"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/box_layout_with_border"
-            android:layout_below="@id/txtTags"
-            android:hint="Tags"
             android:padding="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:imeOptions="actionSend"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tagsRecycler"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tagsEditText"
-            android:visibility="gone"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            />
         <TextView
-            android:id="@+id/txtUploadImage"
+            android:id="@+id/txtDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload Image"
+            android:text="Duration in Hours"
             android:textSize="16dp"
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
-            android:layout_below="@id/tagsRecycler"/>
-        <!--        <TextView-->
-        <!--            android:id="@+id/txtChooseImage"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:text="Upload Image"-->
-        <!--            android:textSize="16dp"-->
-        <!--            android:textColor="@color/black"-->
-        <!--            android:layout_marginLeft="20dp"-->
-        <!--            android:layout_marginTop="10dp"-->
-        <!--            android:paddingTop="5dp"-->
-        <!--            android:paddingBottom="5dp"-->
-        <!--            android:paddingLeft="10dp"-->
-        <!--            android:paddingRight="10dp"-->
-        <!--            android:background="@drawable/box_layout_with_border_and_color"-->
-        <!--            android:layout_below="@id/txtUploadImage"/>-->
-        <ImageView
-            android:id="@+id/uploadImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/ic_image"
-            android:background="@drawable/rounded_corner_with_border3"
-            android:padding="6dp"
-            android:layout_marginStart="30dp"
             android:layout_marginTop="10dp"
-            android:layout_below="@id/txtUploadImage"
+            android:layout_below="@id/descriptionEditText"/>
+        <EditText
+            android:id="@+id/durationEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtDuration"
+            android:hint="2"
+            android:padding="10dp"
+            android:inputType="number"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
             />
-        <TextView
-            android:id="@+id/txtNoFileChosen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="No file chosen"
-            android:textSize="14dp"
-            android:textColor="@color/black"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="50dp"
-            android:layout_below="@id/txtUploadImage"
-            android:layout_toRightOf="@id/uploadImage"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmit"
@@ -190,7 +155,7 @@
             android:layout_marginTop="30dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_below="@id/uploadImage"
+            android:layout_below="@id/durationEditText"
             />
 
     </RelativeLayout>

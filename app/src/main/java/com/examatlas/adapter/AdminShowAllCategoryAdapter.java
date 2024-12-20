@@ -66,7 +66,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         this.originalCategoryModelArrayList = new ArrayList<>(categoryModelArrayList);
         this.categoryModelArrayList = new ArrayList<>(originalCategoryModelArrayList);
         this.context = context;
-        sessionManager = new SessionManager(context.getContext());
+        sessionManager = new SessionManager(context.getActivity());
         authToken = sessionManager.getUserData().get("authToken");
     }
     @NonNull
@@ -171,15 +171,14 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
 
         EditText titleEditTxt = dialog.findViewById(R.id.titleEditTxt);
         titleEditTxt.setText(currentCategory.getCategoryName());
-        EditText descriptionEditText = dialog.findViewById(R.id.descriptionEditText);
-        descriptionEditText.setText(currentCategory.getSlug());
+        EditText slugEditText = dialog.findViewById(R.id.slugEditText);
+        slugEditText.setText(currentCategory.getSlug());
+        ImageView imageView = dialog.findViewById(R.id.uploadImage);
 
-        ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList = new ArrayList<>();
-        AdminTagsForDataALLAdapter adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
-        RecyclerView tagsRecyclerView = dialog.findViewById(R.id.tagsRecycler);
-        tagsRecyclerView.setVisibility(View.VISIBLE);
-        tagsRecyclerView.setLayoutManager(new GridLayoutManager(context.requireContext(), 2));
-        tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
+        Glide.with(context)
+                .load(categoryModelArrayList.get(position).getImageUrl())
+                .error(R.drawable.image1)
+                .into(imageView);
 
         Button submitBtn = dialog.findViewById(R.id.btnSubmit);
         ImageView crossBtn = dialog.findViewById(R.id.btnCross);
@@ -187,7 +186,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendUpdateSubjectDetails(position,currentCategory,titleEditTxt.getText().toString().trim(),descriptionEditText.getText().toString().trim(),adminTagsForDataALLModelArrayList,dialog);
+                sendUpdateSubjectDetails(position,currentCategory,titleEditTxt.getText().toString().trim(),slugEditText.getText().toString().trim(),dialog);
             }
         });
         crossBtn.setOnClickListener(new View.OnClickListener() {
@@ -221,21 +220,14 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
 
     }
 
-    private void sendUpdateSubjectDetails(int position, AdminShowAllCategoryModel currentCategory, String name, String description, ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, Dialog dialog) {
+    private void sendUpdateSubjectDetails(int position, AdminShowAllCategoryModel currentCategory, String name, String slug,  Dialog dialog) {
         String updateURL = Constant.BASE_URL + "category/createCategory";
         // Create JSON object to send in the request
         JSONObject categoryObject = new JSONObject();
         try {
             categoryObject.put("id", currentCategory.getId());
             categoryObject.put("categoryName", name);
-            categoryObject.put("description", description);
-
-            // Convert tags to a JSONArray
-            JSONArray tagsArray = new JSONArray();
-            for (AdminTagsForDataALLModel tag : adminTagsForDataALLModelArrayList) {
-                tagsArray.put(tag.getTagName()); // Assuming `getTag()` returns the tag string
-            }
-            categoryObject.put("tags", tagsArray);
+            categoryObject.put("slug", slug);
 
         } catch (JSONException e) {
             Log.e("JSON_ERROR", "Error creating JSON object: " + e.getMessage());
@@ -248,7 +240,7 @@ public class AdminShowAllCategoryAdapter extends RecyclerView.Adapter<AdminShowA
                             boolean status = response.getBoolean("status");
                             if (status) {
                                 Toast.makeText(context.getContext(), "Blog Updated Successfully", Toast.LENGTH_SHORT).show();
-                                updateSubjectInList(currentCategory, name,description);
+                                updateSubjectInList(currentCategory, name,slug);
                                 ((AdminCreateCategoryFragment) context).getAllCategory();
                                 notifyItemChanged(position);
                                 dialog.dismiss();

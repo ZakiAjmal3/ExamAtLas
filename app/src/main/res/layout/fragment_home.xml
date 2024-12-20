@@ -40,8 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:orientation="vertical">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -105,6 +104,8 @@
                         android:shadowDx="2"
                         android:shadowDy="2"
                         android:shadowRadius="1"
+                        android:layout_marginLeft="10dp"
+                        android:layout_alignParentBottom="true"
                         />
                     <TextView
                         android:id="@+id/viewAllBlogTxt"
@@ -136,29 +137,44 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="10dp">
                         <androidx.cardview.widget.CardView
-                            android:id="@+id/img2"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/imgB1"
+                            android:layout_width="105dp"
                             android:layout_height="120dp"
                             android:gravity="center"
                             android:orientation="vertical"
-                            app:cardCornerRadius="10dp"
+                            app:cardCornerRadius="6dp"
                             >
                             <ImageView
-                                android:layout_width="150dp"
+                                android:layout_width="105dp"
                                 android:layout_height="120dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
                         <androidx.cardview.widget.CardView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/imgB2"
+                            android:layout_width="105dp"
                             android:layout_height="120dp"
                             android:gravity="center"
                             android:orientation="vertical"
-                            app:cardCornerRadius="10dp"
-                            android:layout_toRightOf="@id/img2"
-                            android:layout_marginLeft="20dp">
+                            app:cardCornerRadius="7dp"
+                            android:layout_toRightOf="@id/imgB1"
+                            android:layout_marginLeft="10dp">
                             <ImageView
-                                android:layout_width="150dp"
+                                android:layout_width="105dp"
+                                android:layout_height="120dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="105dp"
+                            android:layout_height="120dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="7dp"
+                            android:layout_toRightOf="@id/imgB2"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="110dp"
                                 android:layout_height="120dp"
                                 android:background="@drawable/skeleton_background"
                                 />
@@ -169,6 +185,8 @@
                     android:id="@+id/blogsRecycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
                     />
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -187,7 +205,8 @@
                         android:shadowColor="#000000"
                         android:shadowDx="2"
                         android:shadowDy="2"
-                        android:shadowRadius="1" />
+                        android:shadowRadius="1"
+                        android:layout_marginLeft="10dp"/>
                     <TextView
                         android:id="@+id/viewAllCATxt"
                         android:layout_width="wrap_content"
@@ -216,29 +235,45 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="10dp">
                         <androidx.cardview.widget.CardView
-                            android:id="@+id/img1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="150dp"
+                            android:id="@+id/imgC1"
+                            android:layout_width="105dp"
+                            android:layout_height="120dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="10dp">
                             <ImageView
-                                android:layout_width="150dp"
-                                android:layout_height="150dp"
+                                android:layout_width="105dp"
+                                android:layout_height="120dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
                         <androidx.cardview.widget.CardView
-                            android:layout_width="wrap_content"
-                            android:layout_height="150dp"
+                            android:id="@+id/imgC2"
+                            android:layout_width="105dp"
+                            android:layout_height="120dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="10dp"
-                            android:layout_toRightOf="@id/img1"
-                            android:layout_marginLeft="20dp">
+                            android:layout_toRightOf="@id/imgC1"
+                            android:layout_marginLeft="10dp">
                             <ImageView
-                                android:layout_width="150dp"
-                                android:layout_height="150dp"
+                                android:layout_width="105dp"
+                                android:layout_height="120dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/imgC3"
+                            android:layout_width="105dp"
+                            android:layout_height="120dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="10dp"
+                            android:layout_toRightOf="@id/imgC2"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="105dp"
+                                android:layout_height="120dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
@@ -247,7 +282,9 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/currentAffairRecycler"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

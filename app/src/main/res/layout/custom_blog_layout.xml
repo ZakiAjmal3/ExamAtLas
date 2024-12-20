@@ -2,72 +2,70 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/blogLayout"
-    android:layout_width="120dp"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    android:orientation="vertical"
     android:layout_margin="5dp"
+    app:cardCornerRadius="7dp"
     app:cardBackgroundColor="@color/white"
-    app:cardElevation="5dp"
+    app:cardElevation="2dp"
     app:strokeWidth="1dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/imageCardView"
+            android:layout_width="130dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="10dp">
-            <TextView
-                android:id="@+id/createdDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:text="Tag Text"
-                android:textColor="@color/red"
-                android:textSize="8sp"
-                android:layout_marginBottom="10dp" />
+            android:layout_centerVertical="true"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp">
+            <ImageView
+                android:id="@+id/imgBlog"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/image1" />
 
-            <TextView
-                android:id="@+id/txtBlogTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:text="Blog Title"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_below="@id/createdDate"/>
-            <TextView
-                android:id="@+id/content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:text="CONTENT"
-                android:textColor="@color/black"
-                android:textSize="10sp"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_below="@id/txtBlogTitle"/>
-
+        </com.google.android.material.card.MaterialCardView>
+        <TextView
+            android:id="@+id/txtBlogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="Blog Title"
+            android:textColor="@color/black"
+            android:layout_toRightOf="@id/imageCardView"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            android:shadowColor="#000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="0.5" />
             <LinearLayout
                 android:id="@+id/layout1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:gravity="bottom"
                 android:orientation="horizontal"
-                android:layout_below="@id/content">
-
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/imageCardView"
+                >
                 <TextView
                     android:id="@+id/txtAuthor"
                     android:layout_width="wrap_content"
@@ -84,15 +82,8 @@
                     android:layout_marginStart="5dp"
                     android:fontFamily="@font/poppins"
                     android:text="Tag Text"
-                    android:textColor="@color/seed"
+                    android:textColor="#4CAF50"
                     android:textSize="10sp" />
             </LinearLayout>
-        </RelativeLayout>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/grey" />
-
+    </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>
