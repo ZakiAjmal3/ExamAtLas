@@ -25,7 +25,6 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
             android:clickable="true"
             android:contentDescription="Menu Drawer Icon"
             android:focusable="true"

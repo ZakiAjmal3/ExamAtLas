@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.BlogSingleViewActivity">
+    tools:context=".activities.AdminCurrentAffairsSingleViewActivity">
 
     <RelativeLayout
         android:id="@+id/topBar"
@@ -25,6 +25,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerVertical="true"
+
             android:clickable="true"
             android:contentDescription="Menu Drawer Icon"
             android:focusable="true"
@@ -39,15 +40,25 @@
             android:fontFamily="@font/poppins"
             android:layout_toRightOf="@id/backBtn"
             android:layout_centerVertical="true"
-            android:letterSpacing="0.1"
+            android:letterSpacing="0.05"
             android:shadowColor="#FFFFFF"
             android:shadowDx="2"
             android:shadowDy="2"
             android:shadowRadius="1"
-            android:text="Blog Detail"
+            android:text="Current Affair Details"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="normal" />
+        <ImageView
+            android:id="@+id/editBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_edit_white"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="5dp"/>
     </RelativeLayout>
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_blog_container"
@@ -115,7 +126,7 @@
         android:layout_below="@id/topBar"
         android:visibility="gone">
         <TextView
-            android:id="@+id/txtBlogTitle"
+            android:id="@+id/txtCATitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins"
@@ -135,29 +146,34 @@
             android:layout_marginRight="10dp"
             app:cardElevation="2dp"
             app:strokeWidth="0dp"
-            android:layout_below="@id/txtBlogTitle"
+            android:layout_below="@id/txtCATitle"
             >
 
             <ImageView
-                android:id="@+id/blogIMG"
+                android:id="@+id/caIMG"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/image1" />
 
         </com.google.android.material.card.MaterialCardView>
-        <WebView
-            android:id="@+id/content"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins"
-            android:layout_below="@id/imageCardView"
-            android:text="CONTENT"
-            android:textColor="@color/dark_grey"
-            android:textSize="10sp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="10dp"/>
+            android:layout_height="match_parent"
+            android:layout_below="@id/imageCardView">
+            <WebView
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:layout_below="@id/imageCardView"
+                android:text="CONTENT"
+                android:textColor="@color/dark_grey"
+                android:textSize="10sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="10dp"/>
+        </ScrollView>
     </RelativeLayout>
 </RelativeLayout>

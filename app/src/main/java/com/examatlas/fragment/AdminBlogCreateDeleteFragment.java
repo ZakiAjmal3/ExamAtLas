@@ -24,12 +24,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,10 +52,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.AdminShowAllBlogAdapter;
 import com.examatlas.adapter.AdminTagsForDataALLAdapter;
+import com.examatlas.models.AdminShowAllCategoryModel;
+import com.examatlas.models.extraModels.AdminCategoryModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MultipartRequest;
 import com.examatlas.utils.MySingletonFragment;
@@ -78,6 +82,9 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
     private Button createBlogBtn;
     private Dialog createBlogDialogBox;
     private EditText titleEditTxt, keywordEditTxt, contentEditTxt, tagsEditTxt;
+    private Spinner categorySpinner;
+    ArrayList<AdminShowAllCategoryModel> categoryModelArrayList;
+    String categoryId,categoryName;
     private RecyclerView tagsRecyclerView;
     private AdminTagsForDataALLAdapter adminTagsForDataALLAdapter;
     private AdminTagsForDataALLModel adminTagsForDataALLModel;
@@ -115,13 +122,13 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         noDataLayout = view.findViewById(R.id.noDataLayout);
 
         adminShowAllBlogModelArrayList = new ArrayList<>();
-        showAllBlogRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false));
+        showAllBlogRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,false));
 
         sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
 
         showAllBlogFunction();
-
+        getCategory();
         // Setup ActivityResultLaunchers
         setupActivityResultLaunchers();
 
@@ -187,13 +194,13 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("data");
                                 adminShowAllBlogModelArrayList.clear(); // Clear the list before adding new items
 
                                 JSONObject jsonObject = response.getJSONObject("pagination");
                                 String totalRows = jsonObject.getString("totalRows");
                                 String totalPages = jsonObject.getString("totalPages");
                                 String currentPage = jsonObject.getString("currentPage");
+                                JSONArray jsonArray = response.getJSONArray("data");
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
@@ -201,7 +208,15 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                                     String title = jsonObject2.getString("title");
                                     String keyword = jsonObject2.getString("keyword");
                                     String content = jsonObject2.getString("content");
-
+                                    Log.e("Blog content",content);
+                                    JSONObject image = jsonObject2.getJSONObject("image");
+                                    String url = image.getString("url");
+                                    String categoryName;
+                                    if (jsonObject2.has("category")) {
+                                        categoryName = jsonObject2.getString("category");
+                                    }else {
+                                        categoryName =  "null";
+                                    }
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
                                     JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
@@ -214,7 +229,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    adminShowAllBlogModel = new AdminShowAllBlogModel(blogID, title, keyword, content, tags.toString(), totalRows,totalPages,currentPage);
+                                    adminShowAllBlogModel = new AdminShowAllBlogModel(blogID,null,categoryName,url, title, keyword, content, tags.toString(), totalRows,totalPages,currentPage);
                                     adminShowAllBlogModelArrayList.add(adminShowAllBlogModel);
                                 }
                                 // Update the original list in the adapter
@@ -272,8 +287,9 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
 
     private void openCreateBlogDialog() {
         createBlogDialogBox = new Dialog(requireContext());
-        createBlogDialogBox.setContentView(R.layout.admin_create_data_dialog_box);
+        createBlogDialogBox.setContentView(R.layout.admin_create_blog_dialog_box);
 
+        categorySpinner = createBlogDialogBox.findViewById(R.id.categorySpinner);
         titleEditTxt = createBlogDialogBox.findViewById(R.id.titleEditTxt);
         keywordEditTxt = createBlogDialogBox.findViewById(R.id.keywordEditText);
         contentEditTxt = createBlogDialogBox.findViewById(R.id.contentEditText);
@@ -292,6 +308,8 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         tagsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
         adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
         tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
+
+        setupCategorySpinner(categorySpinner, titleEditTxt,keywordEditTxt,contentEditTxt,tagsEditTxt,null);
 
         tagsEditTxt = createBlogDialogBox.findViewById(R.id.tagsEditText);
 
@@ -350,6 +368,60 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         createBlogDialogBox.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         createBlogDialogBox.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
+    }
+
+    public void setupCategorySpinner(Spinner categorySpinners,EditText titleEditTxt,EditText keywordEditTxt,EditText contentEditTxt,EditText tagsEditTxt ,AdminShowAllBlogModel currentCategory) {
+        // Assuming `subCategoryModelArrayList` contains the categories data
+        ArrayList<String> categoryNameList = new ArrayList<>();
+        categoryNameList.add("Select Category"); // First item is "Select Category"
+
+        for (int i = 0; i < categoryModelArrayList.size(); i++) {
+            // Populate category names from your subCategoryModelArrayList
+            categoryNameList.add(categoryModelArrayList.get(i).getCategoryName());
+        }
+
+        // Set the adapter for the Spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categoryNameList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinners.setAdapter(adapter);
+        if (currentCategory != null) {
+            for (int i = 0; i < categoryNameList.size(); i++) {
+                if (categoryNameList.get(i).equals(currentCategory.getCategoryName())) {
+                    categorySpinners.setSelection(i);
+                    categoryName = categoryNameList.get(i);
+                }
+            }
+        }
+        // Set the OnItemSelectedListener to handle category selection
+        categorySpinners.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if (position > 0) { // Ensure that a category is selected (not "Select Category")
+                    titleEditTxt.setEnabled(true);
+                    keywordEditTxt.setEnabled(true);
+                    contentEditTxt.setEnabled(true);
+                    tagsEditTxt.setEnabled(true);
+                    categoryId = categoryModelArrayList.get(position - 1).getId();
+                    categoryName = categoryModelArrayList.get(position - 1).getCategoryName();
+                } else {
+                    categoryId = null;
+                    titleEditTxt.setEnabled(false);
+                    keywordEditTxt.setEnabled(false);
+                    contentEditTxt.setEnabled(false);
+                    tagsEditTxt.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                categoryId = null;
+                categoryName = null;
+                titleEditTxt.setEnabled(false);
+                keywordEditTxt.setEnabled(false);
+                contentEditTxt.setEnabled(false);
+                tagsEditTxt.setEnabled(false);
+            }
+        });
     }
 
     private void openKeyboard() {
@@ -537,6 +609,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         params.put("title", title);
         params.put("keyword", keyword);
         params.put("content", content);
+        params.put("category",categoryName);
 
         // Add the tags as a comma-separated string
         StringBuilder tagsBuilder = new StringBuilder();
@@ -595,5 +668,55 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
 
         // Add the request to the queue
         MySingletonFragment.getInstance(this).addToRequestQueue(multipartRequest);
+    }
+    public  void getCategory(){
+        String categoryURL = Constant.BASE_URL + "category/getCategory";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, categoryURL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            boolean status = response.getBoolean("status");
+                            if (status) {
+                                categoryModelArrayList = new ArrayList<>();
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                // Parse books directly here
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject jsonObject2 = jsonArray.getJSONObject(i);
+                                    String id = jsonObject2.getString("_id");
+                                    String categoryName = jsonObject2.getString("categoryName");
+                                    String description = jsonObject2.getString("slug");
+                                    String is_active = jsonObject2.getString("is_active");
+                                    JSONObject imageObj = jsonObject2.getJSONObject("image");
+                                    String imageUrl = imageObj.getString("url");
+
+                                    AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,imageUrl);
+                                    categoryModelArrayList.add(categoryModel);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                            Log.e("catch",e.toString());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                Log.e("onErrorResponse",error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
+                return headers;
+            }
+        };
+        MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
+    public String getCategoryName(){
+        return categoryName;
     }
 }

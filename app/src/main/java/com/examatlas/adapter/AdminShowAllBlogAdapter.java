@@ -1,8 +1,10 @@
 package com.examatlas.adapter;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
@@ -13,12 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
 import com.examatlas.R;
+import com.examatlas.activities.AdminBlogSingleViewActivity;
+import com.examatlas.fragment.AdminCreateSubCategoryFragment;
+import com.examatlas.models.AdminShowAllCategoryModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.fragment.AdminBlogCreateDeleteFragment;
@@ -46,7 +51,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,8 +60,7 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
     private Fragment context;
     private String currentQuery = "";
     SessionManager sessionManager;
-    String authToken;
-
+    String authToken,categoryName;
     public AdminShowAllBlogAdapter(ArrayList<AdminShowAllBlogModel> adminShowAllBlogModelArrayList, Fragment context) {
         this.adminShowAllBlogModelArrayList = adminShowAllBlogModelArrayList;
         this.context = context;
@@ -65,14 +68,12 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
         sessionManager = new SessionManager(context.getContext());
         authToken = sessionManager.getUserData().get("authToken");
     }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_custom_blog_item_layout, parent, false);
         return new ViewHolder(view);
     }
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         AdminShowAllBlogModel currentBlog = adminShowAllBlogModelArrayList.get(position);
@@ -80,53 +81,87 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
 
         // Set highlighted text
         holder.setHighlightedText(holder.title, currentBlog.getTitle(), currentQuery);
-        holder.setHighlightedText(holder.keyword, currentBlog.getKeyword(), currentQuery);
         holder.setHighlightedText(holder.tags, currentBlog.getTags(), currentQuery);
+        holder.setHighlightedText(holder.categoryTxt, currentBlog.getCategoryName(), currentQuery);
 
         holder.editBlogBtn.setOnClickListener(view -> openEditBlogDialog(currentBlog));
         holder.deleteBlogBtn.setOnClickListener(view -> quitDialog(position));
 
-        // Enable JavaScript (optional, depending on your content)
-        WebSettings webSettings = holder.content.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+        String titleStr = currentBlog.getTitle();
+        holder.setHighlightedText(holder.title, titleStr, currentQuery);
 
-        String htmlContentTxt = adminShowAllBlogModelArrayList.get(position).getContent();
+        // Post a Runnable to modify the title text based on the number of lines
+        holder.title.post(new Runnable() {
+            @Override
+            public void run() {
+                // Get the Layout object from the TextView to measure lines
+                Layout layout = holder.title.getLayout();
 
-        // Inject CSS to control the image size
-        String injectedCss = "<style>"
-                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
-                + "img { width: 100%; height: auto; }" // Adjust image size as needed
-                + "</style>";
-        String fullHtmlContent = injectedCss + htmlContentTxt;
+                // Check the number of lines
+                int lineCount = layout.getLineCount();
 
-        // Disable scrolling and over-scrolling
-        holder.content.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
-        holder.content.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+                // Perform truncation only if the line count exceeds 3
+                if (lineCount > 3) {
+                    String firstThreeLinesText = "";
 
-        // Load the modified HTML content
-        holder.content.loadData(fullHtmlContent, "text/html", "UTF-8");
+                    // Get the start and end positions for the first three lines
+                    for (int i = 0; i < 3; i++) {
+                        int startPos = layout.getLineStart(i);
+                        int endPos = layout.getLineEnd(i);
+                        firstThreeLinesText += holder.title.getText().subSequence(startPos, endPos);
+
+                        // Add a space after each line, except for the last one
+                        if (i < 2) {
+                            firstThreeLinesText += " ";
+                        }
+                    }
+
+                    // Truncate the last three characters and add "..."
+                    if (firstThreeLinesText.length() > 3) {
+                        firstThreeLinesText = firstThreeLinesText.substring(0, firstThreeLinesText.length() - 3) + "...";
+                    }
+
+                    // Set the text to the title with the first three lines and ellipsis
+                    holder.title.setText(firstThreeLinesText);
+                    holder.setHighlightedText(holder.title, firstThreeLinesText, currentQuery);
+
+                } else {
+                    // If there are 3 or fewer lines, just set the text normally
+                    holder.setHighlightedText(holder.title, titleStr, currentQuery);
+                }
+            }
+        });
+        // Load the image using Glide
+        Glide.with(context)
+                .load(currentBlog.getImageURL())
+                .error(R.drawable.image1)
+                .into(holder.blogImage);
     }
-
     @Override
     public int getItemCount() {
         return adminShowAllBlogModelArrayList.size();
     }
-
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, keyword, tags;
-        ImageView editBlogBtn, deleteBlogBtn;
-        WebView content;
-
+        TextView title, tags,categoryTxt;
+        ImageView blogImage,editBlogBtn, deleteBlogBtn;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.txtBlogTitle);
-            keyword = itemView.findViewById(R.id.txtBlogKeyword);
-            content = itemView.findViewById(R.id.content);
+            categoryTxt = itemView.findViewById(R.id.categoryTxt);
             tags = itemView.findViewById(R.id.tagTxt);
+            blogImage = itemView.findViewById(R.id.imgBlog);
             editBlogBtn = itemView.findViewById(R.id.editBlogBtn);
             deleteBlogBtn = itemView.findViewById(R.id.deleteBlogBtn);
-        }
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context.getActivity(), AdminBlogSingleViewActivity.class);
+                    intent.putExtra("blogID",adminShowAllBlogModelArrayList.get(getAdapterPosition()).getBlogID());
+                    context.startActivity(intent);
+                }
+            });
+        }
         public void setHighlightedText(TextView textView, String text, String query) {
             if (query == null || query.isEmpty()) {
                 textView.setText(text);
@@ -163,7 +198,12 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
 
     private void openEditBlogDialog(AdminShowAllBlogModel blogModel) {
         Dialog editBlogDialogBox = new Dialog(context.requireContext());
-        editBlogDialogBox.setContentView(R.layout.admin_create_data_dialog_box);
+        editBlogDialogBox.setContentView(R.layout.admin_create_blog_dialog_box);
+
+        Spinner categorySpinner;
+        ArrayList<AdminShowAllCategoryModel> categoryModelArrayList;
+
+        categorySpinner = editBlogDialogBox.findViewById(R.id.categorySpinner);
 
         ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList = new ArrayList<>();
         AdminTagsForDataALLAdapter adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
@@ -188,6 +228,8 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
             adminTagsForDataALLModelArrayList.add(new AdminTagsForDataALLModel(tag.trim()));
         }
         adminTagsForDataALLAdapter.notifyDataSetChanged();
+
+        ((AdminBlogCreateDeleteFragment) context).setupCategorySpinner(categorySpinner,titleEditTxt,keywordEditTxt,contentEditTxt,tagsEditTxt,blogModel);
 
         Button uploadBlogDetailsBtn = editBlogDialogBox.findViewById(R.id.btnSubmit);
         uploadBlogDetailsBtn.setClickable(true);
@@ -243,12 +285,15 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
     private void sendingBlogDetails(String blogId, String title, String keyword, String content, ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList) {
         String updateURL = Constant.BASE_URL + "blog/updateBlog/" + blogId;
 
+        categoryName = ((AdminBlogCreateDeleteFragment) context).getCategoryName();
+
         // Create JSON object to send in the request
         JSONObject blogDetails = new JSONObject();
         try {
             blogDetails.put("title", title);
             blogDetails.put("keyword", keyword);
             blogDetails.put("content", content);
+            blogDetails.put("category",categoryName);
 
             // Convert tags to a JSONArray
             JSONArray tagsArray = new JSONArray();

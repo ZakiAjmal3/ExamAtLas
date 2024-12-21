@@ -1,8 +1,10 @@
 package com.examatlas.adapter;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
@@ -13,8 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -32,7 +32,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
 import com.examatlas.R;
+import com.examatlas.activities.AdminCurrentAffairsSingleViewActivity;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.fragment.AdminCreateCurrentAffairFragment;
@@ -76,36 +78,62 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         AdminShowAllCAModel currentCA = adminShowAllCAModelArrayList.get(position);
         holder.itemView.setTag(currentCA);
 
-        // Set highlighted text
-        holder.setHighlightedText(holder.title, currentCA.getTitle(), currentQuery);
-        holder.setHighlightedText(holder.keyword, currentCA.getKeyword(), currentQuery);
+        // Set highlighted text for the tags
         holder.setHighlightedText(holder.tags, currentCA.getTags(), currentQuery);
 
-        holder.editCABtn.setOnClickListener(view -> openEditBlogDialog(currentCA));
+        holder.editCABtn.setOnClickListener(view -> openEditCADialog(currentCA));
         holder.deleteCABtn.setOnClickListener(view -> quitDialog(position));
 
-        // Enable JavaScript (optional, depending on your content)
-        WebSettings webSettings = holder.content.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+        // Load the image using Glide
+        Glide.with(context)
+                .load(currentCA.getImageURL())
+                .error(R.drawable.noimage)
+                .into(holder.caImage);
 
-        String htmlContentTxt = adminShowAllCAModelArrayList.get(position).getContent();
+        String titleStr = currentCA.getTitle();
+        holder.setHighlightedText(holder.title, titleStr, currentQuery);
 
-        // Inject CSS to control the image size
-        String injectedCss = "<style>"
-                + "p { font-size: 20px; }" // Increase text size only for <p> tags (paragraphs)
-                + "img { width: 100%; height: auto; }" // Adjust image size as needed
-                + "</style>";
-        String fullHtmlContent = injectedCss + htmlContentTxt;
+        // Post a Runnable to modify the title text based on the number of lines
+        holder.title.post(new Runnable() {
+            @Override
+            public void run() {
+                // Get the Layout object from the TextView to measure lines
+                Layout layout = holder.title.getLayout();
 
-        // Disable scrolling and over-scrolling
-        holder.content.setVerticalScrollBarEnabled(false);  // Disable vertical scroll bar
-        holder.content.setOverScrollMode(WebView.OVER_SCROLL_NEVER); // Disable over-scrolling effect
+                // Check the number of lines
+                int lineCount = layout.getLineCount();
 
-        // Load the modified HTML content
-        holder.content.loadData(fullHtmlContent, "text/html", "UTF-8");
+                // Only perform truncation if the line count is more than 3
+                if (lineCount > 3) {
+                    String firstThreeLinesText = "";
+
+                    // Get the start and end positions for the first three lines
+                    for (int i = 0; i < 3; i++) {
+                        int startPos = layout.getLineStart(i);
+                        int endPos = layout.getLineEnd(i);
+                        firstThreeLinesText += holder.title.getText().subSequence(startPos, endPos);
+
+                        // Add a space after each line, except for the last line
+                        if (i < 2) {
+                            firstThreeLinesText += " ";
+                        }
+                    }
+
+                    // Truncate the last three characters and add "..."
+                    if (firstThreeLinesText.length() > 3) {
+                        firstThreeLinesText = firstThreeLinesText.substring(0, firstThreeLinesText.length() - 3) + "...";
+                    }
+
+                    // Set the text to the title with the first three lines and ellipsis
+                    holder.setHighlightedText(holder.title, firstThreeLinesText, currentQuery);
+
+                } else {
+                    // If there are three or fewer lines, just set the text normally
+                    holder.setHighlightedText(holder.title, titleStr, currentQuery);
+                }
+            }
+        });
     }
-
-
     @Override
     public int getItemCount() {
         return adminShowAllCAModelArrayList.size();
@@ -128,9 +156,9 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         }
         notifyDataSetChanged(); // Notify adapter of data change
     }
-    private void openEditBlogDialog(AdminShowAllCAModel caModel) {
+    private void openEditCADialog(AdminShowAllCAModel caModel) {
         Dialog editBlogDialogBox = new Dialog(context.requireContext());
-        editBlogDialogBox.setContentView(R.layout.admin_create_data_dialog_box);
+        editBlogDialogBox.setContentView(R.layout.admin_create_current_affairs_dialog_box);
 
         ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList = new ArrayList<>();
         AdminTagsForDataALLAdapter adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
@@ -329,18 +357,24 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         MySingletonFragment.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, keyword, tags;
-        ImageView editCABtn, deleteCABtn;
-        WebView content;
-
+        TextView title, tags;
+        ImageView caImage,editCABtn, deleteCABtn;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            caImage = itemView.findViewById(R.id.imgAffair);
             title = itemView.findViewById(R.id.txtTitle);
-            keyword = itemView.findViewById(R.id.txtCAKeyword);
-            content = itemView.findViewById(R.id.txtContent);
             tags = itemView.findViewById(R.id.tagTxt);
             editCABtn = itemView.findViewById(R.id.editCABtn);
             deleteCABtn = itemView.findViewById(R.id.deleteCABtn);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context.getActivity(), AdminCurrentAffairsSingleViewActivity.class);
+                    intent.putExtra("CAID",adminShowAllCAModelArrayList.get(getAbsoluteAdapterPosition()).getCaID());
+                    context.startActivity(intent);
+                }
+            });
         }
         public void setHighlightedText(TextView textView, String text, String query) {
             if (query == null || query.isEmpty()) {

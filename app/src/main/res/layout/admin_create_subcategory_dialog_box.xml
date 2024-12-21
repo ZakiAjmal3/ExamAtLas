@@ -59,7 +59,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_below="@id/categorySpinner"/>
 
             <EditText
@@ -83,7 +83,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:layout_below="@id/titleEditTxt"/>
         <EditText
             android:id="@+id/slugEditText"
