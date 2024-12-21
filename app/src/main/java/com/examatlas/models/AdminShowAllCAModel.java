@@ -1,10 +1,11 @@
 package com.examatlas.models;
 
 public class AdminShowAllCAModel {
-    String caID,title,keyword,content,tags,totalRows,totalPages,currentPage;
+    String caID,imageURL,title,keyword,content,tags,totalRows,totalPages,currentPage;
 
-    public AdminShowAllCAModel(String caID, String title, String keyword, String content, String tags,String totalRows,String totalPages,String currentPage) {
+    public AdminShowAllCAModel(String caID,String imageURL, String title, String keyword, String content, String tags,String totalRows,String totalPages,String currentPage) {
         this.caID = caID;
+        this.imageURL = imageURL;
         this.title = title;
         this.keyword = keyword;
         this.content = content;
@@ -12,6 +13,14 @@ public class AdminShowAllCAModel {
         this.totalRows = totalRows;
         this.totalPages = totalPages;
         this.currentPage = currentPage;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public String getTotalRows() {

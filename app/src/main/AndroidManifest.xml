@@ -24,6 +24,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".activities.AdminCurrentAffairsSingleViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AdminBlogSingleViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.CurrentAffairsSingleViewActivity"
             android:exported="false" />
         <activity

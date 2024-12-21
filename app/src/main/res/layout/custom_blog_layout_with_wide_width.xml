@@ -49,6 +49,7 @@
                 android:layout_below="@id/imageCardView"
                 android:layout_marginTop="5dp"
                 android:textStyle="bold"
+                android:lines="2"
                 android:letterSpacing="0.1"
                 android:shadowColor="#000000"
                 android:shadowDx="1"
@@ -65,7 +66,6 @@
                 android:layout_marginBottom="5dp"
                 android:orientation="horizontal"
                 android:layout_below="@id/txtBlogTitle">
-
                 <TextView
                     android:id="@+id/txtAuthor"
                     android:layout_width="wrap_content"
@@ -73,7 +73,7 @@
                     android:fontFamily="@font/poppins"
                     android:text="TAGS:"
                     android:textColor="@color/dark_grey"
-                    android:textSize="10sp" />
+                    android:textSize="9sp" />
 
                 <TextView
                     android:id="@+id/tagTxt"
@@ -83,7 +83,7 @@
                     android:fontFamily="@font/poppins"
                     android:text="Tag Text"
                     android:textColor="#4CAF50"
-                    android:textSize="10sp" />
+                    android:textSize="9sp" />
             </LinearLayout>
         </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

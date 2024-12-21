@@ -90,7 +90,7 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
         noDataLayout = view.findViewById(R.id.noDataLayout);
 
         adminShowAllCAModelArrayList = new ArrayList<>();
-        showAllCARecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false));
+        showAllCARecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,false));
 
         sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
@@ -169,7 +169,6 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("data");
                                 adminShowAllCAModelArrayList.clear(); // Clear the list before adding new items
 
                                 JSONObject jsonObject2 = response.getJSONObject("pagination");
@@ -177,13 +176,15 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
                                 String totalPages = jsonObject2.getString("totalPages");
                                 String currentPage = jsonObject2.getString("currentPage");
 
+                                JSONArray jsonArray = response.getJSONArray("data");
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject3 = jsonArray.getJSONObject(i);
                                     String affairID = jsonObject3.getString("_id");
                                     String title = jsonObject3.getString("title");
                                     String keyword = jsonObject3.getString("keyword");
                                     String content = jsonObject3.getString("content");
-//                                    String image = jsonObject3.getString("image");
+                                    JSONObject image = jsonObject3.getJSONObject("image");
+                                    String imageURL = image.getString("url");
 //                                    String createdDate = jsonObject3.getString("createdAt");
 
 
@@ -199,7 +200,7 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    adminShowAllCAModel = new AdminShowAllCAModel(affairID, title, keyword, content, tags.toString(),totalRows, totalPages,currentPage);
+                                    adminShowAllCAModel = new AdminShowAllCAModel(affairID,imageURL, title, keyword, content, tags.toString(),totalRows, totalPages,currentPage);
                                     adminShowAllCAModelArrayList.add(adminShowAllCAModel);
                                 }
                                 // Update the original list in the adapter
@@ -256,10 +257,7 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
     }
     private void openCreateCADialog() {
         createCADialogBox = new Dialog(requireContext());
-        createCADialogBox.setContentView(R.layout.admin_create_data_dialog_box);
-
-        TextView headerTxt = createCADialogBox.findViewById(R.id.txtAddData);
-        headerTxt.setText("Add Current Affairs");
+        createCADialogBox.setContentView(R.layout.admin_create_current_affairs_dialog_box);
 
         titleEditTxt = createCADialogBox.findViewById(R.id.titleEditTxt);
         keywordEditTxt = createCADialogBox.findViewById(R.id.keywordEditText);

@@ -12,7 +12,7 @@
             android:id="@+id/txtAddData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Blog"
+            android:text="Add Current Affairs"
             android:textSize="25dp"
             android:textColor="@color/black"
             android:textStyle="bold"
@@ -59,7 +59,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:layout_below="@id/titleEditTxt"/>
         <EditText
             android:id="@+id/keywordEditText"
@@ -81,7 +81,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:layout_below="@id/keywordEditText"/>
         <EditText
             android:id="@+id/contentEditText"
@@ -106,7 +106,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:layout_below="@id/contentEditText"/>
         <EditText
             android:id="@+id/tagsEditText"
@@ -140,7 +140,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:layout_below="@id/tagsRecycler"/>
 <!--        <TextView-->
 <!--            android:id="@+id/txtChooseImage"-->

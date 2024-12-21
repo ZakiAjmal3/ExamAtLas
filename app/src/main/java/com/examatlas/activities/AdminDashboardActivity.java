@@ -387,9 +387,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
 //                        currentFragment = new AdminEBooksCreateDeleteFragment();
 //                        drawerDialog.dismiss();
                     } else if (contentItemsSelected.equals("Live Classes")){
-                        loadFragment(new AdminCreateLiveCoursesFragment());
-                        currentFragment = new AdminCreateLiveCoursesFragment();
-                        drawerDialog.dismiss();
+//                        loadFragment(new AdminCreateLiveCoursesFragment());
+//                        currentFragment = new AdminCreateLiveCoursesFragment();
+//                        drawerDialog.dismiss();
                     }
                 }
                 @Override

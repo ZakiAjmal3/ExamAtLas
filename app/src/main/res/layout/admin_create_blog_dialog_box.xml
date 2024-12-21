@@ -12,7 +12,7 @@
             android:id="@+id/txtAddData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add E-Books"
+            android:text="Add Blog"
             android:textSize="25dp"
             android:textColor="@color/black"
             android:textStyle="bold"
@@ -27,6 +27,28 @@
             android:layout_margin="10dp"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"/>
         <TextView
+            android:id="@+id/txtCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/txtAddData"/>
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/txtCategory"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/box_layout_with_border"
+            android:hint="Title"
+            android:padding="10dp" />
+        <TextView
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,8 +57,8 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_below="@id/txtAddData"/>
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/categorySpinner"/>
 
         <EditText
             android:id="@+id/titleEditTxt"
@@ -98,73 +120,6 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"/>
         <TextView
-            android:id="@+id/txtCategory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Category"
-            android:textSize="16dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/contentEditText"/>
-        <EditText
-            android:id="@+id/categoryEditText"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/box_layout_with_border"
-            android:layout_below="@id/txtCategory"
-            android:hint="Category"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"/>
-        <TextView
-            android:id="@+id/txtAuthor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Author"
-            android:textSize="16dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/categoryEditText"/>
-        <EditText
-            android:id="@+id/authorEditText"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/box_layout_with_border"
-            android:layout_below="@id/txtAuthor"
-            android:hint="Author"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"/>
-        <TextView
-            android:id="@+id/txtPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Price"
-            android:textSize="16dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/authorEditText"/>
-        <EditText
-            android:id="@+id/priceEditText"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/box_layout_with_border"
-            android:layout_below="@id/txtPrice"
-            android:hint="Price"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"/>
-
-        <TextView
             android:id="@+id/txtTags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -174,7 +129,7 @@
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
-            android:layout_below="@id/priceEditText"/>
+            android:layout_below="@id/contentEditText"/>
         <EditText
             android:id="@+id/tagsEditText"
             android:layout_width="match_parent"
