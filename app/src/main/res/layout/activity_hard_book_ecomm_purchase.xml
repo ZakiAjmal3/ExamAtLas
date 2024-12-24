@@ -7,81 +7,220 @@
     android:layout_height="match_parent"
     tools:context=".activities.HardBookECommPurchaseActivity"
     android:background="@color/white">
-    <androidx.appcompat.widget.Toolbar
+
+    <RelativeLayout
         android:id="@+id/hardbook_ecomm_purchase_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="15dp">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/search_icon"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="end"
-            android:layout_marginRight="15dp"
-            android:layout_marginEnd="10dp"
-            android:clickable="true"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/wishListBtn"
-            android:background="@drawable/rounded_corner_for_searchview"
+        android:layout_height="wrap_content"
+        android:background="@color/seed">
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:src="@drawable/newlogo"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
             />
-            <ImageView
-                android:id="@+id/wishListBtn"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/ic_heart_red"
-                android:layout_toLeftOf="@id/cartBtn"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="5dp"
-                android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                />
         <ImageView
             android:id="@+id/cartBtn"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_cart"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="15dp"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             />
-        </RelativeLayout>
-    </androidx.appcompat.widget.Toolbar>
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/slider_cardView"
-        android:layout_width="match_parent"
-        android:layout_height="140dp"
-        app:cardBackgroundColor="@color/white"
-        app:strokeWidth="0dp"
-        android:layout_below="@id/hardbook_ecomm_purchase_toolbar"
-        >
-        <com.denzcoskun.imageslider.ImageSlider
-            android:id="@+id/slider"
+        <FrameLayout
+            android:id="@+id/searchViewFrameLayout"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:layout_margin="15dp"
-            app:iss_auto_cycle="true"
-            app:iss_period="1000"
-            app:iss_delay="0" />
-
-    </com.google.android.material.card.MaterialCardView>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/booksRecycler"
+            android:layout_height="50dp"
+            android:layout_gravity="end"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="10dp"
+            android:layout_centerVertical="true"
+            android:layout_below="@id/logo"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="@drawable/rounded_corner_for_searchview">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_search"/>
+            <EditText
+                android:id="@+id/search_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Search books"
+                android:clickable="true"
+                android:layout_toRightOf="@id/search"
+                android:background="@android:color/transparent"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:layout_marginRight="20dp"
+                android:paddingBottom="5dp"/>
+            </RelativeLayout>
+        </FrameLayout>
+    </RelativeLayout>
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/slider_cardView"
-        android:visibility="gone"/>
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="visible"/>
+        android:layout_below="@id/hardbook_ecomm_purchase_toolbar">
+
+<!--            <ImageView-->
+<!--                android:id="@+id/wishListBtn"-->
+<!--                android:layout_width="35dp"-->
+<!--                android:layout_height="35dp"-->
+<!--                android:src="@drawable/ic_heart_red"-->
+<!--                android:layout_toLeftOf="@id/cartBtn"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:layout_marginRight="5dp"-->
+<!--                android:foreground="?android:attr/selectableItemBackgroundBorderless"-->
+<!--                />-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/hardbook_ecomm_purchase_toolbar">
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/slider_cardView"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="5dp"
+                app:cardCornerRadius="10dp"
+                app:cardBackgroundColor="@color/white"
+                app:strokeWidth="0dp"
+                >
+                <com.denzcoskun.imageslider.ImageSlider
+                    android:id="@+id/slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:iss_auto_cycle="true"
+                    app:iss_period="1000"
+                    app:iss_delay="0" />
+
+            </com.google.android.material.card.MaterialCardView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/categoryRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_below="@id/slider_cardView"
+                android:visibility="visible"/>
+            <RelativeLayout
+                android:id="@+id/bookForUserRL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/categoryRecycler"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp">
+            <TextView
+                android:id="@+id/bookForUserTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Books for you"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/bookForUserViewAllTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="View All >"
+                android:textColor="@color/seed"
+                android:textSize="11sp"
+                />
+            </RelativeLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/booksForUserRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_below="@id/bookForUserRL"
+                />
+        <RelativeLayout
+            android:id="@+id/bookBestSellerRL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/booksForUserRecycler"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp">
+            <TextView
+                android:id="@+id/bookBestSellerTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Best Selling Books"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
+            <TextView
+                android:id="@+id/bookBestSellerViewAllTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="View All >"
+                android:textColor="@color/seed"
+                android:textSize="11sp"
+                />
+        </RelativeLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/booksBestSellerRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_below="@id/bookBestSellerRL"/>
+        <RelativeLayout
+            android:id="@+id/bookDiscoverMoreRL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/booksBestSellerRecycler"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp">
+            <TextView
+                android:id="@+id/bookDiscoverMoreTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Discover More"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
+            <TextView
+                android:id="@+id/bookDiscoverMoreViewAllTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="View All >"
+                android:textColor="@color/seed"
+                android:textSize="11sp"
+                />
+        </RelativeLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/booksRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/bookDiscoverMoreRL"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                />
     <RelativeLayout
         android:id="@+id/noDataLayout"
         android:layout_width="wrap_content"
@@ -134,8 +273,8 @@
                     android:textSize="12sp" />
 
             </LinearLayout>
-
         </LinearLayout>
-
-    </RelativeLayout>
+        </RelativeLayout>
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
 </RelativeLayout>

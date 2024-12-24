@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="65dp"
+    android:layout_height="wrap_content"
+    android:background="@color/light_dark_grey"
+    android:paddingTop="5dp"
+    android:paddingRight="5dp"
+    android:paddingLeft="5dp">
+
+    <RelativeLayout
+        android:id="@+id/img_cardView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="5dp"
+        android:layout_centerHorizontal="true"
+        >
+        <ImageView
+            android:id="@+id/categoryIMG"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:src="@drawable/noimage"
+            android:scaleType="fitXY"
+            app:iss_auto_cycle="true"
+            app:iss_period="1000"
+            app:iss_delay="0" />
+
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/categoryName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Category name"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/img_cardView"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:textSize="10dp"
+        android:layout_marginBottom="5dp"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/dark_grey"
+        android:layout_below="@id/categoryName"
+        android:layout_marginTop="5dp"/>
+</RelativeLayout>

@@ -1,22 +1,32 @@
 package com.examatlas.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -29,6 +39,9 @@ import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
 import com.examatlas.adapter.HardBookECommPurchaseAdapter;
+import com.examatlas.adapter.books.BookForUserAdapter;
+import com.examatlas.adapter.books.CategoryAdapter;
+import com.examatlas.models.Books.CategoryModel;
 import com.examatlas.models.HardBookECommPurchaseModel;
 import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
@@ -45,99 +58,180 @@ import java.util.Map;
 
 public class HardBookECommPurchaseActivity extends AppCompatActivity {
     private Toolbar toolbar;
+    ImageView cartBtn,logo;
     private ImageSlider slider;
-    private RecyclerView booksRecyclerView;
+    private RecyclerView booksRecyclerView,categoryRecyclerView,bookForUserRecyclerView,bookBestSellerRecyclerView;
     private HardBookECommPurchaseAdapter hardBookECommPurchaseAdapter;
     private ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList;
-    private ProgressBar progressBar;
+//    private ProgressBar progressBar;
     private SessionManager sessionManager;
     private String token;
     private RelativeLayout noDataLayout;
-    private SearchView searchView;
+    private EditText searchView;
     private final String bookURL = Constant.BASE_URL + "book/getAllBooks";
-    ImageView cartIcon,wishlistIcon;
+//    ImageView cartIcon,wishlistIcon;
     private int currentPage = 1;
     private int totalPages = 1;
     private final int itemsPerPage = 10;
     private boolean isLoading = false;
-
+    ArrayList<CategoryModel> categoryArrayList = new ArrayList<>();
+    NestedScrollView nestedScrollView;
+    RelativeLayout toolbarRelativeLayout;
+    FrameLayout searchViewFrameLayout;
+    private float previousY = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hard_book_ecomm_purchase);
 
         initializeViews();
-        setupToolbar();
+//        setupToolbar();
         setupImageSlider();
         setupSearchView();
         getAllBooks();
-        setClickingListeners();
+//        setClickingListeners();
     }
-
-
-
     private void initializeViews() {
-        toolbar = findViewById(R.id.hardbook_ecomm_purchase_toolbar);
+//        toolbar = findViewById(R.id.hardbook_ecomm_purchase_toolbar);
+        logo = findViewById(R.id.logo);
+        cartBtn = findViewById(R.id.cartBtn);
         slider = findViewById(R.id.slider);
-        progressBar = findViewById(R.id.progressBar);
+//        progressBar = findViewById(R.id.progressBar);
+        nestedScrollView = findViewById(R.id.nestScrollView);
+        searchViewFrameLayout = findViewById(R.id.searchViewFrameLayout);
+        toolbarRelativeLayout = findViewById(R.id.hardbook_ecomm_purchase_toolbar);
         booksRecyclerView = findViewById(R.id.booksRecycler);
+        categoryRecyclerView = findViewById(R.id.categoryRecycler);
+        bookForUserRecyclerView = findViewById(R.id.booksForUserRecycler);
+        bookBestSellerRecyclerView = findViewById(R.id.booksBestSellerRecycler);
         noDataLayout = findViewById(R.id.noDataLayout);
         searchView = findViewById(R.id.search_icon);
-        cartIcon = findViewById(R.id.cartBtn);
-        wishlistIcon = findViewById(R.id.wishListBtn);
+//        cartIcon = findViewById(R.id.cartBtn);
+//        wishlistIcon = findViewById(R.id.wishListBtn);
         hardBookECommPurchaseModelArrayList = new ArrayList<>();
         sessionManager = new SessionManager(this);
         token = sessionManager.getUserData().get("authToken");
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2); // 2 is the number of columns
-        booksRecyclerView.setLayoutManager(gridLayoutManager);
+//        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2); // 2 is the number of columns
+//        booksRecyclerView.setLayoutManager(gridLayoutManager);
 
-        booksRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        booksRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        bookForUserRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        bookBestSellerRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+
+        categoryRecyclerView.setLayoutManager(new GridLayoutManager(this,2,GridLayoutManager.HORIZONTAL,false));
+        categoryArrayList.add(new CategoryModel(null,"Science"));
+        categoryArrayList.add(new CategoryModel(null,"Maths"));
+        categoryArrayList.add(new CategoryModel(null,"Computer"));
+        categoryArrayList.add(new CategoryModel(null,"Hindi"));
+        categoryArrayList.add(new CategoryModel(null,"History"));
+        categoryArrayList.add(new CategoryModel(null,"Geography"));
+        categoryArrayList.add(new CategoryModel(null,"Science"));
+        categoryArrayList.add(new CategoryModel(null,"Maths"));
+        categoryArrayList.add(new CategoryModel(null,"Computer"));
+        categoryArrayList.add(new CategoryModel(null,"Hindi"));
+        categoryArrayList.add(new CategoryModel(null,"History"));
+        categoryArrayList.add(new CategoryModel(null,"Geography"));
+        categoryArrayList.add(new CategoryModel(null,"Science"));
+        categoryArrayList.add(new CategoryModel(null,"Maths"));
+        categoryArrayList.add(new CategoryModel(null,"Computer"));
+        categoryArrayList.add(new CategoryModel(null,"Hindi"));
+        categoryArrayList.add(new CategoryModel(null,"History"));
+        categoryArrayList.add(new CategoryModel(null,"Geography"));
+        categoryArrayList.add(new CategoryModel(null,"Science"));
+        categoryArrayList.add(new CategoryModel(null,"Maths"));
+        categoryArrayList.add(new CategoryModel(null,"Computer"));
+        categoryArrayList.add(new CategoryModel(null,"Hindi"));
+        categoryArrayList.add(new CategoryModel(null,"History"));
+        categoryArrayList.add(new CategoryModel(null,"Geography"));
+        categoryArrayList.add(new CategoryModel(null,"Science"));
+        categoryArrayList.add(new CategoryModel(null,"Maths"));
+        categoryArrayList.add(new CategoryModel(null,"Computer"));
+        categoryArrayList.add(new CategoryModel(null,"Hindi"));
+        categoryArrayList.add(new CategoryModel(null,"History"));
+        categoryArrayList.add(new CategoryModel(null,"Geography"));
+        categoryArrayList.add(new CategoryModel(null,"Science"));
+        categoryArrayList.add(new CategoryModel(null,"Maths"));
+        categoryArrayList.add(new CategoryModel(null,"Computer"));
+        categoryArrayList.add(new CategoryModel(null,"Hindi"));
+        categoryArrayList.add(new CategoryModel(null,"History"));
+        categoryArrayList.add(new CategoryModel(null,"Geography"));
+        categoryRecyclerView.setAdapter(new CategoryAdapter(categoryArrayList,HardBookECommPurchaseActivity.this));
+
+//        booksRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                // Get the GridLayoutManager and find the last visible item position
+//                int lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition();
+//                int totalItemCount = gridLayoutManager.getItemCount();
+//
+//                Log.d("ScrollListener", "Last visible item position: " + lastVisibleItemPosition + " Total items: " + totalItemCount);
+//
+//                // Check if we are at the bottom of the list
+//                if (lastVisibleItemPosition + 1 >= totalItemCount && !isLoading) {
+//                    // Check if there are more pages to load
+//                    if (currentPage < totalPages) {
+//                        currentPage++;  // Increment the current page
+//                        getAllBooks();   // Fetch the next set of books
+//                    }
+//                }
+//            }
+//        });
+
+        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                // Get the GridLayoutManager and find the last visible item position
-                int lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition();
-                int totalItemCount = gridLayoutManager.getItemCount();
-
-                Log.d("ScrollListener", "Last visible item position: " + lastVisibleItemPosition + " Total items: " + totalItemCount);
-
-                // Check if we are at the bottom of the list
-                if (lastVisibleItemPosition + 1 >= totalItemCount && !isLoading) {
-                    // Check if there are more pages to load
-                    if (currentPage < totalPages) {
-                        currentPage++;  // Increment the current page
-                        getAllBooks();   // Fetch the next set of books
-                    }
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // Check if the scroll direction is up or down
+                if (scrollY > previousY) {
+                    // Scroll Down: Hide the toolbar
+                    hideToolbar();
+                } else if (scrollY < previousY) {
+                    // Scroll Up: Show the toolbar
+                    showToolbar();
                 }
-            }
-        });
-
-    }
-    private void setClickingListeners() {
-        wishlistIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(HardBookECommPurchaseActivity.this, WishlistActivity.class);
-                startActivity(intent);
-            }
-        });
-        cartIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(HardBookECommPurchaseActivity.this, CartViewActivity.class);
-                startActivity(intent);
+                previousY = scrollY;
             }
         });
     }
 
-    private void setupToolbar() {
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
+    private void hideToolbar() {
+        // Animate the toolbar upwards to hide it
+        ObjectAnimator animator = ObjectAnimator.ofFloat(toolbarRelativeLayout, "translationY", 0f, -toolbarRelativeLayout.getHeight() / 2.4f);
+        animator.setDuration(100);
+        animator.start();
     }
+
+    private void showToolbar() {
+        // Animate the toolbar back into view
+        ObjectAnimator animator = ObjectAnimator.ofFloat(toolbarRelativeLayout, "translationY", -toolbarRelativeLayout.getHeight() / 2.4f, 0f);
+        animator.setDuration(100);
+        animator.start();
+    }
+//    private void setClickingListeners() {
+//        wishlistIcon.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(HardBookECommPurchaseActivity.this, WishlistActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//        cartIcon.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(HardBookECommPurchaseActivity.this, CartViewActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//    }
+
+//    private void setupToolbar() {
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+//        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
+//    }
 
     private void setupImageSlider() {
         ArrayList<SlideModel> sliderArrayList = new ArrayList<>();
@@ -150,24 +244,39 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void setupSearchView() {
         searchView.setOnClickListener(view -> openKeyboard());
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
                 if (hardBookECommPurchaseAdapter != null) {
-                    hardBookECommPurchaseAdapter.filter(newText);
+                    hardBookECommPurchaseAdapter.filter(String.valueOf(editable));
                 }
-                return true;
             }
         });
+//        searchView.addTextChangedListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//
+//            }
+//        });
     }
 
     private void openKeyboard() {
-        searchView.setIconified(false);
+//        searchView.setIconified(false);
         searchView.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
@@ -182,9 +291,8 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             booksRecyclerView.setVisibility(View.VISIBLE);
-                            progressBar.setVisibility(View.GONE);
+//                            progressBar.setVisibility(View.GONE);
                             boolean status = response.getBoolean("status");
-
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("books");
                                 hardBookECommPurchaseModelArrayList.clear();
@@ -234,15 +342,17 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                                     );
                                     hardBookECommPurchaseModelArrayList.add(model);
                                 }
-                                updateUI();
+                                bookForUserRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this,hardBookECommPurchaseModelArrayList));
+                                bookBestSellerRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this,hardBookECommPurchaseModelArrayList));
+//                                updateUI();
                                 if (hardBookECommPurchaseModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
                                     booksRecyclerView.setVisibility(View.GONE);
-                                    progressBar.setVisibility(View.GONE);
+//                                    progressBar.setVisibility(View.GONE);
                                 } else {
                                     if (hardBookECommPurchaseAdapter == null) {
                                         hardBookECommPurchaseAdapter = new HardBookECommPurchaseAdapter(HardBookECommPurchaseActivity.this, hardBookECommPurchaseModelArrayList);
-                                        booksRecyclerView.setAdapter(hardBookECommPurchaseAdapter);
+                                        booksRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this,hardBookECommPurchaseModelArrayList));
                                     } else {
                                         hardBookECommPurchaseAdapter.notifyDataSetChanged();
                                     }
@@ -289,11 +399,11 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
         if (hardBookECommPurchaseModelArrayList.isEmpty()) {
             noDataLayout.setVisibility(View.VISIBLE);
             booksRecyclerView.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
+//            progressBar.setVisibility(View.GONE);
         } else {
             noDataLayout.setVisibility(View.GONE);
             booksRecyclerView.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
+//            progressBar.setVisibility(View.GONE);
             if (hardBookECommPurchaseAdapter == null) {
                 hardBookECommPurchaseAdapter = new HardBookECommPurchaseAdapter(this, hardBookECommPurchaseModelArrayList);
                 booksRecyclerView.setAdapter(hardBookECommPurchaseAdapter);
