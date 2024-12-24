@@ -24,6 +24,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".activities.Books.FilteringBookWithCategoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.AdminCurrentAffairsSingleViewActivity"
             android:exported="false" />
         <activity

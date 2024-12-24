@@ -53,8 +53,8 @@ public class BookImageAdapter extends RecyclerView.Adapter<BookImageAdapter.Slid
             Glide.with(imageView.getContext())
 //                    .load("https://examatlas-backend.onrender.com/" + imageModel.getFileName())
                     .load(imageModel.getUrl())
-                    .error(R.drawable.book1)
-                    .placeholder(R.drawable.book1)
+                    .error(R.drawable.noimage)
+                    .placeholder(R.drawable.noimage)
                     .into(imageView);
             Log.d("BookImageAdapter", "Loading image: " + imageModel.getFileName());
         }
