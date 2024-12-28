@@ -1,5 +1,6 @@
 package com.examatlas.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -76,8 +77,8 @@ public class HardBookECommPurchaseAdapter extends RecyclerView.Adapter<HardBookE
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HardBookECommPurchaseAdapter.ViewHolder holder, int position) {
-        HardBookECommPurchaseModel currentBook = hardBookECommPurchaseModelArrayList.get(hardBookECommPurchaseModelArrayList.size() - 1 - position);
+    public void onBindViewHolder(@NonNull HardBookECommPurchaseAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        HardBookECommPurchaseModel currentBook = hardBookECommPurchaseModelArrayList.get(position);
         holder.itemView.setTag(currentBook);
 
         // Calculate prices and discount

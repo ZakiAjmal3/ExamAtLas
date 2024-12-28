@@ -31,6 +31,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
+import com.examatlas.activities.Books.SingleBookDetailsActivity;
 import com.examatlas.activities.CartViewActivity;
 import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.HardBookECommPurchaseModel;
@@ -66,7 +67,7 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull BookForUserAdapter.ViewHolder holder, int position) {
-        HardBookECommPurchaseModel currentBook = hardBookECommPurchaseModelArrayList.get(hardBookECommPurchaseModelArrayList.size() - 1 - position);
+        HardBookECommPurchaseModel currentBook = hardBookECommPurchaseModelArrayList.get(position);
         holder.itemView.setTag(currentBook);
 
         holder.title.setText(hardBookECommPurchaseModelArrayList.get(position).getTitle());
@@ -119,6 +120,15 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
             title = itemView.findViewById(R.id.bookTitle);
             price = itemView.findViewById(R.id.bookPriceInfo);
             viewPager = itemView.findViewById(R.id.imgBook);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, SingleBookDetailsActivity.class);
+                    intent.putExtra("bookID",hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getId());
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }

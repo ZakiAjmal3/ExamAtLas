@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/slider_cardView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        app:cardCornerRadius="10dp"
+        app:cardBackgroundColor="@color/white"
+        app:strokeWidth="0dp"
+        >
+        <com.denzcoskun.imageslider.ImageSlider
+            android:id="@+id/slider"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            app:iss_auto_cycle="true"
+            app:iss_period="1000"
+            app:iss_delay="0" />
+    </com.google.android.material.card.MaterialCardView>
+</RelativeLayout>

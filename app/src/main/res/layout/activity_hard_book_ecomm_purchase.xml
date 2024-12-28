@@ -7,12 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".activities.HardBookECommPurchaseActivity"
     android:background="@color/white">
-
     <RelativeLayout
         android:id="@+id/hardbook_ecomm_purchase_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/seed">
+        android:background="@drawable/gradient_background">
         <ImageView
             android:id="@+id/logo"
             android:layout_width="120dp"
@@ -57,13 +56,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Search books"
-                android:clickable="true"
                 android:layout_toRightOf="@id/search"
                 android:background="@android:color/transparent"
                 android:paddingStart="10dp"
                 android:paddingTop="5dp"
                 android:layout_marginRight="20dp"
-                android:paddingBottom="5dp"/>
+                android:paddingBottom="5dp"
+                />
             </RelativeLayout>
         </FrameLayout>
     </RelativeLayout>
@@ -87,14 +86,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/hardbook_ecomm_purchase_toolbar">
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/slider_cardView"
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:layout_marginTop="5dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="10dp"
                 app:cardCornerRadius="10dp"
                 app:cardBackgroundColor="@color/white"
                 app:strokeWidth="0dp"
@@ -104,27 +104,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    app:iss_selected_dot="@drawable/active_dot"
+                    app:iss_unselected_dot="@drawable/inactive_dot"
                     app:iss_auto_cycle="true"
-                    app:iss_period="1000"
+                    app:iss_period="1500"
                     app:iss_delay="0" />
-
             </com.google.android.material.card.MaterialCardView>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/categoryRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:layout_below="@id/slider_cardView"
                 android:visibility="visible"/>
+            <View
+                android:id="@+id/view3"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/light_dark_grey"
+                android:layout_below="@id/categoryRecycler"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"/>
             <RelativeLayout
                 android:id="@+id/bookForUserRL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/categoryRecycler"
+                android:layout_below="@id/view3"
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp">
+                android:layout_marginRight="15dp"
+                android:background="@color/white">
             <TextView
                 android:id="@+id/bookForUserTxt"
                 android:layout_width="wrap_content"
@@ -151,11 +159,18 @@
                 android:layout_margin="10dp"
                 android:layout_below="@id/bookForUserRL"
                 />
+            <View
+                android:id="@+id/view4"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/light_dark_grey"
+                android:layout_below="@id/booksForUserRecycler"
+                android:layout_marginBottom="5dp"/>
         <RelativeLayout
             android:id="@+id/bookBestSellerRL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/booksForUserRecycler"
+            android:layout_below="@id/view4"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp">
@@ -184,14 +199,21 @@
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
                 android:layout_below="@id/bookBestSellerRL"/>
-        <RelativeLayout
-            android:id="@+id/bookDiscoverMoreRL"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/booksBestSellerRecycler"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp">
+            <View
+                android:id="@+id/view5"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/light_dark_grey"
+                android:layout_below="@id/booksBestSellerRecycler"
+                android:layout_marginBottom="5dp"/>
+            <RelativeLayout
+                android:id="@+id/bookDiscoverMoreRL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/view5"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp">
             <TextView
                 android:id="@+id/bookDiscoverMoreTxt"
                 android:layout_width="wrap_content"

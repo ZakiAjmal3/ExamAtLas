@@ -1,29 +1,22 @@
 package com.examatlas.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,8 +29,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
+import com.denzcoskun.imageslider.interfaces.ItemChangeListener;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
+import com.examatlas.activities.Books.SearchingBooksActivity;
 import com.examatlas.adapter.HardBookECommPurchaseAdapter;
 import com.examatlas.adapter.books.BookForUserAdapter;
 import com.examatlas.adapter.books.CategoryAdapter;
@@ -60,13 +55,14 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
     private Toolbar toolbar;
     ImageView cartBtn,logo;
     private ImageSlider slider;
+    ArrayList<SlideModel> sliderArrayList;
     private RecyclerView booksRecyclerView,categoryRecyclerView,bookForUserRecyclerView,bookBestSellerRecyclerView;
     private HardBookECommPurchaseAdapter hardBookECommPurchaseAdapter;
     private ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList;
 //    private ProgressBar progressBar;
     private SessionManager sessionManager;
     private String token;
-    private RelativeLayout noDataLayout;
+    private RelativeLayout noDataLayout,stickySearchRelativeLayout;
     private EditText searchView;
     private final String bookURL = Constant.BASE_URL + "book/getAllBooks";
 //    ImageView cartIcon,wishlistIcon;
@@ -78,16 +74,19 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
     NestedScrollView nestedScrollView;
     RelativeLayout toolbarRelativeLayout;
     FrameLayout searchViewFrameLayout;
+
     private float previousY = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hard_book_ecomm_purchase);
 
+        getWindow().setStatusBarColor(ContextCompat.getColor(HardBookECommPurchaseActivity.this,R.color.md_theme_dark_surfaceTint));
+
         initializeViews();
 //        setupToolbar();
         setupImageSlider();
-        setupSearchView();
+//        setupSearchView();
         getAllBooks();
 //        setClickingListeners();
     }
@@ -105,7 +104,10 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
         bookForUserRecyclerView = findViewById(R.id.booksForUserRecycler);
         bookBestSellerRecyclerView = findViewById(R.id.booksBestSellerRecycler);
         noDataLayout = findViewById(R.id.noDataLayout);
+
         searchView = findViewById(R.id.search_icon);
+        searchView.setFocusable(false);
+        searchView.setClickable(true);
 //        cartIcon = findViewById(R.id.cartBtn);
 //        wishlistIcon = findViewById(R.id.wishListBtn);
         hardBookECommPurchaseModelArrayList = new ArrayList<>();
@@ -180,30 +182,54 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
 //            }
 //        });
 
-        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+//        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+//            @Override
+//            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                // Check if the scroll direction is up or down
+//                if (scrollY > previousY) {
+//                    // Scroll Down: Hide the toolbar
+//                    hideToolbar();
+//                } else if (scrollY < previousY) {
+//                    // Scroll Up: Show the toolbar
+//                    showToolbar();
+//                }
+//                previousY = scrollY;
+//            }
+//        });
+        searchView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                // Check if the scroll direction is up or down
-                if (scrollY > previousY) {
-                    // Scroll Down: Hide the toolbar
-                    hideToolbar();
-                } else if (scrollY < previousY) {
-                    // Scroll Up: Show the toolbar
-                    showToolbar();
-                }
-                previousY = scrollY;
+            public void onClick(View view) {
+                Intent intent = new Intent(HardBookECommPurchaseActivity.this, SearchingBooksActivity.class);
+                startActivity(intent);
             }
         });
     }
+// Original height of the toolbar
+    int originalHeight;
 
+    // Hide the toolbar and set its height to wrap content
     private void hideToolbar() {
+        // Store the original height of the toolbar
+        originalHeight = toolbarRelativeLayout.getHeight();
+
+        // Set height to wrap content by changing the LayoutParams
+        ViewGroup.LayoutParams params = toolbarRelativeLayout.getLayoutParams();
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        toolbarRelativeLayout.setLayoutParams(params);
+
         // Animate the toolbar upwards to hide it
         ObjectAnimator animator = ObjectAnimator.ofFloat(toolbarRelativeLayout, "translationY", 0f, -toolbarRelativeLayout.getHeight() / 2.4f);
         animator.setDuration(100);
         animator.start();
     }
 
+    // Show the toolbar and restore its original height
     private void showToolbar() {
+        // Restore the original height of the toolbar
+        ViewGroup.LayoutParams params = toolbarRelativeLayout.getLayoutParams();
+        params.height = originalHeight;  // Restore the original height
+        toolbarRelativeLayout.setLayoutParams(params);
+
         // Animate the toolbar back into view
         ObjectAnimator animator = ObjectAnimator.ofFloat(toolbarRelativeLayout, "translationY", -toolbarRelativeLayout.getHeight() / 2.4f, 0f);
         animator.setDuration(100);
@@ -234,34 +260,33 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
 //    }
 
     private void setupImageSlider() {
-        ArrayList<SlideModel> sliderArrayList = new ArrayList<>();
+        sliderArrayList = new ArrayList<>();
         sliderArrayList.add(new SlideModel(R.drawable.image1, ScaleTypes.CENTER_CROP));
         sliderArrayList.add(new SlideModel(R.drawable.image2, ScaleTypes.CENTER_CROP));
         sliderArrayList.add(new SlideModel(R.drawable.image3, ScaleTypes.CENTER_CROP));
         slider.setImageList(sliderArrayList);
     }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void setupSearchView() {
-        searchView.setOnClickListener(view -> openKeyboard());
-        searchView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (hardBookECommPurchaseAdapter != null) {
-                    hardBookECommPurchaseAdapter.filter(String.valueOf(editable));
-                }
-            }
-        });
+//    @SuppressLint("ClickableViewAccessibility")
+//    private void setupSearchView() {
+//        searchView.setOnClickListener(view -> openKeyboard());
+//        searchView.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                if (hardBookECommPurchaseAdapter != null) {
+//                    hardBookECommPurchaseAdapter.filter(String.valueOf(editable));
+//                }
+//            }
+//        });
 //        searchView.addTextChangedListener(new SearchView.OnQueryTextListener() {
 //            @Override
 //            public boolean onQueryTextSubmit(String query) {
@@ -273,16 +298,16 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
 //
 //            }
 //        });
-    }
+//    }
 
-    private void openKeyboard() {
-//        searchView.setIconified(false);
-        searchView.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
+//    private void openKeyboard() {
+////        searchView.setIconified(false);
+//        searchView.requestFocus();
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        if (imm != null) {
+//            imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT);
+//        }
+//    }
     private void getAllBooks() {
         String paginatedURL = bookURL + "?type=book&page=" + currentPage + "&per_page=" + itemsPerPage;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
