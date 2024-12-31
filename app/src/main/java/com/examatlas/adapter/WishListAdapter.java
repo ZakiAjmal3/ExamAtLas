@@ -1,5 +1,6 @@
 package com.examatlas.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -71,7 +72,7 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
         }
 
         @Override
-        public void onBindViewHolder (@NonNull WishListAdapter.ViewHolder holder, int position){
+        public void onBindViewHolder (@NonNull WishListAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position){
             WishListModel currentBook = hardBookECommWishlistModelArrayList.get(hardBookECommWishlistModelArrayList.size() - 1 - position);
             holder.itemView.setTag(currentBook);
 
