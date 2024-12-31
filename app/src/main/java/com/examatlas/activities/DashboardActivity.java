@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import com.airbnb.lottie.LottieAnimationView;
 import com.examatlas.R;
 import com.examatlas.fragment.BlogFragment;
+import com.examatlas.fragment.BooksFragment;
 import com.examatlas.fragment.CourseFragment;
 import com.examatlas.fragment.LiveCoursesFragment;
 import com.examatlas.fragment.HomeFragment;
@@ -79,10 +80,10 @@ public class DashboardActivity extends AppCompatActivity {
                     currentFrag = "LIVE";
                     topBar.setVisibility(View.VISIBLE);
 //                    loadFragment(new LiveCoursesFragment());
-                } else if (item.getItemId() == R.id.course) {
-                    currentFrag = "COURSE";
-                    topBar.setVisibility(View.VISIBLE);
-                    loadFragment(new CourseFragment());
+                } else if (item.getItemId() == R.id.books) {
+                    currentFrag = "BOOKS";
+                    topBar.setVisibility(View.GONE);
+                    loadFragment(new BooksFragment());
                 } else {
                     currentFrag = "PROFILE";
                     topBar.setVisibility(View.GONE);

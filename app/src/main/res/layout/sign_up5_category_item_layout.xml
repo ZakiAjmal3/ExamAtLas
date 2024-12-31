@@ -29,7 +29,9 @@
             android:src="@drawable/image2"
             android:textColor="@color/black"
             android:scaleType="centerInside"
-            android:layout_margin="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_centerHorizontal="true"/>
         <TextView
             android:id="@+id/titleTxt"

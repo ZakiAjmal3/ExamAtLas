@@ -55,13 +55,24 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:src="@drawable/book1" />
+        <LinearLayout
+            android:id="@+id/indicatorLayout"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:orientation="horizontal"
+            android:layout_below="@id/bookImg"
+            android:layout_marginTop="5dp"
+            android:gravity="center">
+
+            <!-- Dynamic dots will be added here -->
+        </LinearLayout>
 
         <View
             android:id="@+id/view2"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:background="@color/light_dark_grey"
-            android:layout_below="@id/bookImg"/>
+            android:layout_below="@id/indicatorLayout"/>
         <RelativeLayout
             android:id="@+id/peopleCountRL"
             android:layout_width="wrap_content"
@@ -310,54 +321,6 @@
                 android:layout_marginBottom="5dp"
                 >
                 <TextView
-                    android:id="@+id/bindingTxt"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Binding"
-                    android:textSize="12sp"
-                    android:textColor="@color/dark_grey"
-                    android:layout_weight="1"/>
-                <TextView
-                    android:id="@+id/bindingTxtDisplay"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Binding"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:layout_weight="1"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2"
-                android:orientation="horizontal"
-                android:layout_marginBottom="5dp"
-                >
-                <TextView
-                    android:id="@+id/publishingDateTxt"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Binding"
-                    android:textSize="12sp"
-                    android:textColor="@color/dark_grey"
-                    android:layout_weight="1"/>
-                <TextView
-                    android:id="@+id/publishingDateTxtDisplay"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Publishing Date"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:layout_weight="1"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2"
-                android:orientation="horizontal"
-                android:layout_marginBottom="5dp"
-                >
-                <TextView
                     android:id="@+id/publisherTxt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -369,83 +332,131 @@
                     android:id="@+id/publisherTxtDisplay"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Publishing Date"
+                    android:text="Publisher"
                     android:textSize="12sp"
                     android:textColor="@color/black"
                     android:layout_weight="1"/>
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2"
-                android:orientation="horizontal"
-                android:layout_marginBottom="5dp"
-                >
-                <TextView
-                    android:id="@+id/editionTxt"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Binding"
-                    android:textSize="12sp"
-                    android:textColor="@color/dark_grey"
-                    android:layout_weight="1"/>
-                <TextView
-                    android:id="@+id/editionDisplay"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Edition"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:layout_weight="1"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2"
-                android:orientation="horizontal"
-                android:layout_marginBottom="5dp"
-                >
-                <TextView
-                    android:id="@+id/stockTxt"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Number of Pages"
-                    android:textSize="12sp"
-                    android:textColor="@color/dark_grey"
-                    android:layout_weight="1"/>
-                <TextView
-                    android:id="@+id/stockTxtDisplay"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Binding"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:layout_weight="1"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2"
-                android:orientation="horizontal"
-                android:layout_marginBottom="5dp"
-                >
-                <TextView
-                    android:id="@+id/languageTxt"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Binding"
-                    android:textSize="12sp"
-                    android:textColor="@color/dark_grey"
-                    android:layout_weight="1"/>
-                <TextView
-                    android:id="@+id/languageTxtDisplay"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Language"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:layout_weight="1"/>
-            </LinearLayout>
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:weightSum="2"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:layout_marginBottom="5dp"-->
+<!--                >-->
+<!--                <TextView-->
+<!--                    android:id="@+id/publishingDateTxt"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Binding"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/dark_grey"-->
+<!--                    android:layout_weight="1"/>-->
+<!--                <TextView-->
+<!--                    android:id="@+id/publishingDateTxtDisplay"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Publishing Date"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:layout_weight="1"/>-->
+<!--            </LinearLayout>-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:weightSum="2"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:layout_marginBottom="5dp"-->
+<!--                >-->
+<!--                <TextView-->
+<!--                    android:id="@+id/publisherTxt"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Publisher"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/dark_grey"-->
+<!--                    android:layout_weight="1"/>-->
+<!--                <TextView-->
+<!--                    android:id="@+id/publisherTxtDisplay"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Publishing Date"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:layout_weight="1"/>-->
+<!--            </LinearLayout>-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:weightSum="2"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:layout_marginBottom="5dp"-->
+<!--                >-->
+<!--                <TextView-->
+<!--                    android:id="@+id/editionTxt"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Binding"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/dark_grey"-->
+<!--                    android:layout_weight="1"/>-->
+<!--                <TextView-->
+<!--                    android:id="@+id/editionDisplay"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Edition"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:layout_weight="1"/>-->
+<!--            </LinearLayout>-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:weightSum="2"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:layout_marginBottom="5dp"-->
+<!--                >-->
+<!--                <TextView-->
+<!--                    android:id="@+id/stockTxt"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Number of Pages"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/dark_grey"-->
+<!--                    android:layout_weight="1"/>-->
+<!--                <TextView-->
+<!--                    android:id="@+id/stockTxtDisplay"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Binding"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:layout_weight="1"/>-->
+<!--            </LinearLayout>-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:weightSum="2"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:layout_marginBottom="5dp"-->
+<!--                >-->
+<!--                <TextView-->
+<!--                    android:id="@+id/languageTxt"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Binding"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/dark_grey"-->
+<!--                    android:layout_weight="1"/>-->
+<!--                <TextView-->
+<!--                    android:id="@+id/languageTxtDisplay"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Language"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:layout_weight="1"/>-->
+<!--            </LinearLayout>-->
 
         </LinearLayout>
         </RelativeLayout>
@@ -750,7 +761,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/mat_yellow"
+            android:background="@color/md_theme_dark_surfaceTint"
             android:gravity="center"
             >
         <TextView

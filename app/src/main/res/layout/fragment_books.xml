@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.HardBookECommPurchaseActivity"
+    tools:context=".fragment.BooksFragment"
     android:background="@color/white">
     <RelativeLayout
         android:id="@+id/hardbook_ecomm_purchase_toolbar"
@@ -46,23 +46,23 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-            <ImageView
-                android:id="@+id/search"
-                android:layout_width="30dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_search"/>
-            <EditText
-                android:id="@+id/search_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="Search books"
-                android:layout_toRightOf="@id/search"
-                android:background="@android:color/transparent"
-                android:paddingStart="10dp"
-                android:paddingTop="5dp"
-                android:layout_marginRight="20dp"
-                android:paddingBottom="5dp"
-                />
+                <ImageView
+                    android:id="@+id/search"
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_search"/>
+                <EditText
+                    android:id="@+id/search_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Search books"
+                    android:layout_toRightOf="@id/search"
+                    android:background="@android:color/transparent"
+                    android:paddingStart="10dp"
+                    android:paddingTop="5dp"
+                    android:layout_marginRight="20dp"
+                    android:paddingBottom="5dp"
+                    />
             </RelativeLayout>
         </FrameLayout>
     </RelativeLayout>
@@ -72,16 +72,16 @@
         android:layout_height="match_parent"
         android:layout_below="@id/hardbook_ecomm_purchase_toolbar">
 
-<!--            <ImageView-->
-<!--                android:id="@+id/wishListBtn"-->
-<!--                android:layout_width="35dp"-->
-<!--                android:layout_height="35dp"-->
-<!--                android:src="@drawable/ic_heart_red"-->
-<!--                android:layout_toLeftOf="@id/cartBtn"-->
-<!--                android:layout_centerVertical="true"-->
-<!--                android:layout_marginRight="5dp"-->
-<!--                android:foreground="?android:attr/selectableItemBackgroundBorderless"-->
-<!--                />-->
+        <!--            <ImageView-->
+        <!--                android:id="@+id/wishListBtn"-->
+        <!--                android:layout_width="35dp"-->
+        <!--                android:layout_height="35dp"-->
+        <!--                android:src="@drawable/ic_heart_red"-->
+        <!--                android:layout_toLeftOf="@id/cartBtn"-->
+        <!--                android:layout_centerVertical="true"-->
+        <!--                android:layout_marginRight="5dp"-->
+        <!--                android:foreground="?android:attr/selectableItemBackgroundBorderless"-->
+        <!--                />-->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -343,24 +343,24 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:background="@color/white">
-            <TextView
-                android:id="@+id/bookForUserTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Books for you"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/bookForUserViewAllTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:text="View All >"
-                android:textColor="@color/seed"
-                android:textSize="11sp"
-                />
+                <TextView
+                    android:id="@+id/bookForUserTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Books for you"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/bookForUserViewAllTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="View All >"
+                    android:textColor="@color/seed"
+                    android:textSize="11sp"
+                    />
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/bookForUserItemLayout"
@@ -438,33 +438,33 @@
                 android:background="@color/light_dark_grey"
                 android:layout_below="@id/bookForUserItemLayout"
                 android:layout_marginBottom="5dp"/>
-        <RelativeLayout
-            android:id="@+id/bookBestSellerRL"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/view4"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp">
-            <TextView
-                android:id="@+id/bookBestSellerTxt"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/bookBestSellerRL"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Best Selling Books"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"/>
-            <TextView
-                android:id="@+id/bookBestSellerViewAllTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:text="View All >"
-                android:textColor="@color/seed"
-                android:textSize="11sp"
-                />
-        </RelativeLayout>
+                android:layout_below="@id/view4"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp">
+                <TextView
+                    android:id="@+id/bookBestSellerTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Best Selling Books"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+                <TextView
+                    android:id="@+id/bookBestSellerViewAllTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="View All >"
+                    android:textColor="@color/seed"
+                    android:textSize="11sp"
+                    />
+            </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/bestSellingItemLayout"
                 android:layout_width="match_parent"
@@ -551,25 +551,25 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp">
-            <TextView
-                android:id="@+id/bookDiscoverMoreTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Discover More"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"/>
-            <TextView
-                android:id="@+id/bookDiscoverMoreViewAllTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:text="View All >"
-                android:textColor="@color/seed"
-                android:textSize="11sp"
-                />
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/bookDiscoverMoreTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Discover More"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+                <TextView
+                    android:id="@+id/bookDiscoverMoreViewAllTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="View All >"
+                    android:textColor="@color/seed"
+                    android:textSize="11sp"
+                    />
+            </RelativeLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/booksRecycler"
                 android:layout_width="match_parent"
@@ -580,60 +580,60 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 />
-    <RelativeLayout
-        android:id="@+id/noDataLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="@color/white"
-        android:translationY="20dp"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@color/white"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:src="@drawable/nodatafound" />
-
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/noDataLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:background="@color/white"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:translationY="-20dp">
+                android:translationY="20dp"
+                android:visibility="gone">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="26dp"
-                    android:fontFamily="@font/poppins"
-                    android:text="No Data Found"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="30dp"
-                    android:fontFamily="@font/poppins"
-                    android:text="Currently there is no data. We'll notify you when something new arrives!"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:layout_centerInParent="true"
+                    android:background="@color/white"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-            </LinearLayout>
-        </LinearLayout>
-        </RelativeLayout>
+                    <ImageView
+                        android:layout_width="300dp"
+                        android:layout_height="300dp"
+                        android:src="@drawable/nodatafound" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:translationY="-20dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="26dp"
+                            android:fontFamily="@font/poppins"
+                            android:text="No Data Found"
+                            android:textColor="@color/black"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="30dp"
+                            android:fontFamily="@font/poppins"
+                            android:text="Currently there is no data. We'll notify you when something new arrives!"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 </RelativeLayout>

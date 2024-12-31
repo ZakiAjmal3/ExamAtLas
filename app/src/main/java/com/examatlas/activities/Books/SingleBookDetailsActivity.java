@@ -28,14 +28,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.adapter.HardBookECommPurchaseAdapter;
 import com.examatlas.adapter.books.BookForUserAdapter;
 import com.examatlas.adapter.extraAdapter.BookImageAdapter;
-import com.examatlas.models.HardBookECommPurchaseModel;
-import com.examatlas.models.extraModels.BookImageModels;
+import com.examatlas.models.Books.AllBooksModel;
+import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,15 +51,15 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
     ImageView productDetailsImg,backBtn;
     ViewPager2 bookImgViewPager;
     RelativeLayout productDetailsClickRL;
-    LinearLayout productDetailsLinearLayout;
+    LinearLayout productDetailsLinearLayout,indicatorLayout;
     boolean isProductDetailsExpanded = false;
-    TextView ratingTxtDisplay,bookTitle,bookPriceInfo,bookTitleTxtDisplay,authorTxtDisplay,bindingTxtDisplay,publishingDateTxtDisplay,publisherTxtDisplay,editionDisplay, stockTxtDisplay,languageTxtDisplay;
-    private final String bookURL = Constant.BASE_URL + "book/getAllBooks";
+    TextView ratingTxtDisplay,bookTitle,bookPriceInfo,bookTitleTxtDisplay,authorTxtDisplay, publisherTxt,publishingDateTxtDisplay,publisherTxtDisplay,editionDisplay, stockTxtDisplay,languageTxtDisplay;
+    private final String bookURL = Constant.BASE_URL + "v1/books";
     private RecyclerView booksRecyclerView;
-    private HardBookECommPurchaseAdapter hardBookECommPurchaseAdapter;
-    private ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList;
+    private ArrayList<AllBooksModel> allBooksModelArrayList;
     SessionManager sessionManager;
     String token;
+    int totalPage,totalItems;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,19 +91,20 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
         booksRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
 
         bookImgViewPager = findViewById(R.id.bookImg);
+        indicatorLayout = findViewById(R.id.indicatorLayout);
 
         bookTitle = findViewById(R.id.bookTitle);
         bookPriceInfo = findViewById(R.id.bookPriceInfo);
         bookTitleTxtDisplay = findViewById(R.id.bookTitleTxtDisplay);
         authorTxtDisplay = findViewById(R.id.authorTxtDisplay);
-        bindingTxtDisplay = findViewById(R.id.bindingTxtDisplay);
-        publishingDateTxtDisplay = findViewById(R.id.publishingDateTxtDisplay);
         publisherTxtDisplay = findViewById(R.id.publisherTxtDisplay);
-        editionDisplay = findViewById(R.id.editionDisplay);
-        stockTxtDisplay = findViewById(R.id.stockTxtDisplay);
-        languageTxtDisplay = findViewById(R.id.languageTxtDisplay);
+//        publishingDateTxtDisplay = findViewById(R.id.publishingDateTxtDisplay);
+//        publisherTxtDisplay = findViewById(R.id.publisherTxtDisplay);
+//        editionDisplay = findViewById(R.id.editionDisplay);
+//        stockTxtDisplay = findViewById(R.id.stockTxtDisplay);
+//        languageTxtDisplay = findViewById(R.id.languageTxtDisplay);
 
-        hardBookECommPurchaseModelArrayList = new ArrayList<>();
+        allBooksModelArrayList = new ArrayList<>();
         productDetailsClickRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,15 +133,15 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
     }
 
     private void getSingleBook() {
-        String singleBookURL = Constant.BASE_URL + "book/getBookyId/" + bookId;
+        String singleBookURL = Constant.BASE_URL + "v1/booksByID?id=" + bookId;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, singleBookURL , null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            boolean status = response.getBoolean("status");
+                            boolean status = response.getBoolean("success");
                             if (status) {
-                                JSONObject jsonObject = response.getJSONObject("book");
+                                JSONObject jsonObject = response.getJSONObject("data");
                                 // Parse books directly here
                                 ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
                                 JSONArray jsonArray1 = jsonObject.getJSONArray("images");
@@ -154,19 +155,18 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
                                     bookImageArrayList.add(bookImageModels);
                                 }
 
-                                BookImageAdapter bookImageAdapter = new BookImageAdapter(bookImageArrayList);
+                                BookImageAdapter bookImageAdapter = new BookImageAdapter(bookImageArrayList,bookImgViewPager,indicatorLayout);
                                 bookImgViewPager.setAdapter(bookImageAdapter);
 
                                 String id = jsonObject.getString("_id");
-                                String type = jsonObject.getString("type");
                                 String title = jsonObject.getString("title");
                                 bookTitle.setText(title);
                                 bookTitleTxtDisplay.setText(title);
-                                String keyword = jsonObject.getString("keyword");
-                                String stock = jsonObject.getString("stock");
-                                stockTxtDisplay.setText(stock);
+                                String publication = jsonObject.getString("publication");
+                                publisherTxtDisplay.setText(publication);
+//                                stockTxtDisplay.setText(stock);
                                 String price = jsonObject.getString("price");
-                                String sellPrice = jsonObject.getString("sellPrice");
+                                String sellPrice = jsonObject.getString("sellingPrice");
 
                                 // Calculate prices and discount
 //                                    String originalPrice = currentBook.getPrice();
@@ -190,13 +190,8 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
 
                                 bookPriceInfo.setText(spannableText);
 
-                                String content = jsonObject.getString("content");
                                 String author = jsonObject.getString("author");
                                 authorTxtDisplay.setText(author);
-                                String categoryId = jsonObject.getString("categoryId");
-                                String subCategoryId = jsonObject.getString("subCategoryId");
-                                String subjectId = jsonObject.getString("subjectId");
-                                String tags = parseTags(jsonObject.getJSONArray("tags"));
                             } else {
                                 Toast.makeText(SingleBookDetailsActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
@@ -237,7 +232,7 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
     }
 
     private void getAllBooks() {
-        String paginatedURL = bookURL + "?type=book&page=" + 1 + "&per_page=" + 5;
+        String paginatedURL = bookURL;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -245,50 +240,24 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
                         try {
                             booksRecyclerView.setVisibility(View.VISIBLE);
 //                            progressBar.setVisibility(View.GONE);
-                            boolean status = response.getBoolean("status");
+                            boolean status = response.getBoolean("success");
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("books");
-                                hardBookECommPurchaseModelArrayList.clear();
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                allBooksModelArrayList.clear();
+                                totalPage = Integer.parseInt(response.getString("totalPage"));
+                                totalItems = Integer.parseInt(response.getString("totalItems"));
 
                                 // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
-                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("images");
 
-                                    for (int j = 0; j < jsonArray1.length(); j++) {
-                                        JSONObject jsonObject3 = jsonArray1.getJSONObject(j);
-                                        BookImageModels bookImageModels = new BookImageModels(
-                                                jsonObject3.getString("url"),
-                                                jsonObject3.getString("filename")
-                                        );
-                                        bookImageArrayList.add(bookImageModels);
-                                    }
-                                    HardBookECommPurchaseModel model = new HardBookECommPurchaseModel(
-                                            jsonObject2.getString("_id"),
-                                            jsonObject2.getString("type"),
-                                            jsonObject2.getString("title"),
-                                            jsonObject2.getString("keyword"),
-                                            jsonObject2.getString("stock"),
-                                            jsonObject2.getString("price"),
-                                            jsonObject2.getString("sellPrice"),
-                                            jsonObject2.getString("content"),
-                                            jsonObject2.getString("author"),
-                                            jsonObject2.getString("categoryId"),
-                                            jsonObject2.getString("subCategoryId"),
-                                            jsonObject2.getString("subjectId"),
-                                            parseTags(jsonObject2.getJSONArray("tags")), // Ensure this method is implemented correctly
-                                            jsonObject2.getString("bookUrl"),
-                                            bookImageArrayList,
-                                            jsonObject2.getString("createdAt"),
-                                            jsonObject2.getString("updatedAt"),
-                                            jsonObject2.getString("isInCart"),
-                                            jsonObject2.getString("isInWishList"),
-                                            0,0,0,0
-                                    );
-                                    hardBookECommPurchaseModelArrayList.add(model);
+                                    // Convert the book object into a Map to make it dynamic
+                                    Map<String, Object> bookData = new Gson().fromJson(jsonObject2.toString(), Map.class);
+                                    AllBooksModel model = new AllBooksModel(bookData); // Pass the map to the model
+
+                                    allBooksModelArrayList.add(model);
                                 }
-                                booksRecyclerView.setAdapter(new BookForUserAdapter(SingleBookDetailsActivity.this,hardBookECommPurchaseModelArrayList));
+                                booksRecyclerView.setAdapter(new BookForUserAdapter(SingleBookDetailsActivity.this, allBooksModelArrayList));
                             } else {
                                 Toast.makeText(SingleBookDetailsActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }

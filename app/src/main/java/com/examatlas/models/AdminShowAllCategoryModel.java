@@ -1,9 +1,5 @@
 package com.examatlas.models;
 
-import com.examatlas.models.extraModels.BookImageModels;
-
-import java.util.ArrayList;
-
 public class AdminShowAllCategoryModel {
     String id,categoryName, slug,isActive,imageUrl;
 

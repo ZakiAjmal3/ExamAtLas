@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.examatlas.R;
 import com.examatlas.utils.SessionManager;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
     SessionManager sessionManager;
     ImageView logo;
@@ -43,8 +45,13 @@ public class MainActivity extends AppCompatActivity {
                     String role = sessionManager.getUserData().get("role");
                     Intent intent;
                     if (role.equalsIgnoreCase("student")) {
-                        intent = new Intent(MainActivity.this, DashboardActivity.class);
-                        Log.e("Dashboard", "User logged in, navigating to Dashboard");
+                        if (Objects.equals(sessionManager.getUserData().get("step"), "1") || Objects.equals(sessionManager.getUserData().get("step"), (Integer.parseInt("1")))) {
+                            intent = new Intent(MainActivity.this, SignUpActivity5CategorySelect.class);
+                            Log.e("SignUp2", "User logged in, navigating to SignUp2");
+                        }else {
+                            intent = new Intent(MainActivity.this, DashboardActivity.class);
+                            Log.e("Dashboard", "User logged in, navigating to Dashboard");
+                        }
                     } else if (role.equalsIgnoreCase("admin")) {
                         intent = new Intent(MainActivity.this, AdminDashboardActivity.class);
                         Log.e("AdminDashboard", "Admin logged in, navigating to Admin Dashboard");

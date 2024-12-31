@@ -28,20 +28,23 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
 import com.examatlas.activities.CurrentAffairsActivity;
 import com.examatlas.activities.DashboardActivity;
-import com.examatlas.adapter.AdminShowAllLiveCoursesAdapter;
+import com.examatlas.activities.HardBookECommPurchaseActivity;
 import com.examatlas.adapter.BlogAdapter;
 import com.examatlas.adapter.CurrentAffairsAdapter;
 import com.examatlas.adapter.LiveCoursesAdapter;
-import com.examatlas.models.AdminShowAllLiveCoursesModel;
+import com.examatlas.adapter.books.BookForUserAdapter;
+import com.examatlas.adapter.books.HomeFragmentBookAdapter;
 import com.examatlas.models.BlogModel;
+import com.examatlas.models.Books.AllBooksModel;
 import com.examatlas.models.CurrentAffairsModel;
 import com.examatlas.models.LiveCoursesModel;
-import com.examatlas.models.extraModels.BookImageModels;
+import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
 import com.examatlas.utils.MySingletonFragment;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,21 +56,23 @@ import java.util.Map;
 
 
 public class HomeFragment extends Fragment {
-    RecyclerView liveClassesRecycler, testimonialRecycler, blogsRecycler, currentAffairRecycler;
+    RecyclerView liveClassesRecycler, booksRecycler, blogsRecycler, currentAffairRecycler;
     ProgressBar homeProgress;
     SessionManager sessionManager;
     ImageSlider slider;
     ArrayList<BlogModel> blogModelArrayList;
     ArrayList<CurrentAffairsModel> currentAffairsModelArrayList;
     ArrayList<LiveCoursesModel> liveCoursesModelArrayList;
+    private ArrayList<AllBooksModel> allBooksModelArrayList;
     BlogAdapter blogAdapter;
     LiveCoursesAdapter liveCoursesAdapter;
     CurrentAffairsAdapter currentAffairAdapter;
+    private final String bookURL = Constant.BASE_URL + "v1/books";
     private final String blogURL = Constant.BASE_URL + "blog/getAllBlogs";
     private final String liveClassURL = Constant.BASE_URL + "liveclass/getAllLiveClass";
     private final String currentAffairsURL = Constant.BASE_URL + "currentAffair/getAllCA";
     String token;
-    ShimmerFrameLayout blogShimmeringLayout,currentAffairShimmeringLayout;
+    ShimmerFrameLayout booksShimmeringLayout,blogShimmeringLayout,currentAffairShimmeringLayout;
     TextView viewAllBlog,viewAllCA;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,8 +81,10 @@ public class HomeFragment extends Fragment {
         liveClassesRecycler = view.findViewById(R.id.examRecycler);
         currentAffairRecycler = view.findViewById(R.id.currentAffairRecycler);
         blogsRecycler = view.findViewById(R.id.blogsRecycler);
+        booksRecycler = view.findViewById(R.id.booksRecycler);
         homeProgress = view.findViewById(R.id.homeProgress);
 
+        booksShimmeringLayout = view.findViewById(R.id.shimmer_Book_container);
         blogShimmeringLayout = view.findViewById(R.id.shimmer_blog_container);
         currentAffairShimmeringLayout = view.findViewById(R.id.shimmer_CA_container);
 
@@ -86,6 +93,7 @@ public class HomeFragment extends Fragment {
 
         slider = view.findViewById(R.id.slider);
         ArrayList<SlideModel> sliderArrayList = new ArrayList<>();
+        allBooksModelArrayList = new ArrayList<>();
         blogModelArrayList = new ArrayList<>();
         liveCoursesModelArrayList = new ArrayList<>();
         currentAffairsModelArrayList = new ArrayList<>();
@@ -98,6 +106,7 @@ public class HomeFragment extends Fragment {
         slider.setImageList(sliderArrayList);
 
         liveClassesRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        booksRecycler.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         blogsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         currentAffairRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));liveClassesRecycler.setVisibility(View.GONE);
         blogsRecycler.setVisibility(View.GONE);
@@ -107,6 +116,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void run() {
                 //        getLiveClasses();
+                getAllBooks();
                 getBlogList();
                 getCurrentAffairs();
             }
@@ -247,7 +257,70 @@ public class HomeFragment extends Fragment {
         };
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
+    private void getAllBooks() {
+        String paginatedURL = bookURL;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            boolean status = response.getBoolean("success");
+                            if (status) {
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                allBooksModelArrayList.clear();
 
+                                // Parse books directly here
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject jsonObject2 = jsonArray.getJSONObject(i);
+
+                                    // Convert the book object into a Map to make it dynamic
+                                    Map<String, Object> bookData = new Gson().fromJson(jsonObject2.toString(), Map.class);
+                                    AllBooksModel model = new AllBooksModel(bookData); // Pass the map to the model
+
+                                    allBooksModelArrayList.add(model);
+                                }
+
+                                // Update UI and adapters
+                                booksRecycler.setAdapter(new HomeFragmentBookAdapter(HomeFragment.this, allBooksModelArrayList));
+                                booksShimmeringLayout.stopShimmer();
+                                booksShimmeringLayout.setVisibility(View.GONE);
+                                booksRecycler.setVisibility(View.VISIBLE);
+                            } else {
+                                Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.e("BlogFetchError", errorMessage);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + token);
+                return headers;
+            }
+        };
+
+        MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
     private void getBlogList() {
         // Create a JsonObjectRequest for the GET request
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, blogURL, null,

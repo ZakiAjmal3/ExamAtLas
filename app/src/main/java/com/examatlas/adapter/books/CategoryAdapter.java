@@ -2,7 +2,6 @@ package com.examatlas.adapter.books;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.activities.Books.FilteringBookWithCategoryActivity;
+import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.models.Books.CategoryModel;
-import com.examatlas.models.extraModels.BookImageModels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,13 +38,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        holder.categoryName.setText(categoryArrayList.get(position).getCategoryName());
+        CategoryModel currentCategory = categoryArrayList.get(position);
+        holder.itemView.setTag(currentCategory);
+        holder.categoryName.setText(categoryArrayList.get(position).getString("categoryName"));
+        String imgURL = categoryArrayList.get(position).getImageUrl();
         Glide.with(context)
-                .load(R.drawable.book_img2)
-                .error(R.drawable.book_img2)
+                .load(imgURL)
+                .error(R.drawable.noimage)
                 .into(holder.imageView);
-
     }
 
     @Override
@@ -65,9 +65,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, FilteringBookWithCategoryActivity.class);
-                    intent.putExtra("name", categoryArrayList.get(getAdapterPosition()).getCategoryName());
+                    intent.putExtra("name", categoryArrayList.get(getAdapterPosition()).getString("categoryName"));
+                    intent.putExtra("id", categoryArrayList.get(getAdapterPosition()).getString("_id"));
                     context.startActivity(intent);
-
                 }
             });
         }

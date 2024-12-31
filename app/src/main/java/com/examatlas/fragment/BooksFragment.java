@@ -1,21 +1,21 @@
-package com.examatlas.activities.Books;
+package com.examatlas.fragment;
 
-import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,16 +25,21 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.denzcoskun.imageslider.ImageSlider;
+import com.denzcoskun.imageslider.constants.ScaleTypes;
+import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
-import com.examatlas.adapter.books.FilteringCategoryAdapter;
-import com.examatlas.adapter.books.SearchingActivityAdapter;
-import com.examatlas.models.Books.CategoryModel;
+import com.examatlas.activities.Books.SearchingBooksActivity;
+import com.examatlas.activities.HardBookECommPurchaseActivity;
+import com.examatlas.adapter.books.BookForUserAdapter;
+import com.examatlas.adapter.books.CategoryAdapter;
 import com.examatlas.models.Books.AllBooksModel;
+import com.examatlas.models.Books.CategoryModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
+import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -45,101 +50,95 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FilteringBookWithCategoryActivity extends AppCompatActivity {
-    RecyclerView booksRecycler;
-    ArrayList<CategoryModel> categoryArrayList = new ArrayList<>();
+public class BooksFragment extends Fragment {
+    ImageView cartBtn,logo;
+    private ImageSlider slider;
+    ArrayList<SlideModel> sliderArrayList;
+    private RecyclerView booksRecyclerView,categoryRecyclerView,bookForUserRecyclerView,bookBestSellerRecyclerView;
     private ArrayList<AllBooksModel> allBooksModelArrayList;
-    private final String bookURL = Constant.BASE_URL + "v1/booksByCategory?categoryId=";
-    private final String categoryURL = Constant.BASE_URL + "v1/category";
     private SessionManager sessionManager;
-    private String token,categoryName,categoryID;
-    TextView categoryNameTxtView,viewAllCategoryTxt,noDataTxt;
-    ImageView backBtn;
+    private String token;
+    private RelativeLayout noDataLayout;
+    private EditText searchView;
+    private final String bookURL = Constant.BASE_URL + "v1/books";
+    private final String categoryURL = Constant.BASE_URL + "v1/category";
     int totalPage,totalItems;
-    ShimmerFrameLayout bookShimmerLayout;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filtering_book_with_category);
+    ArrayList<CategoryModel> categoryArrayList = new ArrayList<>();
+    NestedScrollView nestedScrollView;
+    RelativeLayout toolbarRelativeLayout;
+    FrameLayout searchViewFrameLayout;
+    ShimmerFrameLayout categoryShimmerLayout,bookForUsrShimmerLayout,bookBestSellerShimmerLayout;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_books, container, false);
 
-        getWindow().setStatusBarColor(ContextCompat.getColor(FilteringBookWithCategoryActivity.this,R.color.md_theme_dark_surfaceTint));
+        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), R.color.md_theme_dark_surfaceTint));
 
-        booksRecycler = findViewById(R.id.booksRecycler);
-        bookShimmerLayout = findViewById(R.id.shimmer_for_user_container);
-        booksRecycler.setVisibility(View.GONE);
-        bookShimmerLayout.setVisibility(View.VISIBLE);
-        bookShimmerLayout.startShimmer();
-        backBtn = findViewById(R.id.backBtn);
+        logo = view.findViewById(R.id.logo);
+        cartBtn = view.findViewById(R.id.cartBtn);
+        slider = view.findViewById(R.id.slider);
+        nestedScrollView = view.findViewById(R.id.nestScrollView);
+        searchViewFrameLayout = view.findViewById(R.id.searchViewFrameLayout);
+        toolbarRelativeLayout = view.findViewById(R.id.hardbook_ecomm_purchase_toolbar);
+        booksRecyclerView = view.findViewById(R.id.booksRecycler);
 
-        booksRecycler.setLayoutManager(new GridLayoutManager(this,2));
+        categoryRecyclerView = view.findViewById(R.id.categoryRecycler);
+        categoryShimmerLayout = view.findViewById(R.id.shimmer_category_container);
+        categoryRecyclerView.setVisibility(View.GONE);
+        categoryShimmerLayout.setVisibility(View.VISIBLE);
+        categoryShimmerLayout.startShimmer();
+
+        bookForUserRecyclerView = view.findViewById(R.id.booksForUserRecycler);
+        bookForUsrShimmerLayout = view.findViewById(R.id.shimmer_for_user_container);
+        bookForUserRecyclerView.setVisibility(View.GONE);
+        bookForUsrShimmerLayout.setVisibility(View.VISIBLE);
+        bookForUsrShimmerLayout.startShimmer();
+
+        bookBestSellerRecyclerView = view.findViewById(R.id.booksBestSellerRecycler);
+        bookBestSellerShimmerLayout = view.findViewById(R.id.shimmer_Best_selling_container);
+        bookBestSellerRecyclerView.setVisibility(View.GONE);
+        bookBestSellerShimmerLayout.setVisibility(View.VISIBLE);
+        bookBestSellerShimmerLayout.startShimmer();
+
+        noDataLayout = view.findViewById(R.id.noDataLayout);
+
+        searchView = view.findViewById(R.id.search_icon);
+        searchView.setFocusable(false);
+        searchView.setClickable(true);
+//        cartIcon = findViewById(R.id.cartBtn);
         allBooksModelArrayList = new ArrayList<>();
-        sessionManager = new SessionManager(this);
+        sessionManager = new SessionManager(getContext());
         token = sessionManager.getUserData().get("authToken");
 
-        categoryNameTxtView = findViewById(R.id.showingCategoryDisplayNameText);
-        viewAllCategoryTxt = findViewById(R.id.viewAllCategoryTxt);
-        noDataTxt = findViewById(R.id.noDataTxt);
 
-        categoryName = getIntent().getStringExtra("name");
-        categoryID = getIntent().getStringExtra("id");
-        categoryNameTxtView.setText(categoryName);
+        booksRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
+        bookForUserRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
+        bookBestSellerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
 
-        backBtn.setOnClickListener(new View.OnClickListener() {
+        searchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
-            }
-        });
-        viewAllCategoryTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDrawerDialog();
-            }
-        });
-        getAllBooks();
-    }
-    Dialog drawerDialog;
-    RecyclerView drawerCategoryRecycler;
-    MaterialCardView cardBack;
-    ShimmerFrameLayout drawerCategoryShimmerLayout;
-    private void showDrawerDialog() {
-        drawerDialog = new Dialog(FilteringBookWithCategoryActivity.this);
-        drawerDialog.setContentView(R.layout.filtering_book_category_drawer_layout);
-        drawerDialog.setCancelable(true);
-
-        drawerCategoryRecycler = drawerDialog.findViewById(R.id.categoryNameRecycler);
-        cardBack = drawerDialog.findViewById(R.id.cardBack);
-
-        drawerCategoryShimmerLayout = drawerDialog.findViewById(R.id.shimmer_category_container);
-        drawerCategoryShimmerLayout.startShimmer();
-        drawerCategoryRecycler.setVisibility(View.GONE);
-
-        drawerCategoryRecycler.setLayoutManager(new LinearLayoutManager(this));
-        drawerCategoryRecycler.setAdapter(new FilteringCategoryAdapter(categoryArrayList, FilteringBookWithCategoryActivity.this));
-
-        cardBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerDialog.dismiss();
+                Intent intent = new Intent(getContext(), SearchingBooksActivity.class);
+                startActivity(intent);
             }
         });
 
+        setupImageSlider();
         getAlLCategory();
-        drawerDialog.show();
-        drawerDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        drawerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        drawerDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        drawerDialog.getWindow().setGravity(Gravity.TOP);
-        drawerDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            drawerDialog.getWindow().setStatusBarColor(getColor(R.color.seed));
-        }
+        getAllBooks();
+
+        return view;
     }
 
-    public void setCategoryName(String name){
-        categoryNameTxtView.setText(name);
-        drawerDialog.dismiss();
+    private void setupImageSlider() {
+        sliderArrayList = new ArrayList<>();
+        sliderArrayList.add(new SlideModel(R.drawable.image1, ScaleTypes.CENTER_CROP));
+        sliderArrayList.add(new SlideModel(R.drawable.image2, ScaleTypes.CENTER_CROP));
+        sliderArrayList.add(new SlideModel(R.drawable.image3, ScaleTypes.CENTER_CROP));
+        slider.setImageList(sliderArrayList);
     }
+
     private void getAlLCategory() {
         String paginatedURL = categoryURL;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
@@ -147,7 +146,7 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            drawerCategoryRecycler.setVisibility(View.VISIBLE);
+                            categoryRecyclerView.setVisibility(View.VISIBLE);
                             boolean status = response.getBoolean("success");
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("data");
@@ -177,14 +176,18 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
                                     // Add the model to the list
                                     categoryArrayList.add(model);
                                 }
-
+                                if (categoryArrayList.size()>10){
+                                    categoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),2,GridLayoutManager.HORIZONTAL,false));
+                                }else {
+                                    categoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),5,GridLayoutManager.VERTICAL,false));
+                                }
                                 // Update UI and adapters
-                                drawerCategoryRecycler.setAdapter(new FilteringCategoryAdapter(categoryArrayList, FilteringBookWithCategoryActivity.this));
-                                drawerCategoryShimmerLayout.stopShimmer();
-                                drawerCategoryShimmerLayout.setVisibility(View.GONE);
-                                drawerCategoryRecycler.setVisibility(View.VISIBLE);
+                                categoryRecyclerView.setAdapter(new CategoryAdapter(categoryArrayList, getContext()));
+                                categoryShimmerLayout.stopShimmer();
+                                categoryShimmerLayout.setVisibility(View.GONE);
+                                categoryRecyclerView.setVisibility(View.VISIBLE);
                             } else {
-                                Toast.makeText(FilteringBookWithCategoryActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
@@ -200,7 +203,7 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
                                 String jsonError = new String(error.networkResponse.data);
                                 JSONObject jsonObject = new JSONObject(jsonError);
                                 String message = jsonObject.optString("message", "Unknown error");
-                                Toast.makeText(FilteringBookWithCategoryActivity.this, message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -217,16 +220,18 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
             }
         };
 
-        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+        MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
+
+
     private void getAllBooks() {
-        String paginatedURL = bookURL + categoryID;
+        String paginatedURL = bookURL;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-//                            progressBar.setVisibility(View.GONE);
+                            booksRecyclerView.setVisibility(View.VISIBLE);
                             boolean status = response.getBoolean("success");
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("data");
@@ -244,19 +249,25 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
 
                                     allBooksModelArrayList.add(model);
                                 }
-                                if (!allBooksModelArrayList.isEmpty()) {
-                                    booksRecycler.setAdapter(new SearchingActivityAdapter(FilteringBookWithCategoryActivity.this, allBooksModelArrayList));
-                                    bookShimmerLayout.stopShimmer();
-                                    bookShimmerLayout.setVisibility(View.GONE);
-                                    booksRecycler.setVisibility(View.VISIBLE);
-                                }else {
-                                    booksRecycler.setVisibility(View.GONE);
-                                    bookShimmerLayout.stopShimmer();
-                                    bookShimmerLayout.setVisibility(View.GONE);
-                                    noDataTxt.setVisibility(View.VISIBLE);
+
+                                // Update UI and adapters
+                                bookForUserRecyclerView.setAdapter(new BookForUserAdapter(getContext(), allBooksModelArrayList));
+                                bookForUsrShimmerLayout.stopShimmer();
+                                bookForUsrShimmerLayout.setVisibility(View.GONE);
+                                bookForUserRecyclerView.setVisibility(View.VISIBLE);
+                                bookBestSellerRecyclerView.setAdapter(new BookForUserAdapter(getContext(), allBooksModelArrayList));
+                                bookBestSellerShimmerLayout.stopShimmer();
+                                bookBestSellerShimmerLayout.setVisibility(View.GONE);
+                                bookBestSellerRecyclerView.setVisibility(View.VISIBLE);
+
+                                if (allBooksModelArrayList.isEmpty()) {
+                                    noDataLayout.setVisibility(View.VISIBLE);
+                                    booksRecyclerView.setVisibility(View.GONE);
+                                } else {
+                                    booksRecyclerView.setAdapter(new BookForUserAdapter(getContext(), allBooksModelArrayList));
                                 }
                             } else {
-                                Toast.makeText(FilteringBookWithCategoryActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
@@ -269,12 +280,10 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {
-                                // Parse the error response
                                 String jsonError = new String(error.networkResponse.data);
                                 JSONObject jsonObject = new JSONObject(jsonError);
                                 String message = jsonObject.optString("message", "Unknown error");
-                                // Now you can use the message
-                                Toast.makeText(FilteringBookWithCategoryActivity.this, message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -291,8 +300,9 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
             }
         };
 
-        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+        MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
+
     private String parseTags(JSONArray tagsArray) throws JSONException {
         StringBuilder tags = new StringBuilder();
         for (int j = 0; j < tagsArray.length(); j++) {
@@ -303,12 +313,5 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
         }
         return tags.toString();
     }
-    public void setCategoryID(String id){
-        categoryID = id;
-        booksRecycler.setVisibility(View.GONE);
-        noDataTxt.setVisibility(View.GONE);
-        bookShimmerLayout.setVisibility(View.VISIBLE);
-        bookShimmerLayout.startShimmer();
-        getAllBooks();
-    }
 }
+

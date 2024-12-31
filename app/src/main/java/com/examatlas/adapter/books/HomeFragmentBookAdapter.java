@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -25,24 +26,24 @@ import com.examatlas.models.Books.BookImageModels;
 
 import java.util.ArrayList;
 
-public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.ViewHolder> {
-    private final Context context;
+public class HomeFragmentBookAdapter extends RecyclerView.Adapter<HomeFragmentBookAdapter.ViewHolder> {
+    private final Fragment context;
     private final ArrayList<AllBooksModel> allBooksModelArrayList;
 
-    public BookForUserAdapter(Context context, ArrayList<AllBooksModel> allBooksModelArrayList) {
+    public HomeFragmentBookAdapter(Fragment context, ArrayList<AllBooksModel> allBooksModelArrayList) {
         this.allBooksModelArrayList = new ArrayList<>(allBooksModelArrayList);
         this.context = context;
     }
 
     @NonNull
     @Override
-    public BookForUserAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hardcopybook_item_list2, parent, false);
-        return new BookForUserAdapter.ViewHolder(view);
+    public HomeFragmentBookAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_books_item_home_fragment_layout, parent, false);
+        return new HomeFragmentBookAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BookForUserAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull HomeFragmentBookAdapter.ViewHolder holder, int position) {
         AllBooksModel currentBook = allBooksModelArrayList.get(position);
         holder.itemView.setTag(currentBook);
 
@@ -95,19 +96,19 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, price;
-//        ViewPager2 viewPager;
+        //        ViewPager2 viewPager;
         ImageView bookImg;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.bookTitle);
+            title = itemView.findViewById(R.id.txtBookTitle);
             price = itemView.findViewById(R.id.bookPriceInfo);
             bookImg = itemView.findViewById(R.id.imgBook);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, SingleBookDetailsActivity.class);
+                    Intent intent = new Intent(context.getContext(), SingleBookDetailsActivity.class);
                     intent.putExtra("bookID", allBooksModelArrayList.get(getAdapterPosition()).getString("_id"));
                     context.startActivity(intent);
                 }

@@ -11,6 +11,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.examatlas.R;
 import com.examatlas.activities.MainActivity;
@@ -31,6 +33,8 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), R.color.seed));
 
         txtName = view.findViewById(R.id.txtName);
         txtEmail = view.findViewById(R.id.txtEmail);
@@ -70,11 +74,11 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-//        getProfile(sessionManager.getToken());
-        super.onResume();
-    }
+//    @Override
+//    public void onResume() {
+////        getProfile(sessionManager.getToken());
+//        super.onResume();
+//    }
 
     private void logoutDialog() {
         new MaterialAlertDialogBuilder(getContext())

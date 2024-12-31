@@ -13,29 +13,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.activities.Books.SingleBookDetailsActivity;
-import com.examatlas.models.HardBookECommPurchaseModel;
+import com.examatlas.adapter.extraAdapter.BookImageAdapter;
+import com.examatlas.models.Books.AllBooksModel;
+import com.examatlas.models.Books.BookImageModels;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class SearchingActivityAdapter extends RecyclerView.Adapter<SearchingActivityAdapter.ViewHolder> {
     private final Context context;
-    private final ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList;
-    private final ArrayList<HardBookECommPurchaseModel> originalHardBookECommPurchaseModelArrayList;
+    private final ArrayList<AllBooksModel> allBooksModelArrayList;
+    private final ArrayList<AllBooksModel> originalAllBooksModelArrayList;
 
     private String currentQuery = "";
 
-    public SearchingActivityAdapter(Context context, ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList) {
-        this.originalHardBookECommPurchaseModelArrayList = new ArrayList<>(hardBookECommPurchaseModelArrayList);
-        this.hardBookECommPurchaseModelArrayList = new ArrayList<>(originalHardBookECommPurchaseModelArrayList);        this.context = context;
+    public SearchingActivityAdapter(Context context, ArrayList<AllBooksModel> allBooksModelArrayList) {
+        this.originalAllBooksModelArrayList = new ArrayList<>(allBooksModelArrayList);
+        this.allBooksModelArrayList = new ArrayList<>(originalAllBooksModelArrayList);
+        this.context = context;
     }
 
     @NonNull
@@ -47,14 +51,14 @@ public class SearchingActivityAdapter extends RecyclerView.Adapter<SearchingActi
 
     @Override
     public void onBindViewHolder(@NonNull SearchingActivityAdapter.ViewHolder holder, int position) {
-        HardBookECommPurchaseModel currentBook = hardBookECommPurchaseModelArrayList.get(hardBookECommPurchaseModelArrayList.size() - 1 - position);
+        AllBooksModel currentBook = allBooksModelArrayList.get(position);
         holder.itemView.setTag(currentBook);
 
-        holder.setHighlightedText(holder.title, currentBook.getTitle(), currentQuery);
+        holder.setHighlightedText(holder.title, allBooksModelArrayList.get(position).getString("title"), currentQuery);
 
         // Calculate prices and discount
-        String purchasingPrice = currentBook.getSellPrice();
-        String originalPrice = currentBook.getPrice();
+        String purchasingPrice = allBooksModelArrayList.get(position).getString("sellingPrice");
+        String originalPrice = allBooksModelArrayList.get(position).getString("price");
         int discount = Integer.parseInt(purchasingPrice) * 100 / Integer.parseInt(originalPrice);
         discount = 100 - discount;
 
@@ -75,33 +79,33 @@ public class SearchingActivityAdapter extends RecyclerView.Adapter<SearchingActi
 
         holder.setHighlightedPrice(holder.price, spannableText, currentQuery);
 
-//        BookImageAdapter bookImageAdapter = new BookImageAdapter((ArrayList<BookImageModels>) currentBook.getImages());
-//        holder.viewPager.setAdapter(bookImageAdapter);
-        Glide.with(context)
-                .load(R.drawable.book1)
-                .error(R.drawable.book1)
-                .placeholder(R.drawable.book1)
-                .into(holder.bookImg);
+        BookImageAdapter bookImageAdapter = new BookImageAdapter((ArrayList<BookImageModels>) currentBook.getImages(),holder.bookImg,holder.indicatorLayout);
+        holder.bookImg.setAdapter(bookImageAdapter);
+//        Glide.with(context)
+//                .load(R.drawable.book1)
+//                .error(R.drawable.book1)
+//                .placeholder(R.drawable.book1)
+//                .into(holder.bookImg);
 
     }
 
     @Override
     public int getItemCount() {
-        return hardBookECommPurchaseModelArrayList.size();
+        return allBooksModelArrayList.size();
     }
     public void filter(String query) {
         currentQuery = query;
-        hardBookECommPurchaseModelArrayList.clear();
+        allBooksModelArrayList.clear();
         if (query.isEmpty()) {
-            hardBookECommPurchaseModelArrayList.addAll(originalHardBookECommPurchaseModelArrayList);
+            allBooksModelArrayList.addAll(originalAllBooksModelArrayList);
         } else {
             String lowerCaseQuery = query.toLowerCase();
-            for (HardBookECommPurchaseModel bookModel : originalHardBookECommPurchaseModelArrayList) {
-                if (bookModel.getTitle().toLowerCase().contains(lowerCaseQuery) ||
-                        bookModel.getContent().toLowerCase().contains(lowerCaseQuery) ||
-                        bookModel.getTags().toLowerCase().contains(lowerCaseQuery) ||
-                        bookModel.getPrice().toLowerCase().contains(lowerCaseQuery)) {
-                    hardBookECommPurchaseModelArrayList.add(bookModel);
+            for (AllBooksModel bookModel : originalAllBooksModelArrayList) {
+                if (bookModel.getString("title").toLowerCase().contains(lowerCaseQuery) ||
+                        bookModel.getString("description").toLowerCase().contains(lowerCaseQuery) ||
+                        bookModel.getString("tags").toLowerCase().contains(lowerCaseQuery) ||
+                        bookModel.getString("price").toLowerCase().contains(lowerCaseQuery)) {
+                    allBooksModelArrayList.add(bookModel);
                 }
             }
         }
@@ -110,19 +114,21 @@ public class SearchingActivityAdapter extends RecyclerView.Adapter<SearchingActi
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, price;
         //        ViewPager2 viewPager;
-        ImageView bookImg;
+        ViewPager2 bookImg;
+        LinearLayout indicatorLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.bookTitle);
             price = itemView.findViewById(R.id.bookPriceInfo);
             bookImg = itemView.findViewById(R.id.bookImg);
+            indicatorLayout = itemView.findViewById(R.id.indicatorLayout);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(context, SingleBookDetailsActivity.class);
-                    intent.putExtra("bookID",hardBookECommPurchaseModelArrayList.get(getAbsoluteAdapterPosition()).getId());
+                    intent.putExtra("bookID", allBooksModelArrayList.get(getAbsoluteAdapterPosition()).getString("_id"));
                     context.startActivity(intent);
                 }
             });

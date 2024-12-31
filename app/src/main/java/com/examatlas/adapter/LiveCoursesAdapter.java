@@ -47,7 +47,7 @@ public class LiveCoursesAdapter extends RecyclerView.Adapter<LiveCoursesAdapter.
         holder.tags.setText(liveCoursesModelArrayList.get(position).getTags());
         holder.teacherName.setText(liveCoursesModelArrayList.get(position).getTeacherName());
 
-        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentClasss.getImageArrayList());
+        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentClasss.getImageArrayList(),null,null);
         holder.cfImage.setAdapter(bookImageAdapter);
 
 //        // Enable JavaScript (optional, depending on your content)
