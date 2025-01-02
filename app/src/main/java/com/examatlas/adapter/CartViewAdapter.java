@@ -30,7 +30,6 @@ import com.examatlas.R;
 import com.examatlas.activities.CartViewActivity;
 import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.CartViewModel;
-import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -94,7 +93,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
         // Set the spannable text to holder
         holder.price.setText(spannableText);
 
-        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getBookImageArrayList());
+        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getBookImageArrayList(),null,null);
         holder.bookImage.setAdapter(bookImageAdapter);
 
         // Set quantity

@@ -91,6 +91,122 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        android:id="@+id/bookTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins"
+                        android:text="Books"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:letterSpacing="0.1"
+                        android:shadowColor="#000000"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="1"
+                        android:layout_marginLeft="10dp"
+                        android:layout_alignParentBottom="true"
+                        />
+                    <TextView
+                        android:id="@+id/viewAllBooksTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="View All"
+                        android:padding="5dp"
+                        android:layout_alignParentEnd="true"
+                        android:textColor="@color/seed2"
+                        android:textSize="12sp"
+                        android:textStyle="normal"
+                        android:layout_marginRight="10dp"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        />
+                </RelativeLayout>
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_Book_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="visible"
+                    android:layout_marginTop="10dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/imgD1"
+                            android:layout_width="130dp"
+                            android:layout_height="200dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="6dp"
+                            >
+                            <ImageView
+                                android:layout_width="130dp"
+                                android:layout_height="200dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/imgD2"
+                            android:layout_width="130dp"
+                            android:layout_height="200dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="7dp"
+                            android:layout_toRightOf="@id/imgD1"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="130dp"
+                                android:layout_height="200dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/imgD3"
+                            android:layout_width="130dp"
+                            android:layout_height="200dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="7dp"
+                            android:layout_toRightOf="@id/imgD2"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="130dp"
+                                android:layout_height="200dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="130dp"
+                            android:layout_height="200dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="7dp"
+                            android:layout_toRightOf="@id/imgD3"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="130dp"
+                                android:layout_height="200dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                    </RelativeLayout>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/booksRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
                         android:id="@+id/blogTxt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -138,44 +254,59 @@
                         android:layout_marginLeft="10dp">
                         <androidx.cardview.widget.CardView
                             android:id="@+id/imgB1"
-                            android:layout_width="105dp"
-                            android:layout_height="120dp"
+                            android:layout_width="130dp"
+                            android:layout_height="140dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="6dp"
                             >
                             <ImageView
-                                android:layout_width="105dp"
-                                android:layout_height="120dp"
+                                android:layout_width="130dp"
+                                android:layout_height="140dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
                         <androidx.cardview.widget.CardView
                             android:id="@+id/imgB2"
-                            android:layout_width="105dp"
-                            android:layout_height="120dp"
+                            android:layout_width="130dp"
+                            android:layout_height="140dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="7dp"
                             android:layout_toRightOf="@id/imgB1"
                             android:layout_marginLeft="10dp">
                             <ImageView
-                                android:layout_width="105dp"
-                                android:layout_height="120dp"
+                                android:layout_width="130dp"
+                                android:layout_height="140dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
                         <androidx.cardview.widget.CardView
-                            android:layout_width="105dp"
-                            android:layout_height="120dp"
+                            android:id="@+id/imgB3"
+                            android:layout_width="130dp"
+                            android:layout_height="140dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="7dp"
                             android:layout_toRightOf="@id/imgB2"
                             android:layout_marginLeft="10dp">
                             <ImageView
-                                android:layout_width="110dp"
-                                android:layout_height="120dp"
+                                android:layout_width="130dp"
+                                android:layout_height="140dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="130dp"
+                            android:layout_height="140dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="7dp"
+                            android:layout_toRightOf="@id/imgB3"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="130dp"
+                                android:layout_height="140dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
@@ -236,44 +367,59 @@
                         android:layout_marginLeft="10dp">
                         <androidx.cardview.widget.CardView
                             android:id="@+id/imgC1"
-                            android:layout_width="105dp"
-                            android:layout_height="120dp"
+                            android:layout_width="130dp"
+                            android:layout_height="140dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="10dp">
                             <ImageView
-                                android:layout_width="105dp"
-                                android:layout_height="120dp"
+                                android:layout_width="130dp"
+                                android:layout_height="140dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
                         <androidx.cardview.widget.CardView
                             android:id="@+id/imgC2"
-                            android:layout_width="105dp"
-                            android:layout_height="120dp"
+                            android:layout_width="130dp"
+                            android:layout_height="140dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="10dp"
                             android:layout_toRightOf="@id/imgC1"
                             android:layout_marginLeft="10dp">
                             <ImageView
-                                android:layout_width="105dp"
-                                android:layout_height="120dp"
+                                android:layout_width="130dp"
+                                android:layout_height="140dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>
                         <androidx.cardview.widget.CardView
                             android:id="@+id/imgC3"
-                            android:layout_width="105dp"
-                            android:layout_height="120dp"
+                            android:layout_width="130dp"
+                            android:layout_height="140dp"
                             android:gravity="center"
                             android:orientation="vertical"
                             app:cardCornerRadius="10dp"
                             android:layout_toRightOf="@id/imgC2"
                             android:layout_marginLeft="10dp">
                             <ImageView
-                                android:layout_width="105dp"
-                                android:layout_height="120dp"
+                                android:layout_width="130dp"
+                                android:layout_height="140dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/imgC4"
+                            android:layout_width="130dp"
+                            android:layout_height="140dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="10dp"
+                            android:layout_toRightOf="@id/imgC3"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="130dp"
+                                android:layout_height="140dp"
                                 android:background="@drawable/skeleton_background"
                                 />
                         </androidx.cardview.widget.CardView>

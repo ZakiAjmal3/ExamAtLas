@@ -16,10 +16,10 @@
         android:icon="@drawable/test_series"
         android:title="Live Classes" />
     <item
-        android:id="@+id/course"
+        android:id="@+id/books"
         android:enabled="true"
         android:icon="@drawable/courses"
-        android:title="Course" />
+        android:title="Books" />
     <item
         android:id="@+id/profile"
         android:enabled="true"

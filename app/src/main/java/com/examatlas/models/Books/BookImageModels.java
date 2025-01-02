@@ -1,4 +1,4 @@
-package com.examatlas.models.extraModels;
+package com.examatlas.models.Books;
 
 public class BookImageModels {
     String url,fileName;

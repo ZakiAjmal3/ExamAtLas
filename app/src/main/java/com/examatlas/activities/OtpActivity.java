@@ -350,10 +350,10 @@ public class OtpActivity extends AppCompatActivity {
                                         String city = addressObj.getString("city");
                                         sessionManager.saveLoginDetails2(user_id,firstName,lastName,email,state,city,role,isActive,step,authToken,createdAt,updatedAt,null);
                                         Intent intent = new Intent(OtpActivity.this, SignUpActivity5CategorySelect.class);
+                                        intent.putExtra("task",task);
                                         startActivity(intent);
                                     }
                                 } catch (JSONException e) {
-
                                     Toast.makeText(OtpActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                                 }
                             }

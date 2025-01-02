@@ -38,7 +38,7 @@ import com.examatlas.adapter.CreateDeliveryAddressAdapter;
 import com.examatlas.adapter.extraAdapter.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
 import com.examatlas.models.CartViewModel;
 import com.examatlas.models.CreateDeliveryAddressModel;
-import com.examatlas.models.extraModels.BookImageModels;
+import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.models.extraModels.BookOrderSummaryItemsDetailsRecyclerViewModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;

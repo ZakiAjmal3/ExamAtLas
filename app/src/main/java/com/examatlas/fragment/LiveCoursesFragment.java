@@ -1,7 +1,6 @@
 package com.examatlas.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.LiveCoursesAdapter;
 import com.examatlas.models.LiveCoursesModel;
-import com.examatlas.models.extraModels.BookImageModels;
+import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;

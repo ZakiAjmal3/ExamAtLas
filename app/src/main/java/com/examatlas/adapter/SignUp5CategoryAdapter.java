@@ -14,17 +14,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.models.AdminShowAllCategoryModel;
+import com.examatlas.models.Books.CategoryModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SignUp5CategoryAdapter extends RecyclerView.Adapter<SignUp5CategoryAdapter.ViewHolder> {
-    private ArrayList<AdminShowAllCategoryModel> categoryModelArrayList;
+    private ArrayList<CategoryModel> categoryModelArrayList;
     private Context context;
     private ArrayList<String> categorySelectedArrayList;
     private OnCategoryClickListener onCategoryClickListener;
 
-    public SignUp5CategoryAdapter(ArrayList<AdminShowAllCategoryModel> categoryModelArrayList, Context context, OnCategoryClickListener onCategoryClickListener) {
+    public SignUp5CategoryAdapter(ArrayList<CategoryModel> categoryModelArrayList, Context context, OnCategoryClickListener onCategoryClickListener) {
         this.categoryModelArrayList = categoryModelArrayList;
         this.context = context;
         this.categorySelectedArrayList = new ArrayList<>();
@@ -40,9 +41,10 @@ public class SignUp5CategoryAdapter extends RecyclerView.Adapter<SignUp5Category
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        AdminShowAllCategoryModel category = categoryModelArrayList.get(position);
+        CategoryModel category = categoryModelArrayList.get(position);
         holder.itemView.setTag(category);
-        holder.title.setText(category.getCategoryName());
+        holder.title.setText(category.getString("categoryName"));
+
 
         String imageUrl = category.getImageUrl();
         Glide.with(context)
@@ -51,7 +53,7 @@ public class SignUp5CategoryAdapter extends RecyclerView.Adapter<SignUp5Category
                 .into(holder.description);
 
         // Set background based on selection status
-        if (categorySelectedArrayList.contains(category.getId())) {
+        if (categorySelectedArrayList.contains(category.getString("_id"))) {
             holder.tick.setVisibility(View.VISIBLE);
         } else {
             holder.tick.setVisibility(View.GONE);
@@ -78,8 +80,8 @@ public class SignUp5CategoryAdapter extends RecyclerView.Adapter<SignUp5Category
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AdminShowAllCategoryModel category = (AdminShowAllCategoryModel) itemView.getTag();
-                    String categoryId = category.getId();
+                    CategoryModel category = (CategoryModel) itemView.getTag();
+                    String categoryId = category.getString("_id");
                     // Check the number of selected categories
                     if (categorySelectedArrayList.size() >= 3 && !categorySelectedArrayList.contains(categoryId)) {
                         Toast.makeText(context, "You can select only three categories", Toast.LENGTH_SHORT).show();

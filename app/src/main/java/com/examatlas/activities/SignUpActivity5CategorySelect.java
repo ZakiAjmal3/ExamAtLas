@@ -21,9 +21,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.SignUp5CategoryAdapter;
 import com.examatlas.models.AdminShowAllCategoryModel;
+import com.examatlas.models.Books.CategoryModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,9 +38,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SignUpActivity5CategorySelect extends AppCompatActivity implements SignUp5CategoryAdapter.OnCategoryClickListener {
-    private final String categoryURL = Constant.BASE_URL + "category/getCategory";
+    private final String categoryURL = Constant.BASE_URL + "v1/category";
     RecyclerView categoryRecyclerView;
-    ArrayList<AdminShowAllCategoryModel> categoryModelArrayList;
+    ArrayList<CategoryModel> categoryModelArrayList;
     SignUp5CategoryAdapter categoryAdapter;
     Button nextBtn;
     SessionManager sessionManager;
@@ -142,6 +144,7 @@ public class SignUpActivity5CategorySelect extends AppCompatActivity implements 
                                 sessionManager.saveLoginDetails2(user_id,firstName,lastName,email,state,city,role,isActive,step,authToken,createdAt,updatedAt,null);
                                 if (Objects.equals(getIntent().getStringExtra("task"), "signUp")) {
                                     Intent intent = new Intent(SignUpActivity5CategorySelect.this, LoginActivity.class);
+                                    sessionManager.logout();
                                     startActivity(intent);
                                     finish();
                                 }else {
@@ -194,22 +197,33 @@ public class SignUpActivity5CategorySelect extends AppCompatActivity implements 
                         try {
                             categoryRecyclerView.setVisibility(View.VISIBLE);
                             progressBar.setVisibility(View.GONE);
-                            boolean status = response.getBoolean("status");
+                            boolean status = response.getBoolean("success");
 
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("data");
+                                categoryModelArrayList.clear();
 
+                                // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    String id = jsonObject2.getString("_id");
-                                    String categoryName = jsonObject2.getString("categoryName");
-                                    String slug = jsonObject2.getString("slug");
-                                    String is_active = jsonObject2.getString("is_active");
-                                    JSONObject imageObj = jsonObject2.getJSONObject("image");
-                                    String imageUrl = imageObj.getString("url");
 
-                                    AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(id, categoryName, slug, is_active, imageUrl);
-                                    categoryModelArrayList.add(categoryModel);
+                                    // Convert the book object into a Map to make it dynamic
+                                    Map<String, Object> categoryData = new Gson().fromJson(jsonObject2.toString(), Map.class);
+
+                                    // Extract image URL from the "imageUrl" field, handle missing image gracefully
+                                    JSONObject imgObj = jsonObject2.optJSONObject("imageUrl");
+                                    String imageURL = null;
+                                    if (imgObj != null) {
+                                        imageURL = imgObj.optString("url", ""); // Default to empty string if URL is not present
+                                    }
+                                    // Handle missing image gracefully
+                                    if (imageURL == null || imageURL.isEmpty()) {
+                                        imageURL = "default_image_url"; // Placeholder for missing images
+                                    }
+
+                                    CategoryModel model = new CategoryModel(categoryData,imageURL); // Pass the map to the model
+                                    // Add the model to the list
+                                    categoryModelArrayList.add(model);
                                 }
                                 if (categoryModelArrayList.isEmpty()) {
                                     categoryRecyclerView.setVisibility(View.GONE);

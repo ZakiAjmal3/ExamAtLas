@@ -1,8 +1,8 @@
 package com.examatlas.adapter.books;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
+import com.examatlas.activities.Books.FilteringBookWithCategoryActivity;
 import com.examatlas.models.Books.CategoryModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FilteringCategoryAdapter extends RecyclerView.Adapter<FilteringCategoryAdapter.ViewHolder> {
-    private final List<CategoryModel> categoryArrayList; // Use List of BookImageModels
+    private final List<CategoryModel> categoryArrayList;
     private final Context context;
     private int selectedPosition = -1;
 
@@ -40,15 +41,8 @@ public class FilteringCategoryAdapter extends RecyclerView.Adapter<FilteringCate
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
         // Set category name
-        holder.categoryName.setText(categoryArrayList.get(position).getCategoryName());
-
-        // Load image using Glide
-        Glide.with(context)
-                .load(R.drawable.book_img2)  // Use your image URL here
-                .error(R.drawable.book_img2)  // Fallback image
-                .into(holder.imageView);
+        holder.categoryName.setText(categoryArrayList.get(position).getString("categoryName"));
     }
 
     @Override
@@ -57,13 +51,20 @@ public class FilteringCategoryAdapter extends RecyclerView.Adapter<FilteringCate
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView imageView;
         private final TextView categoryName;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.categoryIMG);
             categoryName = itemView.findViewById(R.id.categoryName);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((FilteringBookWithCategoryActivity) context).setCategoryName(categoryArrayList.get(getAdapterPosition()).getString("categoryName"));
+                    Log.e("categoryId",categoryArrayList.get(getAdapterPosition()).getString("_id"));
+                    ((FilteringBookWithCategoryActivity) context).setCategoryID(categoryArrayList.get(getAdapterPosition()).getString("_id"));
+                }
+            });
         }
     }
 }

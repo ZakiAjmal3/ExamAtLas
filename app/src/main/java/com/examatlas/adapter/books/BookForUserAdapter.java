@@ -1,59 +1,36 @@
 package com.examatlas.adapter.books;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.widget.ViewPager2;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
-import com.examatlas.activities.CartViewActivity;
-import com.examatlas.adapter.extraAdapter.BookImageAdapter;
-import com.examatlas.models.HardBookECommPurchaseModel;
-import com.examatlas.models.extraModels.BookImageModels;
-import com.examatlas.utils.Constant;
-import com.examatlas.utils.MySingleton;
-import com.examatlas.utils.SessionManager;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.examatlas.activities.Books.SingleBookDetailsActivity;
+import com.examatlas.models.Books.AllBooksModel;
+import com.examatlas.models.Books.BookImageModels;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.ViewHolder> {
     private final Context context;
-    private final ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList;
+    private final ArrayList<AllBooksModel> allBooksModelArrayList;
 
-    public BookForUserAdapter(Context context, ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList) {
-        this.hardBookECommPurchaseModelArrayList = new ArrayList<>(hardBookECommPurchaseModelArrayList);
+    public BookForUserAdapter(Context context, ArrayList<AllBooksModel> allBooksModelArrayList) {
+        this.allBooksModelArrayList = new ArrayList<>(allBooksModelArrayList);
         this.context = context;
     }
 
@@ -66,14 +43,14 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull BookForUserAdapter.ViewHolder holder, int position) {
-        HardBookECommPurchaseModel currentBook = hardBookECommPurchaseModelArrayList.get(hardBookECommPurchaseModelArrayList.size() - 1 - position);
+        AllBooksModel currentBook = allBooksModelArrayList.get(position);
         holder.itemView.setTag(currentBook);
 
-        holder.title.setText(hardBookECommPurchaseModelArrayList.get(position).getTitle());
+        holder.title.setText(allBooksModelArrayList.get(position).getString("title"));
 
         // Calculate prices and discount
-        String purchasingPrice = currentBook.getSellPrice();
-        String originalPrice = currentBook.getPrice();
+        String purchasingPrice = currentBook.getString("sellingPrice");
+        String originalPrice = currentBook.getString("price");
         int discount = Integer.parseInt(purchasingPrice) * 100 / Integer.parseInt(originalPrice);
         discount = 100 - discount;
 
@@ -96,29 +73,45 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
 
 //        BookImageAdapter bookImageAdapter = new BookImageAdapter((ArrayList<BookImageModels>) currentBook.getImages());
 //        holder.viewPager.setAdapter(bookImageAdapter);
-        Glide.with(context)
-                .load(R.drawable.book1)
-                .error(R.drawable.book1)
-                .placeholder(R.drawable.book1)
-                .into(holder.viewPager);
-
+        ArrayList<BookImageModels> bookImageModelsArrayList = currentBook.getImages();
+        if (!bookImageModelsArrayList.isEmpty()){
+            String imageUrl = currentBook.getImages().get(0).getUrl();
+            Glide.with(context)
+                    .load(imageUrl)
+                    .error(R.drawable.noimage)
+                    .placeholder(R.drawable.noimage)
+                    .into(holder.bookImg);
+        }else {
+            Glide.with(context)
+                    .load(R.drawable.noimage)
+                    .into(holder.bookImg);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return hardBookECommPurchaseModelArrayList.size();
+        return allBooksModelArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, price;
 //        ViewPager2 viewPager;
-        ImageView viewPager;
+        ImageView bookImg;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.bookTitle);
             price = itemView.findViewById(R.id.bookPriceInfo);
-            viewPager = itemView.findViewById(R.id.imgBook);
+            bookImg = itemView.findViewById(R.id.imgBook);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, SingleBookDetailsActivity.class);
+                    intent.putExtra("bookID", allBooksModelArrayList.get(getAdapterPosition()).getString("_id"));
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }

@@ -24,6 +24,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".activities.Books.SearchingBooksActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Books.SingleBookDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.Books.FilteringBookWithCategoryActivity"
             android:exported="false" />
         <activity

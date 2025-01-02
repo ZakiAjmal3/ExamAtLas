@@ -1,29 +1,21 @@
 package com.examatlas.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,15 +30,17 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
-import com.examatlas.adapter.HardBookECommPurchaseAdapter;
+import com.examatlas.activities.Books.SearchingBooksActivity;
 import com.examatlas.adapter.books.BookForUserAdapter;
 import com.examatlas.adapter.books.CategoryAdapter;
 import com.examatlas.models.Books.CategoryModel;
-import com.examatlas.models.HardBookECommPurchaseModel;
-import com.examatlas.models.extraModels.BookImageModels;
+import com.examatlas.models.Books.AllBooksModel;
+import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
+import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,306 +51,142 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HardBookECommPurchaseActivity extends AppCompatActivity {
-    private Toolbar toolbar;
     ImageView cartBtn,logo;
     private ImageSlider slider;
+    ArrayList<SlideModel> sliderArrayList;
     private RecyclerView booksRecyclerView,categoryRecyclerView,bookForUserRecyclerView,bookBestSellerRecyclerView;
-    private HardBookECommPurchaseAdapter hardBookECommPurchaseAdapter;
-    private ArrayList<HardBookECommPurchaseModel> hardBookECommPurchaseModelArrayList;
-//    private ProgressBar progressBar;
+    private ArrayList<AllBooksModel> allBooksModelArrayList;
     private SessionManager sessionManager;
     private String token;
     private RelativeLayout noDataLayout;
     private EditText searchView;
-    private final String bookURL = Constant.BASE_URL + "book/getAllBooks";
-//    ImageView cartIcon,wishlistIcon;
-    private int currentPage = 1;
-    private int totalPages = 1;
-    private final int itemsPerPage = 10;
-    private boolean isLoading = false;
+    private final String bookURL = Constant.BASE_URL + "v1/books";
+    private final String categoryURL = Constant.BASE_URL + "v1/category";
+    int totalPage,totalItems;
     ArrayList<CategoryModel> categoryArrayList = new ArrayList<>();
     NestedScrollView nestedScrollView;
     RelativeLayout toolbarRelativeLayout;
     FrameLayout searchViewFrameLayout;
-    private float previousY = 0;
+    ShimmerFrameLayout categoryShimmerLayout,bookForUsrShimmerLayout,bookBestSellerShimmerLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hard_book_ecomm_purchase);
 
+        getWindow().setStatusBarColor(ContextCompat.getColor(HardBookECommPurchaseActivity.this,R.color.md_theme_dark_surfaceTint));
+
         initializeViews();
-//        setupToolbar();
         setupImageSlider();
-        setupSearchView();
+        getAlLCategory();
         getAllBooks();
-//        setClickingListeners();
     }
     private void initializeViews() {
-//        toolbar = findViewById(R.id.hardbook_ecomm_purchase_toolbar);
         logo = findViewById(R.id.logo);
         cartBtn = findViewById(R.id.cartBtn);
         slider = findViewById(R.id.slider);
-//        progressBar = findViewById(R.id.progressBar);
         nestedScrollView = findViewById(R.id.nestScrollView);
         searchViewFrameLayout = findViewById(R.id.searchViewFrameLayout);
         toolbarRelativeLayout = findViewById(R.id.hardbook_ecomm_purchase_toolbar);
         booksRecyclerView = findViewById(R.id.booksRecycler);
+
         categoryRecyclerView = findViewById(R.id.categoryRecycler);
+        categoryShimmerLayout = findViewById(R.id.shimmer_category_container);
+        categoryRecyclerView.setVisibility(View.GONE);
+        categoryShimmerLayout.setVisibility(View.VISIBLE);
+        categoryShimmerLayout.startShimmer();
+
         bookForUserRecyclerView = findViewById(R.id.booksForUserRecycler);
+        bookForUsrShimmerLayout = findViewById(R.id.shimmer_for_user_container);
+        bookForUserRecyclerView.setVisibility(View.GONE);
+        bookForUsrShimmerLayout.setVisibility(View.VISIBLE);
+        bookForUsrShimmerLayout.startShimmer();
+
         bookBestSellerRecyclerView = findViewById(R.id.booksBestSellerRecycler);
+        bookBestSellerShimmerLayout = findViewById(R.id.shimmer_Best_selling_container);
+        bookBestSellerRecyclerView.setVisibility(View.GONE);
+        bookBestSellerShimmerLayout.setVisibility(View.VISIBLE);
+        bookBestSellerShimmerLayout.startShimmer();
+
         noDataLayout = findViewById(R.id.noDataLayout);
+
         searchView = findViewById(R.id.search_icon);
+        searchView.setFocusable(false);
+        searchView.setClickable(true);
 //        cartIcon = findViewById(R.id.cartBtn);
-//        wishlistIcon = findViewById(R.id.wishListBtn);
-        hardBookECommPurchaseModelArrayList = new ArrayList<>();
+        allBooksModelArrayList = new ArrayList<>();
         sessionManager = new SessionManager(this);
         token = sessionManager.getUserData().get("authToken");
 
-//        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2); // 2 is the number of columns
-//        booksRecyclerView.setLayoutManager(gridLayoutManager);
 
         booksRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
         bookForUserRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
         bookBestSellerRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
 
-        categoryRecyclerView.setLayoutManager(new GridLayoutManager(this,2,GridLayoutManager.HORIZONTAL,false));
-        categoryArrayList.add(new CategoryModel(null,"Science"));
-        categoryArrayList.add(new CategoryModel(null,"Maths"));
-        categoryArrayList.add(new CategoryModel(null,"Computer"));
-        categoryArrayList.add(new CategoryModel(null,"Hindi"));
-        categoryArrayList.add(new CategoryModel(null,"History"));
-        categoryArrayList.add(new CategoryModel(null,"Geography"));
-        categoryArrayList.add(new CategoryModel(null,"Science"));
-        categoryArrayList.add(new CategoryModel(null,"Maths"));
-        categoryArrayList.add(new CategoryModel(null,"Computer"));
-        categoryArrayList.add(new CategoryModel(null,"Hindi"));
-        categoryArrayList.add(new CategoryModel(null,"History"));
-        categoryArrayList.add(new CategoryModel(null,"Geography"));
-        categoryArrayList.add(new CategoryModel(null,"Science"));
-        categoryArrayList.add(new CategoryModel(null,"Maths"));
-        categoryArrayList.add(new CategoryModel(null,"Computer"));
-        categoryArrayList.add(new CategoryModel(null,"Hindi"));
-        categoryArrayList.add(new CategoryModel(null,"History"));
-        categoryArrayList.add(new CategoryModel(null,"Geography"));
-        categoryArrayList.add(new CategoryModel(null,"Science"));
-        categoryArrayList.add(new CategoryModel(null,"Maths"));
-        categoryArrayList.add(new CategoryModel(null,"Computer"));
-        categoryArrayList.add(new CategoryModel(null,"Hindi"));
-        categoryArrayList.add(new CategoryModel(null,"History"));
-        categoryArrayList.add(new CategoryModel(null,"Geography"));
-        categoryArrayList.add(new CategoryModel(null,"Science"));
-        categoryArrayList.add(new CategoryModel(null,"Maths"));
-        categoryArrayList.add(new CategoryModel(null,"Computer"));
-        categoryArrayList.add(new CategoryModel(null,"Hindi"));
-        categoryArrayList.add(new CategoryModel(null,"History"));
-        categoryArrayList.add(new CategoryModel(null,"Geography"));
-        categoryArrayList.add(new CategoryModel(null,"Science"));
-        categoryArrayList.add(new CategoryModel(null,"Maths"));
-        categoryArrayList.add(new CategoryModel(null,"Computer"));
-        categoryArrayList.add(new CategoryModel(null,"Hindi"));
-        categoryArrayList.add(new CategoryModel(null,"History"));
-        categoryArrayList.add(new CategoryModel(null,"Geography"));
-        categoryRecyclerView.setAdapter(new CategoryAdapter(categoryArrayList,HardBookECommPurchaseActivity.this));
-
-//        booksRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//
-//                // Get the GridLayoutManager and find the last visible item position
-//                int lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition();
-//                int totalItemCount = gridLayoutManager.getItemCount();
-//
-//                Log.d("ScrollListener", "Last visible item position: " + lastVisibleItemPosition + " Total items: " + totalItemCount);
-//
-//                // Check if we are at the bottom of the list
-//                if (lastVisibleItemPosition + 1 >= totalItemCount && !isLoading) {
-//                    // Check if there are more pages to load
-//                    if (currentPage < totalPages) {
-//                        currentPage++;  // Increment the current page
-//                        getAllBooks();   // Fetch the next set of books
-//                    }
-//                }
-//            }
-//        });
-
-        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+        searchView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                // Check if the scroll direction is up or down
-                if (scrollY > previousY) {
-                    // Scroll Down: Hide the toolbar
-                    hideToolbar();
-                } else if (scrollY < previousY) {
-                    // Scroll Up: Show the toolbar
-                    showToolbar();
-                }
-                previousY = scrollY;
+            public void onClick(View view) {
+                Intent intent = new Intent(HardBookECommPurchaseActivity.this, SearchingBooksActivity.class);
+                startActivity(intent);
             }
         });
     }
 
-    private void hideToolbar() {
-        // Animate the toolbar upwards to hide it
-        ObjectAnimator animator = ObjectAnimator.ofFloat(toolbarRelativeLayout, "translationY", 0f, -toolbarRelativeLayout.getHeight() / 2.4f);
-        animator.setDuration(100);
-        animator.start();
-    }
-
-    private void showToolbar() {
-        // Animate the toolbar back into view
-        ObjectAnimator animator = ObjectAnimator.ofFloat(toolbarRelativeLayout, "translationY", -toolbarRelativeLayout.getHeight() / 2.4f, 0f);
-        animator.setDuration(100);
-        animator.start();
-    }
-//    private void setClickingListeners() {
-//        wishlistIcon.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(HardBookECommPurchaseActivity.this, WishlistActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//        cartIcon.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(HardBookECommPurchaseActivity.this, CartViewActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//    }
-
-//    private void setupToolbar() {
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
-//        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
-//    }
-
     private void setupImageSlider() {
-        ArrayList<SlideModel> sliderArrayList = new ArrayList<>();
+        sliderArrayList = new ArrayList<>();
         sliderArrayList.add(new SlideModel(R.drawable.image1, ScaleTypes.CENTER_CROP));
         sliderArrayList.add(new SlideModel(R.drawable.image2, ScaleTypes.CENTER_CROP));
         sliderArrayList.add(new SlideModel(R.drawable.image3, ScaleTypes.CENTER_CROP));
         slider.setImageList(sliderArrayList);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void setupSearchView() {
-        searchView.setOnClickListener(view -> openKeyboard());
-        searchView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (hardBookECommPurchaseAdapter != null) {
-                    hardBookECommPurchaseAdapter.filter(String.valueOf(editable));
-                }
-            }
-        });
-//        searchView.addTextChangedListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//
-//            }
-//        });
-    }
-
-    private void openKeyboard() {
-//        searchView.setIconified(false);
-        searchView.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
-    private void getAllBooks() {
-        String paginatedURL = bookURL + "?type=book&page=" + currentPage + "&per_page=" + itemsPerPage;
+    private void getAlLCategory() {
+        String paginatedURL = categoryURL;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            booksRecyclerView.setVisibility(View.VISIBLE);
-//                            progressBar.setVisibility(View.GONE);
-                            boolean status = response.getBoolean("status");
+                            categoryRecyclerView.setVisibility(View.VISIBLE);
+                            boolean status = response.getBoolean("success");
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("books");
-                                hardBookECommPurchaseModelArrayList.clear();
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                categoryArrayList.clear();
+                                totalPage = Integer.parseInt(response.getString("totalPage"));
+                                totalItems = Integer.parseInt(response.getString("totalItems"));
 
                                 // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
-                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("images");
 
-                                    JSONObject jsonObject = response.getJSONObject("pagination");
+                                    // Convert the book object into a Map to make it dynamic
+                                    Map<String, Object> categoryData = new Gson().fromJson(jsonObject2.toString(), Map.class);
 
-                                    int totalRows = Integer.parseInt(jsonObject.getString("totalRows"));
-                                    totalPages = Integer.parseInt(jsonObject.getString("totalPages"));
-                                    currentPage = Integer.parseInt(jsonObject.getString("currentPage"));
-                                    int pageSize = Integer.parseInt(jsonObject.getString("pageSize"));
-
-                                    for (int j = 0; j < jsonArray1.length(); j++) {
-                                        JSONObject jsonObject3 = jsonArray1.getJSONObject(j);
-                                        BookImageModels bookImageModels = new BookImageModels(
-                                                jsonObject3.getString("url"),
-                                                jsonObject3.getString("filename")
-                                        );
-                                        bookImageArrayList.add(bookImageModels);
+                                    // Extract image URL from the "imageUrl" field, handle missing image gracefully
+                                    JSONObject imgObj = jsonObject2.optJSONObject("imageUrl");
+                                    String imageURL = null;
+                                    if (imgObj != null) {
+                                        imageURL = imgObj.optString("url", ""); // Default to empty string if URL is not present
                                     }
-                                    HardBookECommPurchaseModel model = new HardBookECommPurchaseModel(
-                                            jsonObject2.getString("_id"),
-                                            jsonObject2.getString("type"),
-                                            jsonObject2.getString("title"),
-                                            jsonObject2.getString("keyword"),
-                                            jsonObject2.getString("stock"),
-                                            jsonObject2.getString("price"),
-                                            jsonObject2.getString("sellPrice"),
-                                            jsonObject2.getString("content"),
-                                            jsonObject2.getString("author"),
-                                            jsonObject2.getString("categoryId"),
-                                            jsonObject2.getString("subCategoryId"),
-                                            jsonObject2.getString("subjectId"),
-                                            parseTags(jsonObject2.getJSONArray("tags")), // Ensure this method is implemented correctly
-                                            jsonObject2.getString("bookUrl"),
-                                            bookImageArrayList,
-                                            jsonObject2.getString("createdAt"),
-                                            jsonObject2.getString("updatedAt"),
-                                            jsonObject2.getString("isInCart"),
-                                            jsonObject2.getString("isInWishList"),
-                                            totalRows,totalPages,currentPage,pageSize
-                                    );
-                                    hardBookECommPurchaseModelArrayList.add(model);
-                                }
-                                bookForUserRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this,hardBookECommPurchaseModelArrayList));
-                                bookBestSellerRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this,hardBookECommPurchaseModelArrayList));
-//                                updateUI();
-                                if (hardBookECommPurchaseModelArrayList.isEmpty()) {
-                                    noDataLayout.setVisibility(View.VISIBLE);
-                                    booksRecyclerView.setVisibility(View.GONE);
-//                                    progressBar.setVisibility(View.GONE);
-                                } else {
-                                    if (hardBookECommPurchaseAdapter == null) {
-                                        hardBookECommPurchaseAdapter = new HardBookECommPurchaseAdapter(HardBookECommPurchaseActivity.this, hardBookECommPurchaseModelArrayList);
-                                        booksRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this,hardBookECommPurchaseModelArrayList));
-                                    } else {
-                                        hardBookECommPurchaseAdapter.notifyDataSetChanged();
+                                    // Handle missing image gracefully
+                                    if (imageURL == null || imageURL.isEmpty()) {
+                                        imageURL = "default_image_url"; // Placeholder for missing images
                                     }
+
+                                    CategoryModel model = new CategoryModel(categoryData,imageURL); // Pass the map to the model
+                                    // Add the model to the list
+                                    categoryArrayList.add(model);
                                 }
+                                if (categoryArrayList.size()>10){
+                                    categoryRecyclerView.setLayoutManager(new GridLayoutManager(HardBookECommPurchaseActivity.this,2,GridLayoutManager.HORIZONTAL,false));
+                                }else {
+                                    categoryRecyclerView.setLayoutManager(new GridLayoutManager(HardBookECommPurchaseActivity.this,5,GridLayoutManager.VERTICAL,false));
+                                }
+                                // Update UI and adapters
+                                categoryRecyclerView.setAdapter(new CategoryAdapter(categoryArrayList, HardBookECommPurchaseActivity.this));
+                                categoryShimmerLayout.stopShimmer();
+                                categoryShimmerLayout.setVisibility(View.GONE);
+                                categoryRecyclerView.setVisibility(View.VISIBLE);
                             } else {
                                 Toast.makeText(HardBookECommPurchaseActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
@@ -371,11 +201,9 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {
-                                // Parse the error response
                                 String jsonError = new String(error.networkResponse.data);
                                 JSONObject jsonObject = new JSONObject(jsonError);
                                 String message = jsonObject.optString("message", "Unknown error");
-                                // Now you can use the message
                                 Toast.makeText(HardBookECommPurchaseActivity.this, message, Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -395,23 +223,87 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
 
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-    private void updateUI() {
-        if (hardBookECommPurchaseModelArrayList.isEmpty()) {
-            noDataLayout.setVisibility(View.VISIBLE);
-            booksRecyclerView.setVisibility(View.GONE);
-//            progressBar.setVisibility(View.GONE);
-        } else {
-            noDataLayout.setVisibility(View.GONE);
-            booksRecyclerView.setVisibility(View.VISIBLE);
-//            progressBar.setVisibility(View.GONE);
-            if (hardBookECommPurchaseAdapter == null) {
-                hardBookECommPurchaseAdapter = new HardBookECommPurchaseAdapter(this, hardBookECommPurchaseModelArrayList);
-                booksRecyclerView.setAdapter(hardBookECommPurchaseAdapter);
-            } else {
-                hardBookECommPurchaseAdapter.notifyDataSetChanged();
+
+
+    private void getAllBooks() {
+        String paginatedURL = bookURL;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            booksRecyclerView.setVisibility(View.VISIBLE);
+                            boolean status = response.getBoolean("success");
+                            if (status) {
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                allBooksModelArrayList.clear();
+                                totalPage = Integer.parseInt(response.getString("totalPage"));
+                                totalItems = Integer.parseInt(response.getString("totalItems"));
+
+                                // Parse books directly here
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject jsonObject2 = jsonArray.getJSONObject(i);
+
+                                    // Convert the book object into a Map to make it dynamic
+                                    Map<String, Object> bookData = new Gson().fromJson(jsonObject2.toString(), Map.class);
+                                    AllBooksModel model = new AllBooksModel(bookData); // Pass the map to the model
+
+                                    allBooksModelArrayList.add(model);
+                                }
+
+                                // Update UI and adapters
+                                bookForUserRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this, allBooksModelArrayList));
+                                bookForUsrShimmerLayout.stopShimmer();
+                                bookForUsrShimmerLayout.setVisibility(View.GONE);
+                                bookForUserRecyclerView.setVisibility(View.VISIBLE);
+                                bookBestSellerRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this, allBooksModelArrayList));
+                                bookBestSellerShimmerLayout.stopShimmer();
+                                bookBestSellerShimmerLayout.setVisibility(View.GONE);
+                                bookBestSellerRecyclerView.setVisibility(View.VISIBLE);
+
+                                if (allBooksModelArrayList.isEmpty()) {
+                                    noDataLayout.setVisibility(View.VISIBLE);
+                                    booksRecyclerView.setVisibility(View.GONE);
+                                } else {
+                                    booksRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this, allBooksModelArrayList));
+                                }
+                            } else {
+                                Toast.makeText(HardBookECommPurchaseActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                Toast.makeText(HardBookECommPurchaseActivity.this, message, Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.e("BlogFetchError", errorMessage);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + token);
+                return headers;
             }
-        }
+        };
+
+        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
+
     private String parseTags(JSONArray tagsArray) throws JSONException {
         StringBuilder tags = new StringBuilder();
         for (int j = 0; j < tagsArray.length(); j++) {

@@ -1,5 +1,6 @@
 package com.examatlas.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,12 +29,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.activities.CartViewActivity;
 import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.WishListModel;
-import com.examatlas.models.extraModels.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -73,7 +72,7 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
         }
 
         @Override
-        public void onBindViewHolder (@NonNull WishListAdapter.ViewHolder holder, int position){
+        public void onBindViewHolder (@NonNull WishListAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position){
             WishListModel currentBook = hardBookECommWishlistModelArrayList.get(hardBookECommWishlistModelArrayList.size() - 1 - position);
             holder.itemView.setTag(currentBook);
 
@@ -103,8 +102,8 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
             holder.setHighlightedText(holder.author, currentBook.getAuthor(), currentQuery);
             holder.setHighlightedPrice(holder.price, spannableText, currentQuery);
 
-            BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getImages());
-            holder.bookImage.setAdapter(bookImageAdapter);
+//            BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getImages());
+//            holder.bookImage.setAdapter(bookImageAdapter);
 
             // Set the heart icon based on the state
             holder.toggleHeartIcon.setImageResource(heartToggleStates.get(position) ? R.drawable.ic_heart_red : R.drawable.ic_heart_white);

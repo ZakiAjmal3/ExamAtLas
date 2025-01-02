@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_dark_grey"
+    android:background="@color/white"
     tools:context=".activities.Books.FilteringBookWithCategoryActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <RelativeLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/seed"
+        android:background="@color/md_theme_dark_surfaceTint"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         >
@@ -68,30 +72,192 @@
             android:layout_marginRight="15dp"
             />
     </RelativeLayout>
-    <LinearLayout
+
+
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/categoryRecycler"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_below="@id/toolbar"-->
+<!--            android:background="@color/white"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="5dp"-->
+<!--            android:layout_marginBottom="10dp" />-->
+    <View
+        android:id="@+id/view1"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@color/light_dark_grey"
+        android:layout_below="@id/toolbar"/>
+    <TextView
+        android:id="@+id/showingCategoryText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Books related to: "
+        android:textColor="@color/dark_grey"
+        android:textSize="16sp"
+        android:layout_below="@id/view1"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        />
+    <TextView
+        android:id="@+id/showingCategoryDisplayNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="History"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:layout_below="@id/view1"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_toRightOf="@id/showingCategoryText"
+        />
+    <TextView
+        android:id="@+id/viewAllCategoryTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View All >"
+        android:textColor="@color/seed"
+        android:textSize="12sp"
+        android:layout_below="@id/view1"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:padding="5dp"
+        />
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@color/light_dark_grey"
+        android:layout_below="@id/showingCategoryText"
+        />
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_for_user_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/view2">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imgA1"
+                    android:layout_width="160dp"
+                    android:layout_height="230dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:cardCornerRadius="6dp"
+                    >
+                    <ImageView
+                        android:layout_width="160dp"
+                        android:layout_height="230dp"
+                        android:background="@drawable/skeleton_background"
+                        />
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imgA2"
+                    android:layout_width="160dp"
+                    android:layout_height="230dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:cardCornerRadius="7dp"
+                    android:layout_toRightOf="@id/imgA1"
+                    android:layout_marginLeft="10dp">
+                    <ImageView
+                        android:layout_width="160dp"
+                        android:layout_height="230dp"
+                        android:background="@drawable/skeleton_background"
+                        />
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imgA3"
+                    android:layout_width="160dp"
+                    android:layout_height="230dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:cardCornerRadius="7dp"
+                    android:layout_below="@id/imgA1"
+                    android:layout_marginTop="10dp">
+                    <ImageView
+                        android:layout_width="160dp"
+                        android:layout_height="230dp"
+                        android:background="@drawable/skeleton_background"
+                        />
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imgA4"
+                    android:layout_width="160dp"
+                    android:layout_height="230dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:cardCornerRadius="7dp"
+                    android:layout_toRightOf="@id/imgA3"
+                    android:layout_below="@id/imgA2"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp">
+                    <ImageView
+                        android:layout_width="160dp"
+                        android:layout_height="230dp"
+                        android:background="@drawable/skeleton_background"
+                        />
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imgA5"
+                    android:layout_width="160dp"
+                    android:layout_height="230dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:cardCornerRadius="7dp"
+                    android:layout_below="@id/imgA3"
+                    android:layout_marginTop="10dp">
+                    <ImageView
+                        android:layout_width="160dp"
+                        android:layout_height="230dp"
+                        android:background="@drawable/skeleton_background"
+                        />
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imgA6"
+                    android:layout_width="160dp"
+                    android:layout_height="230dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:cardCornerRadius="7dp"
+                    android:layout_toRightOf="@id/imgA5"
+                    android:layout_below="@id/imgA4"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp">
+                    <ImageView
+                        android:layout_width="160dp"
+                        android:layout_height="230dp"
+                        android:background="@drawable/skeleton_background"
+                        />
+                </androidx.cardview.widget.CardView>
+            </RelativeLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/booksRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_below="@+id/toolbar"
-        android:weightSum="2"
-        >
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/categoryRecycler"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginBottom="10dp"
-            android:layout_weight="0.6"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/booksRecycler"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/white"
-            android:layout_weight="2.4"/>
-    </LinearLayout>
-</RelativeLayout>
+        android:layout_below="@id/view2"
+        android:background="@color/white"
+        android:visibility="gone"
+        />
+        <TextView
+            android:id="@+id/noDataTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Books in this category"
+            android:textColor="@color/md_theme_dark_surfaceTint"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="350dp"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+    </RelativeLayout>
+</androidx.core.widget.NestedScrollView>

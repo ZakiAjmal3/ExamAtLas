@@ -26,7 +26,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.CartViewAdapter;
 import com.examatlas.models.CartViewModel;
-import com.examatlas.models.extraModels.BookImageModels;
+import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;

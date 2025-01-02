@@ -1,6 +1,6 @@
 package com.examatlas.models;
 
-import com.examatlas.models.extraModels.BookImageModels;
+import com.examatlas.models.Books.BookImageModels;
 
 import java.util.ArrayList;
 
