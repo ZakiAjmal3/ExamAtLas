@@ -1,0 +1,57 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+android {
+    namespace 'com.examatlas'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.examatlas"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
+    implementation libs.volley
+    implementation libs.glide
+    implementation libs.pinview
+    implementation libs.lottie
+    implementation libs.circleimageview
+    implementation 'com.github.denzcoskun:ImageSlideshow:0.1.2'
+    implementation 'live.videosdk:rtc-android-sdk:0.1.34'
+    implementation 'com.amitshekhar.android:android-networking:1.0.2'
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.5'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.razorpay:checkout:1.6.40'
+    implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'com.hbb20:ccp:2.7.1'
+    implementation 'io.github.chaosleung:pinview:1.4.4'
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation libs.recyclerview
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:layout_margin="5dp"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/editTitleBtn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_edit"
+            android:padding="5dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            />
+        <ImageView
+            android:id="@+id/deleteSubjectBtn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_delete"
+            android:padding="5dp"
+            android:layout_alignParentEnd="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            />
+        <LinearLayout
+            android:id="@+id/categoryNameLT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/editTitleBtn" >
+            <TextView
+                android:id="@+id/categoryTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category name:"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/titleTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_below="@id/categoryNameLT"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>
