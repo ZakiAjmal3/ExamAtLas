@@ -93,12 +93,12 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
     private TextView uploadImageName;
     Button uploadBlogDetailsBtn;
     private Uri image_uri;
-    private final String createBlogURL = Constant.BASE_URL + "blog/createBlog";
+    private final String createBlogURL = Constant.BASE_URL + "v1/blog";
     RecyclerView showAllBlogRecyclerView;
     AdminShowAllBlogAdapter adminShowAllBlogAdapter;
     AdminShowAllBlogModel adminShowAllBlogModel;
     ArrayList<AdminShowAllBlogModel> adminShowAllBlogModelArrayList;
-    private final String blogURL = Constant.BASE_URL + "blog/getAllBlogs";
+    private final String blogURL = Constant.BASE_URL + "v1/blog";
     ProgressBar showAllBlogProgressBar;
     RelativeLayout noDataLayout;
     SessionManager sessionManager;
@@ -196,40 +196,38 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                             if (status) {
                                 adminShowAllBlogModelArrayList.clear(); // Clear the list before adding new items
 
-                                JSONObject jsonObject = response.getJSONObject("pagination");
-                                String totalRows = jsonObject.getString("totalRows");
-                                String totalPages = jsonObject.getString("totalPages");
-                                String currentPage = jsonObject.getString("currentPage");
+                                String totalItems = response.getString("totalItems");
+                                String totalPages = response.getString("totalPage");
+
                                 JSONArray jsonArray = response.getJSONArray("data");
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String blogID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
-                                    String keyword = jsonObject2.getString("keyword");
                                     String content = jsonObject2.getString("content");
                                     Log.e("Blog content",content);
-                                    JSONObject image = jsonObject2.getJSONObject("image");
-                                    String url = image.getString("url");
-                                    String categoryName;
-                                    if (jsonObject2.has("category")) {
-                                        categoryName = jsonObject2.getString("category");
-                                    }else {
-                                        categoryName =  "null";
-                                    }
+//                                    JSONObject image = jsonObject2.getJSONObject("image");
+//                                    String url = image.getString("url");
+//                                    String categoryName;
+//                                    if (jsonObject2.has("category")) {
+//                                        categoryName = jsonObject2.getString("category");
+//                                    }else {
+//                                        categoryName =  "null";
+//                                    }
                                     // Use StringBuilder for tags
-                                    StringBuilder tags = new StringBuilder();
-                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
-                                    for (int j = 0; j < jsonArray1.length(); j++) {
-                                        String singleTag = jsonArray1.getString(j);
-                                        tags.append(singleTag).append(", ");
-                                    }
+//                                    StringBuilder tags = new StringBuilder();
+//                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
+//                                    for (int j = 0; j < jsonArray1.length(); j++) {
+//                                        String singleTag = jsonArray1.getString(j);
+//                                        tags.append(singleTag).append(", ");
+//                                    }
                                     // Remove trailing comma and space if any
-                                    if (tags.length() > 0) {
-                                        tags.setLength(tags.length() - 2);
-                                    }
+//                                    if (tags.length() > 0) {
+//                                        tags.setLength(tags.length() - 2);
+//                                    }
 
-                                    adminShowAllBlogModel = new AdminShowAllBlogModel(blogID,null,categoryName,url, title, keyword, content, tags.toString(), totalRows,totalPages,currentPage);
+                                    adminShowAllBlogModel = new AdminShowAllBlogModel(blogID,null,categoryName,null, title, content, null, totalItems,totalPages,null);
                                     adminShowAllBlogModelArrayList.add(adminShowAllBlogModel);
                                 }
                                 // Update the original list in the adapter

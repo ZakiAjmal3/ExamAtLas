@@ -30,8 +30,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.activities.CartViewActivity;
-import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.WishListModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
@@ -199,8 +197,8 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
             holder.goToCartBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, CartViewActivity.class);
-                    context.startActivity(intent);
+//                    Intent intent = new Intent(context, CartViewActivity.class);
+//                    context.startActivity(intent);
                 }
             });
         }

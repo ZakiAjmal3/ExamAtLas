@@ -2,34 +2,80 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp">
+  >
 
-    <RadioButton
-        android:id="@+id/radioButton"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="2dp"/>
-    <TextView
-        android:id="@+id/addressNameTxt"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Zaki Ajmal"
-        android:textColor="@color/black"
-        android:layout_toRightOf="@id/radioButton"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"/>
+        android:layout_marginTop="7dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:elevation="5dp"
+        android:visibility="visible"
+        android:background="@color/white">
 
-    <TextView
-        android:id="@+id/addressFullTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:layout_below="@id/addressNameTxt"
-        android:text="HNo.1234,RoadNo.1234,StreetName"
-        android:layout_marginTop="10dp"
-        android:textColor="@color/dark_grey"
-        android:layout_marginLeft="35dp"/>
+        <RadioButton
+            android:id="@+id/radioButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+        <TextView
+            android:id="@+id/nameAndPincodeTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/radioButton"
+            android:text="Zaki Ajmal, 832110"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/changeAddressBtn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_three_dot"
+            android:layout_marginRight="25dp"
+            android:padding="5dp"
+            android:layout_alignParentEnd="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            />
+        <TextView
+            android:id="@+id/addressFullTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/radioButton"
+            android:layout_below="@id/nameAndPincodeTxt"
+            android:text="Zaki Ajmal, 832110"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="5dp"
+            android:textSize="13sp"
+            android:textColor="@color/black"
+            />
+        <TextView
+            android:id="@+id/addressPhoneTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/radioButton"
+            android:layout_below="@id/addressFullTxt"
+            android:text="Zaki Ajmal, 832110"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="5dp"
+            android:textSize="13sp"
+            android:textColor="@color/black"
+            />
+<!--        <ImageView-->
+<!--            android:id="@+id/deleteAddressBtn"-->
+<!--            android:layout_width="25dp"-->
+<!--            android:layout_height="25dp"-->
+<!--            android:src="@drawable/ic_delete"-->
+<!--            android:layout_marginRight="25dp"-->
+<!--            android:padding="5dp"-->
+<!--            android:layout_below="@id/addressFullTxt"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:foreground="?android:attr/selectableItemBackgroundBorderless"-->
+<!--            />-->
+    </RelativeLayout>
 </RelativeLayout>

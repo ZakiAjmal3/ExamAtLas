@@ -6,11 +6,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
+import com.examatlas.activities.DashboardActivity;
 import com.examatlas.adapter.BlogAdapter;
 import com.examatlas.adapter.BlogAdapterForShowingAllBlogs;
 import com.examatlas.models.BlogModel;
@@ -40,11 +43,12 @@ import java.util.Map;
 
 public class BlogFragment extends Fragment {
 
+    ImageView backBtn;
     RecyclerView blogRecycler;
     RelativeLayout noDataLayout;
     ArrayList<BlogModel> blogModelArrayList;
     BlogAdapterForShowingAllBlogs blogAdapter;
-    private final String blogURL = Constant.BASE_URL + "blog/getAllBlogs";
+    private final String blogURL = Constant.BASE_URL + "v1/blog";
 //    private final String blogURL = Constant.BASE_URL2 + "course/getAllCourse";
     String token;
     SessionManager sessionManager;
@@ -55,6 +59,9 @@ public class BlogFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_blog, container, false);
 
+        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), R.color.seed));
+
+        backBtn = view.findViewById(R.id.backBtn);
         shimmer_blog_container = view.findViewById(R.id.shimmer_blog_container);
 
         noDataLayout = view.findViewById(R.id.noDataLayout);
@@ -77,6 +84,18 @@ public class BlogFragment extends Fragment {
             }
         },1000);
 
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Use the current activity to call loadFragment
+                if (getActivity() != null) {
+                    DashboardActivity activity = (DashboardActivity) getActivity();
+                    activity.loadFragment(new HomeFragment());
+                    activity.showTopToolBar("BlogFragment");
+                }
+            }
+        });
+
         return view;
     }
     private void getBlogList() {
@@ -95,21 +114,21 @@ public class BlogFragment extends Fragment {
                                 JSONArray jsonArray = response.getJSONArray("data");
                                 blogModelArrayList.clear();// Clear the list before adding new items
 
-                                JSONObject jsonObject = response.getJSONObject("pagination");
-                                String totalRows = jsonObject.getString("totalRows");
-                                String totalPages = jsonObject.getString("totalPages");
-                                String currentPage = jsonObject.getString("currentPage");
+                                String totalItems = response.getString("totalItems");
+                                String totalPages = response.getString("totalPage");
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String blogID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
-                                    String keyword = jsonObject2.getString("keyword");
                                     String content = jsonObject2.getString("content");
-                                    JSONObject image = jsonObject2.getJSONObject("image");
-                                    String url = image.getString("url");
+//                                    JSONObject image = jsonObject2.getJSONObject("imageUrl");
+//                                    String url = "";
+//                                    if (image == null) {
+//                                        url = image.getString("url");
+//                                    }
 
-                                    // Use StringBuilder for tags
+//                                    // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
                                     JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
                                     for (int j = 0; j < jsonArray1.length(); j++) {
@@ -121,7 +140,7 @@ public class BlogFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    BlogModel blogModel = new BlogModel(blogID,url, title, keyword, content, tags.toString(), totalRows,totalPages,currentPage);
+                                    BlogModel blogModel = new BlogModel(blogID,null, title, content, tags.toString(),totalItems,totalPages);
                                     blogModelArrayList.add(blogModel);
                                 }
                                 // If you have already created the adapter, just notify the change
@@ -144,6 +163,7 @@ public class BlogFragment extends Fragment {
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
+                            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
                         }
                     }

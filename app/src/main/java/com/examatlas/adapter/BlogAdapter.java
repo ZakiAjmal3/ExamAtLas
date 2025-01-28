@@ -3,6 +3,7 @@ package com.examatlas.adapter;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +50,8 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.ViewHolder> {
 
         holder.itemView.setTag(blogModelArrayList.get(position));
         holder.tags.setText(blogModelArrayList.get(position).getTags());
+        holder.tags.setEllipsize(TextUtils.TruncateAt.END);
+        holder.tags.setMaxLines(1);
         String titleStr = blogModelArrayList.get(position).getTitle();
 
 // Set the title text first to measure the number of lines

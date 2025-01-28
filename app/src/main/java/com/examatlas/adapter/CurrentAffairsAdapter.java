@@ -3,6 +3,7 @@ package com.examatlas.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -123,6 +124,8 @@ public class CurrentAffairsAdapter extends RecyclerView.Adapter<CurrentAffairsAd
         });
 
         holder.tags.setText(currentAffairsModelArrayList.get(position).getCfTags());
+        holder.tags.setEllipsize(TextUtils.TruncateAt.END);
+        holder.tags.setMaxLines(1);
     }
 
     @Override

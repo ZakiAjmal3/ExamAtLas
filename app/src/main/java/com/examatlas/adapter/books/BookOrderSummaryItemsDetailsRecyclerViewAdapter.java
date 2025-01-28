@@ -1,17 +1,17 @@
-package com.examatlas.adapter.extraAdapter;
+package com.examatlas.adapter.books;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.examatlas.R;
-import com.examatlas.models.extraModels.BookOrderSummaryItemsDetailsRecyclerViewModel;
+import com.examatlas.models.Books.BookOrderSummaryItemsDetailsRecyclerViewModel;
 
 import java.util.ArrayList;
 
@@ -39,6 +39,8 @@ public class BookOrderSummaryItemsDetailsRecyclerViewAdapter extends RecyclerVie
 
         String itemTitleAndQuantity = bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.get(position).getItemName() + " x " + bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.get(position).getItemQuantity();
         holder.itemTitle.setText(itemTitleAndQuantity);
+        holder.itemTitle.setEllipsize(TextUtils.TruncateAt.END);
+        holder.itemTitle.setMaxLines(2);
 
         int itemPrice = Integer.parseInt(bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.get(position).getItemQuantity()) * Integer.parseInt(bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.get(position).getItemPrice());
         holder.itemPrice.setText("₹" + itemPrice + ".00");

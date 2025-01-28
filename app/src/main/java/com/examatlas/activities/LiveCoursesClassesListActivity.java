@@ -71,11 +71,11 @@ public class LiveCoursesClassesListActivity extends AppCompatActivity {
         getLiveClassesListURL = Constant.BASE_URL + "liveclass/getAllScheduledCourseByCourseId/" + courseId;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getLiveClassesList(); // Always refresh data when the activity is resumed
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        getLiveClassesList(); // Always refresh data when the activity is resumed
+//    }
 
     private void getLiveClassesList() {
         progressBar.setVisibility(View.VISIBLE);

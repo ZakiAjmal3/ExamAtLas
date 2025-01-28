@@ -1,5 +1,6 @@
 package com.examatlas.fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,8 +12,10 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
@@ -29,8 +32,13 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
+import com.examatlas.activities.Books.CartViewActivity;
+import com.examatlas.activities.Books.MyBookOrderHistory;
 import com.examatlas.activities.Books.SearchingBooksActivity;
+import com.examatlas.activities.Books.SingleBookDetailsActivity;
+import com.examatlas.activities.DashboardActivity;
 import com.examatlas.activities.HardBookECommPurchaseActivity;
+import com.examatlas.activities.LoginWithEmailActivity;
 import com.examatlas.adapter.books.BookForUserAdapter;
 import com.examatlas.adapter.books.CategoryAdapter;
 import com.examatlas.models.Books.AllBooksModel;
@@ -40,6 +48,7 @@ import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -52,7 +61,9 @@ import java.util.Map;
 
 public class BooksFragment extends Fragment {
     ImageView cartBtn,logo;
+    TextView cartItemCountTxt;
     private ImageSlider slider;
+    CardView sliderCardView;
     ArrayList<SlideModel> sliderArrayList;
     private RecyclerView booksRecyclerView,categoryRecyclerView,bookForUserRecyclerView,bookBestSellerRecyclerView;
     private ArrayList<AllBooksModel> allBooksModelArrayList;
@@ -67,7 +78,7 @@ public class BooksFragment extends Fragment {
     NestedScrollView nestedScrollView;
     RelativeLayout toolbarRelativeLayout;
     FrameLayout searchViewFrameLayout;
-    ShimmerFrameLayout categoryShimmerLayout,bookForUsrShimmerLayout,bookBestSellerShimmerLayout;
+    ShimmerFrameLayout sliderShimmerLayout,categoryShimmerLayout,bookForUsrShimmerLayout,bookBestSellerShimmerLayout;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -84,6 +95,9 @@ public class BooksFragment extends Fragment {
         booksRecyclerView = view.findViewById(R.id.booksRecycler);
 
         categoryRecyclerView = view.findViewById(R.id.categoryRecycler);
+        sliderCardView = view.findViewById(R.id.slider_cardView);
+        sliderShimmerLayout = view.findViewById(R.id.shimmer_Slider_container);
+        sliderCardView.setVisibility(View.GONE);
         categoryShimmerLayout = view.findViewById(R.id.shimmer_category_container);
         categoryRecyclerView.setVisibility(View.GONE);
         categoryShimmerLayout.setVisibility(View.VISIBLE);
@@ -111,7 +125,14 @@ public class BooksFragment extends Fragment {
         sessionManager = new SessionManager(getContext());
         token = sessionManager.getUserData().get("authToken");
 
-
+        cartItemCountTxt = view.findViewById(R.id.cartItemCountTxt);
+        String quantity = sessionManager.getCartQuantity();
+        if (!quantity.equals("0")) {
+            cartItemCountTxt.setVisibility(View.VISIBLE);
+            cartItemCountTxt.setText(quantity);
+        }else {
+            cartItemCountTxt.setVisibility(View.GONE);
+        }
         booksRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         bookForUserRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         bookBestSellerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
@@ -123,12 +144,48 @@ public class BooksFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        cartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (sessionManager.IsLoggedIn()) {
+                    Intent intent = new Intent(getContext(), CartViewActivity.class);
+                    startActivity(intent);
+                }else {
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setTitle("Login")
+                            .setMessage("You need to login to view cart")
+                            .setPositiveButton("Proceed to Login", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(getContext(), LoginWithEmailActivity.class);
+                                    startActivity(intent);
+                                }
+                            }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
+                                }
+                            }).show();
+                }
+            }
+        });
 
-        setupImageSlider();
         getAlLCategory();
         getAllBooks();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        String quantity = sessionManager.getCartQuantity();
+        if (!quantity.equals("0")) {
+            cartItemCountTxt.setVisibility(View.VISIBLE);
+            cartItemCountTxt.setText(quantity);
+        }else {
+            cartItemCountTxt.setVisibility(View.GONE);
+        }
     }
 
     private void setupImageSlider() {
@@ -186,6 +243,10 @@ public class BooksFragment extends Fragment {
                                 categoryShimmerLayout.stopShimmer();
                                 categoryShimmerLayout.setVisibility(View.GONE);
                                 categoryRecyclerView.setVisibility(View.VISIBLE);
+                                sliderShimmerLayout.stopShimmer();
+                                sliderShimmerLayout.setVisibility(View.GONE);
+                                sliderCardView.setVisibility(View.VISIBLE);
+                                setupImageSlider();
                             } else {
                                 Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_SHORT).show();
                             }

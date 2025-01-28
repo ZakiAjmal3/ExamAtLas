@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.examatlas.R;
-import com.examatlas.adapter.extraAdapter.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
+import com.examatlas.adapter.books.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
 import com.examatlas.models.BookOrderHistoryModel;
-import com.examatlas.models.extraModels.BookOrderSummaryItemsDetailsRecyclerViewModel;
+import com.examatlas.models.Books.BookOrderSummaryItemsDetailsRecyclerViewModel;
 
 import java.util.ArrayList;
 

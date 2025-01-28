@@ -105,7 +105,7 @@ public class AdminBlogSingleViewActivity extends AppCompatActivity {
         token = sessionManager.getUserData().get("authToken");
 
         blogID = getIntent().getStringExtra("blogID");
-        blogURL = Constant.BASE_URL + "blog/getBlogById/" + blogID;
+        blogURL = Constant.BASE_URL + "v1/blog/getBlogById/" + blogID;
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,7 +274,7 @@ public class AdminBlogSingleViewActivity extends AppCompatActivity {
     }
 
     private void sendingBlogDetails(String blogId, String title, String keyword, String content, ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList) {
-        String updateURL = Constant.BASE_URL + "blog/updateBlog/" + blogId;
+        String updateURL = Constant.BASE_URL + "v1/blog/updateBlog/" + blogId;
 
         // Create JSON object to send in the request
         JSONObject blogDetails = new JSONObject();
@@ -395,23 +395,23 @@ public class AdminBlogSingleViewActivity extends AppCompatActivity {
                             boolean status = response.getBoolean("status");
                             Log.e("blog Response",response.toString());
                             if (status) {
-                                JSONObject jsonObject = response.getJSONObject("blog");
-                                keywordStr = jsonObject.getString("keyword");
+                                JSONObject jsonObject = response.getJSONObject("data");
+//                                keywordStr = jsonObject.getString("keyword");
                                 // Use StringBuilder for tags
-                                StringBuilder tags = new StringBuilder();
-                                JSONArray jsonArray1 = jsonObject.getJSONArray("tags");
-                                for (int j = 0; j < jsonArray1.length(); j++) {
-                                    String singleTag = jsonArray1.getString(j);
-                                    tags.append(singleTag).append(", ");
-                                }
-                                // Remove trailing comma and space if any
-                                if (tags.length() > 0) {
-                                    tags.setLength(tags.length() - 2);
-                                }
-                                tagsStr = tags.toString();
-                                txtTags.setText(tagsStr);
-                                JSONObject imgJsonObject = jsonObject.getJSONObject("image");
-                                imageURL = imgJsonObject.getString("url");
+//                                StringBuilder tags = new StringBuilder();
+//                                JSONArray jsonArray1 = jsonObject.getJSONArray("tags");
+//                                for (int j = 0; j < jsonArray1.length(); j++) {
+//                                    String singleTag = jsonArray1.getString(j);
+//                                    tags.append(singleTag).append(", ");
+//                                }
+//                                // Remove trailing comma and space if any
+//                                if (tags.length() > 0) {
+//                                    tags.setLength(tags.length() - 2);
+//                                }
+//                                tagsStr = tags.toString();
+//                                txtTags.setText(tagsStr);
+//                                JSONObject imgJsonObject = jsonObject.getJSONObject("image");
+                                imageURL = jsonObject.getString("coverImage");
 
                                 Glide.with(AdminBlogSingleViewActivity.this)
                                         .load(imageURL)

@@ -1,14 +1,19 @@
 package com.examatlas.activities;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -44,8 +49,9 @@ public class OtpActivity extends AppCompatActivity {
     PinView otpView;
     String task, token, otp;
     String userNumber,userEmail,userFirstName,userLastName,userPhone,userState,userCity;
-    private final String serverUrl = Constant.BASE_URL + "auth/createUser";
+    private final String serverUrl = Constant.BASE_URL + "v1/auth/createUser";
     SessionManager sessionManager;
+    Dialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +115,7 @@ public class OtpActivity extends AppCompatActivity {
     }
 
     public void verifyOtp( String otp) {
-        String verifyEmailUrl = Constant.BASE_URL + "otp/verifyEmail";
+        String verifyEmailUrl = Constant.BASE_URL + "v1/otp/verifyEmail";
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("email",userEmail);
@@ -118,9 +124,13 @@ public class OtpActivity extends AppCompatActivity {
             e.printStackTrace();
             return;
         }
-        ProgressDialog progressDialog = new ProgressDialog(OtpActivity.this);
-        progressDialog.setMessage("Verifying OTP...");
+        progressDialog = new Dialog(OtpActivity.this);
+        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        progressDialog.setContentView(R.layout.progress_bar_drawer);
         progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
         progressDialog.show();
 
         new Handler().postDelayed(new Runnable() {
@@ -180,7 +190,7 @@ public class OtpActivity extends AppCompatActivity {
     }
 
     private void signInUser() {
-        String verifyEmailUrl = Constant.BASE_URL + "auth/signin";
+        String verifyEmailUrl = Constant.BASE_URL + "v1/auth/signin";
 
         Log.e("sendingOTP method", verifyEmailUrl);
 
@@ -192,9 +202,13 @@ public class OtpActivity extends AppCompatActivity {
             return;
         }
 
-        ProgressDialog progressDialog = new ProgressDialog(OtpActivity.this);
-        progressDialog.setMessage("Verifying USER...");
+        progressDialog = new Dialog(OtpActivity.this);
+        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        progressDialog.setContentView(R.layout.progress_bar_drawer);
         progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
         progressDialog.show();
 
         new Handler().postDelayed(new Runnable() {
@@ -209,15 +223,15 @@ public class OtpActivity extends AppCompatActivity {
                                     Log.e("Success log", response.toString());
                                     String status = response.getString("success");
                                     String message = response.getString("message");
+                                    String authToken = response.getString("token");
+                                    String user_id = response.getString("userId");
                                     Toast.makeText(OtpActivity.this, message, Toast.LENGTH_SHORT).show();
 
                                     if (status.equals("true")) {
-                                        String authToken = response.getString("token");
                                         JSONObject userDataJson = response.getJSONObject("data");
-                                        String firstName = userDataJson.getString("firstname");
-                                        String lastName = userDataJson.getString("lastname");
+                                        String firstName = userDataJson.getString("firstName");
+                                        String lastName = userDataJson.getString("lastName");
                                         String email = userDataJson.getString("email");
-                                        String user_id = userDataJson.getString("_id");
                                         String role = userDataJson.getString("role");
                                         String isActive = userDataJson.getString("isActive");
                                         String createdAt = userDataJson.getString("createdAt");
@@ -234,14 +248,15 @@ public class OtpActivity extends AppCompatActivity {
                                             String organisationId = organisationArray.getString(i);
                                             Log.d("Organisation", "Organisation ID: " + organisationId);
                                         }
-                                        sessionManager.saveLoginDetails2(user_id, firstName, lastName, email, state, city, role, isActive, step, authToken, createdAt, updatedAt, null);
+                                        sessionManager.setCartItemQuantity();
+                                        sessionManager.saveLoginDetails2(user_id, firstName, lastName,null, email, state, city, role, isActive, step, authToken, createdAt, updatedAt, null);
                                         if (role.equalsIgnoreCase("student")) {
                                             if (isActive.equals("true")) {
                                                 Intent intent = new Intent(OtpActivity.this, DashboardActivity.class);
                                                 startActivity(intent);
                                                 finish();
                                             } else if (step.equals("1")) {
-                                                Intent intent = new Intent(OtpActivity.this, SignUpActivity5CategorySelect.class);
+                                                Intent intent = new Intent(OtpActivity.this, DashboardActivity.class);
                                                 intent.putExtra("task", task);
                                                 startActivity(intent);
                                                 finish();
@@ -301,8 +316,8 @@ public class OtpActivity extends AppCompatActivity {
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("firstname", userFirstName);
-            jsonObject.put("lastname", userLastName);
+            jsonObject.put("firstName", userFirstName);
+            jsonObject.put("lastName", userLastName);
             jsonObject.put("phone", userPhone);
             jsonObject.put("email", userEmail);
             jsonObject.put("address", addressObject);
@@ -313,10 +328,13 @@ public class OtpActivity extends AppCompatActivity {
         }
 
         Log.d("LoginPayload", jsonObject.toString());
-        ProgressDialog progressDialog;
-        progressDialog = new ProgressDialog(OtpActivity.this);
-        progressDialog.setMessage("Creating User...");
+        progressDialog = new Dialog(OtpActivity.this);
+        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        progressDialog.setContentView(R.layout.progress_bar_drawer);
         progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
         progressDialog.show();
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -335,8 +353,8 @@ public class OtpActivity extends AppCompatActivity {
                                     if (status.equals("true")) {
                                         String authToken = null;
                                         JSONObject userDataJson = response.getJSONObject("data");
-                                        String firstName = userDataJson.getString("firstname");
-                                        String lastName = userDataJson.getString("lastname");
+                                        String firstName = userDataJson.getString("firstName");
+                                        String lastName = userDataJson.getString("lastName");
 //                                String mobile = userDataJson.getString("phone");
                                         String email = userDataJson.getString("email");
                                         String user_id = userDataJson.getString("_id");
@@ -348,10 +366,12 @@ public class OtpActivity extends AppCompatActivity {
                                         JSONObject addressObj = userDataJson.getJSONObject("address");
                                         String state = addressObj.getString("state");
                                         String city = addressObj.getString("city");
-                                        sessionManager.saveLoginDetails2(user_id,firstName,lastName,email,state,city,role,isActive,step,authToken,createdAt,updatedAt,null);
-                                        Intent intent = new Intent(OtpActivity.this, SignUpActivity5CategorySelect.class);
+                                        sessionManager.saveLoginDetails2(user_id,firstName,lastName,null,email,state,city,role,isActive,step,authToken,createdAt,updatedAt,null);
+                                        Intent intent = new Intent(OtpActivity.this, LoginWithEmailActivity.class);
+//                                        Intent intent = new Intent(OtpActivity.this, SignUpActivity5CategorySelect.class);
                                         intent.putExtra("task",task);
                                         startActivity(intent);
+                                        finish();
                                     }
                                 } catch (JSONException e) {
                                     Toast.makeText(OtpActivity.this, e.toString(), Toast.LENGTH_SHORT).show();

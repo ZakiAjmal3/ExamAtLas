@@ -45,7 +45,7 @@ public class CurrentAffairsActivity extends AppCompatActivity {
     ArrayList<CurrentAffairsModel> currentAffairsModelArrayList;
     CurrentAffairsShowingAllAdapter currentAffairAdapter;
     SessionManager sessionManager;
-    String authToken,currentAffairsURL = Constant.BASE_URL + "currentAffair/getAllCA";
+    String authToken,currentAffairsURL = Constant.BASE_URL + "v1/blog?type=current_affairs";
     ShimmerFrameLayout shimmerFrameLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,20 +92,17 @@ public class CurrentAffairsActivity extends AppCompatActivity {
                                 JSONArray jsonArray = response.getJSONArray("data");
                                 currentAffairsModelArrayList.clear(); // Clear the list before adding new items
 
-                                JSONObject jsonObject2 = response.getJSONObject("pagination");
-                                String totalRows = jsonObject2.getString("totalRows");
-                                String totalPages = jsonObject2.getString("totalPages");
-                                String currentPage = jsonObject2.getString("currentPage");
+                                String totalItems = response.getString("totalItems");
+                                String totalPages = response.getString("totalPage");
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                                     String affairID = jsonObject.getString("_id");
                                     String title = jsonObject.getString("title");
-                                    String keyword = jsonObject.getString("keyword");
+                                    String categoryId = jsonObject.getString("categoryId");
                                     String content = jsonObject.getString("content");
-                                    JSONObject image = jsonObject.getJSONObject("image");
-                                    String url = image.getString("url");
-//                                    String createdDate = jsonObject.getString("createdAt");
+//                                    JSONObject image = jsonObject.getJSONObject("image");
+//                                    String url = image.getString("url");
 
 
                                     // Use StringBuilder for tags
@@ -120,7 +117,7 @@ public class CurrentAffairsActivity extends AppCompatActivity {
                                         tags.setLength(tags.length() - 2); // Adjust to remove the last comma and space
                                     }
 
-                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID,url, title, keyword, content, tags.toString(),totalRows, totalPages,currentPage);
+                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID,null, title, categoryId, content, tags.toString(),totalItems, totalPages);
                                     currentAffairsModelArrayList.add(currentAffairModel);
                                 }
                                 // If you have already created the adapter, just notify the change

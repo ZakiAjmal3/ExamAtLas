@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="homeFragTopColor">#F8F8F8</color>
     <color name="black">#FF000000</color>
     <color name="red">#FF0000</color>
     <color name="grey">#CFCFCF</color>
     <color name="bottom_grey">#F4F4F4</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="blue">#0073FF</color>
+    <color name="whiteSeed">#F0F4FB</color>
     <color name="seed">#15b0fd</color>
     <color name="seed2">#4ABEFF</color>
     <color name="dark_seed">#001EC7</color>
     <color name="green">#0C9700</color>
+    <color name="timelineBGColor">#E4FDE4</color>
     <color name="md_theme_light_primary">#006493</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#CAE6FF</color>
@@ -74,5 +78,5 @@
     <color name="dark_grey">#776F6F</color>
     <color name="darker_grey">#423D3D</color>
     <color name="mat_yellow">#F1B501</color>
-    <color name="red_orange">#FF4500</color>
+    <color name="red_orange">#FF7700</color>
 </resources>

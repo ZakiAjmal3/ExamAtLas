@@ -27,7 +27,6 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.activities.CartViewActivity;
 import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.CartViewModel;
 import com.examatlas.utils.Constant;
@@ -211,7 +210,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
 
                         if (success) {
                             holder.quantityTxt.setText(String.valueOf("Qty: " + quantity));
-                            ((CartViewActivity) context).fetchCartItems();
+//                            ((CartViewActivity) context).fetchCartItems();
                         }
                     } catch (JSONException e) {
                         Toast.makeText(context, "Error processing response", Toast.LENGTH_SHORT).show();
@@ -269,6 +268,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
                         if (success) {
+                            sessionManager.setCartItemQuantity();
                             int position = cartViewModelArrayList.indexOf(currentBook);
                             if (position != -1) {
                                 cartViewModelArrayList.remove(position);
@@ -318,7 +318,6 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
         ImageView deleteBookBtn;
         ViewPager2 bookImage;
         ProgressBar quantityProgressbar;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.bookTitle);

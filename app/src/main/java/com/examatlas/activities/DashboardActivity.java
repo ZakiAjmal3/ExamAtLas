@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.examatlas.R;
+import com.examatlas.activities.Books.MyBookOrderHistory;
 import com.examatlas.fragment.BlogFragment;
 import com.examatlas.fragment.BooksFragment;
 import com.examatlas.fragment.CourseFragment;
@@ -74,7 +75,7 @@ public class DashboardActivity extends AppCompatActivity {
                     loadFragment(new HomeFragment());
                 } else if (item.getItemId() == R.id.blogs) {
                     currentFrag = "BLOGS";
-                    topBar.setVisibility(View.VISIBLE);
+                    topBar.setVisibility(View.GONE);
                     loadFragment(new BlogFragment());
 //                } else if (item.getItemId() == R.id.live) {
 //                    currentFrag = "LIVE";
@@ -85,9 +86,15 @@ public class DashboardActivity extends AppCompatActivity {
                     topBar.setVisibility(View.GONE);
                     loadFragment(new BooksFragment());
                 } else {
-                    currentFrag = "PROFILE";
-                    topBar.setVisibility(View.GONE);
-                    loadFragment(new ProfileFragment());
+                    if (sessionManager.IsLoggedIn()) {
+                        currentFrag = "PROFILE";
+                        topBar.setVisibility(View.GONE);
+                        loadFragment(new ProfileFragment());
+                    }else {
+                        Intent intent = new Intent(DashboardActivity.this, LoginWithEmailActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
                 }
                 return true;
             }
@@ -99,7 +106,6 @@ public class DashboardActivity extends AppCompatActivity {
                 showDrawerDialog();
             }
         });
-//
 //        imgSearch.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -136,6 +142,13 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
+    public void showTopToolBar(String callingThisMethodFrom){
+        topBar.setVisibility(View.VISIBLE);
+        if (callingThisMethodFrom.equals("BlogFragment")){
+            bottom_navigation.setSelectedItemId(R.id.home);
+        }
+    }
+
     public void loadFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -155,9 +168,8 @@ public class DashboardActivity extends AppCompatActivity {
 //    }
 
     Dialog drawerDialog;
-    LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks, layoutLiveClasses,
-            layoutEbook,layoutCurrentAffairs, layoutLogout,layoutLogin, layoutShare, layoutAboutUs, layoutPrivacy,
-            layoutTerms, layoutOrderHistory, layoutFaq, layoutServices;
+    LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks,layoutCurrentAffairs, layoutLogout,layoutLogin, layoutShare,
+             layoutOrderHistory;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
     MaterialCardView cardBack;
@@ -169,7 +181,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         transLayer = drawerDialog.findViewById(R.id.transLayer);
         layoutHome = drawerDialog.findViewById(R.id.layoutHome);
-        layoutLiveClasses = drawerDialog.findViewById(R.id.layoutLiveClasses);
+//        layoutLiveClasses = drawerDialog.findViewById(R.id.layoutLiveClasses);
         layoutBlogs = drawerDialog.findViewById(R.id.layoutBlogs);
         layoutPurchaseBooks = drawerDialog.findViewById(R.id.layoutPurchaseBooks);
 //        layoutEbook = drawerDialog.findViewById(R.id.layoutEbook);
@@ -182,7 +194,7 @@ public class DashboardActivity extends AppCompatActivity {
 //        layoutAboutUs = drawerDialog.findViewById(R.id.layoutAboutUs);
 //        layoutPrivacy = drawerDialog.findViewById(R.id.layoutPrivacy);
 //        layoutTerms = drawerDialog.findViewById(R.id.layoutTerms);
-//        layoutOrderHistory = drawerDialog.findViewById(R.id.layoutOrderHistory);
+        layoutOrderHistory = drawerDialog.findViewById(R.id.layoutMyOrders);
         cardBack = drawerDialog.findViewById(R.id.cardBack);
         imgUser = drawerDialog.findViewById(R.id.imgUser);
 //        layoutFaq = drawerDialog.findViewById(R.id.layoutFaq);
@@ -195,9 +207,11 @@ public class DashboardActivity extends AppCompatActivity {
 
         if (sessionManager.IsLoggedIn()){
             layoutLogout.setVisibility(View.VISIBLE);
+            layoutOrderHistory.setVisibility(View.VISIBLE);
             layoutLogin.setVisibility(View.GONE);
         }else {
             layoutLogout.setVisibility(View.GONE);
+            layoutOrderHistory.setVisibility(View.GONE);
             layoutLogin.setVisibility(View.VISIBLE);
         }
 
@@ -220,6 +234,7 @@ public class DashboardActivity extends AppCompatActivity {
                 drawerDialog.dismiss();
                 if (!currentFrag.equals("BLOGS")) {
                     currentFrag = "BLOGS";
+                    topBar.setVisibility(View.GONE);
                     loadFragment(new BlogFragment());
                     bottom_navigation.setSelectedItemId(R.id.blogs);
                     bottom_navigation.setSelected(true);
@@ -231,7 +246,11 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
-                startActivity(new Intent(DashboardActivity.this, HardBookECommPurchaseActivity.class));
+                currentFrag = "BOOKS";
+                topBar.setVisibility(View.GONE);
+                loadFragment(new BooksFragment());
+                bottom_navigation.setSelectedItemId(R.id.books);
+                bottom_navigation.setSelected(true);
             }
         });
 
@@ -248,13 +267,13 @@ public class DashboardActivity extends AppCompatActivity {
 //            }
 //        });
 
-        layoutEbook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerDialog.dismiss();
-                startActivity(new Intent(DashboardActivity.this, EbookActivity.class));
-            }
-        });
+//        layoutEbook.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerDialog.dismiss();
+//                startActivity(new Intent(DashboardActivity.this, EbookActivity.class));
+//            }
+//        });
 
         layoutLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,18 +286,25 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
-                startActivity(new Intent(DashboardActivity.this, LoginActivity.class));
+                startActivity(new Intent(DashboardActivity.this, LoginWithEmailActivity.class));
                 finish();
             }
         });
-
-        layoutShare.setOnClickListener(new View.OnClickListener() {
+        layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
-                shareApplication();
+                startActivity(new Intent(DashboardActivity.this, MyBookOrderHistory.class));
             }
         });
+
+//        layoutShare.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerDialog.dismiss();
+//                shareApplication();
+//            }
+//        });
 
 //        layoutAboutUs.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -316,14 +342,14 @@ public class DashboardActivity extends AppCompatActivity {
 //            }
 //        });
 
-        layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerDialog.dismiss();
-                Intent intent = new Intent(DashboardActivity.this, BookOrderHistoryActivity.class);
-                startActivity(intent);
-            }
-        });
+//        layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerDialog.dismiss();
+//                Intent intent = new Intent(DashboardActivity.this, BookOrderHistoryActivity.class);
+//                startActivity(intent);
+//            }
+//        });
         layoutCurrentAffairs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

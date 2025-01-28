@@ -1,18 +1,16 @@
 package com.examatlas.models;
 
 public class BlogModel {
-    String blogID,imageURL,title,keyword,content,tags,totalRows,totalPages,currentPage;
+    String blogID,imageURL,title,content,tags,totalRows,totalPages;
 
-    public BlogModel(String blogID,String imageURL, String title, String keyword, String content, String tags, String totalRows, String totalPages, String currentPage) {
+    public BlogModel(String blogID,String imageURL, String title, String content, String tags, String totalRows, String totalPages) {
         this.blogID = blogID;
         this.imageURL = imageURL;
         this.title = title;
-        this.keyword = keyword;
         this.content = content;
         this.tags = tags;
         this.totalRows = totalRows;
         this.totalPages = totalPages;
-        this.currentPage = currentPage;
     }
 
     public String getImageURL() {
@@ -29,14 +27,6 @@ public class BlogModel {
 
     public void setTotalPages(String totalPages) {
         this.totalPages = totalPages;
-    }
-
-    public String getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(String currentPage) {
-        this.currentPage = currentPage;
     }
 
     public String getTotalRows() {
@@ -61,14 +51,6 @@ public class BlogModel {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
     }
 
     public String getContent() {

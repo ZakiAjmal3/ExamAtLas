@@ -1,10 +1,11 @@
-package com.examatlas.models;
+package com.examatlas.models.Books;
 
-public class CreateDeliveryAddressModel {
-    String billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress;
+public class DeliveryAddressItemModel {
+    String billingId,addressType,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress,selected;
 
-    public CreateDeliveryAddressModel(String billingId, String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress) {
+    public DeliveryAddressItemModel(String billingId, String addressType, String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress, String selected) {
         this.billingId = billingId;
+        this.addressType = addressType;
         this.firstName = firstName;
         this.lastName = lastName;
         this.houseNoOrApartmentNo = houseNoOrApartmentNo;
@@ -15,10 +16,27 @@ public class CreateDeliveryAddressModel {
         this.countryName = countryName;
         this.phone = phone;
         this.emailAddress = emailAddress;
+        this.selected = selected;
+    }
+
+    public String getSelected() {
+        return selected;
+    }
+
+    public void setSelected(String selected) {
+        this.selected = selected;
     }
 
     public String getBillingId() {
         return billingId;
+    }
+
+    public String getAddressType() {
+        return addressType;
+    }
+
+    public void setAddressType(String addressType) {
+        this.addressType = addressType;
     }
 
     public void setBillingId(String billingId) {

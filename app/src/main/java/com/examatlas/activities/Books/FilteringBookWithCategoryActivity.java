@@ -1,6 +1,7 @@
 package com.examatlas.activities.Books;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,10 +55,11 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
     private final String categoryURL = Constant.BASE_URL + "v1/category";
     private SessionManager sessionManager;
     private String token,categoryName,categoryID;
-    TextView categoryNameTxtView,viewAllCategoryTxt,noDataTxt;
-    ImageView backBtn;
+    TextView categoryNameTxtView,cartItemQuantityTxt,viewAllCategoryTxt,noDataTxt;
+    ImageView backBtn,cartBtn;
     int totalPage,totalItems;
     ShimmerFrameLayout bookShimmerLayout;
+    EditText searchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,15 +73,27 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
         bookShimmerLayout.setVisibility(View.VISIBLE);
         bookShimmerLayout.startShimmer();
         backBtn = findViewById(R.id.backBtn);
-
+        cartBtn = findViewById(R.id.cartBtn);
         booksRecycler.setLayoutManager(new GridLayoutManager(this,2));
         allBooksModelArrayList = new ArrayList<>();
         sessionManager = new SessionManager(this);
         token = sessionManager.getUserData().get("authToken");
-
         categoryNameTxtView = findViewById(R.id.showingCategoryDisplayNameText);
+
+        cartItemQuantityTxt = findViewById(R.id.cartItemCountTxt);
+        String quantity = sessionManager.getCartQuantity();
+        if (!quantity.equals("0")) {
+            cartItemQuantityTxt.setVisibility(View.VISIBLE);
+            cartItemQuantityTxt.setText(quantity);
+        }else {
+            cartItemQuantityTxt.setVisibility(View.GONE);
+        }
+
         viewAllCategoryTxt = findViewById(R.id.viewAllCategoryTxt);
         noDataTxt = findViewById(R.id.noDataTxt);
+        searchView = findViewById(R.id.search_icon);
+        searchView.setFocusable(false);
+        searchView.setClickable(true);
 
         categoryName = getIntent().getStringExtra("name");
         categoryID = getIntent().getStringExtra("id");
@@ -90,10 +105,23 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        cartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(FilteringBookWithCategoryActivity.this, CartViewActivity.class));
+            }
+        });
         viewAllCategoryTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDrawerDialog();
+            }
+        });
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(FilteringBookWithCategoryActivity.this, SearchingBooksActivity.class);
+                startActivity(intent);
             }
         });
         getAllBooks();

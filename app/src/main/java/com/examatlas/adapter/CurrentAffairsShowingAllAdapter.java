@@ -92,6 +92,10 @@ public class CurrentAffairsShowingAllAdapter extends RecyclerView.Adapter<Curren
                         Intent intent = new Intent(context.getContext(), CurrentAffairsSingleViewActivity.class);
                         intent.putExtra("CAID",currentAffairsModelArrayList.get(getAdapterPosition()).getCfID());
                         context.startActivity(intent);
+                    }else {
+                        Intent intent = new Intent(context1, CurrentAffairsSingleViewActivity.class);
+                        intent.putExtra("CAID",currentAffairsModelArrayList.get(getAdapterPosition()).getCfID());
+                        context1.startActivity(intent);
                     }
                 }
             });

@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -24,10 +26,29 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".activities.Books.DeliveryAddressInputActivity"
+            android:name=".activities.Books.OrderSuccessFullyPlacedActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.Books.BuyNowCartAddressActivity"
+            android:name=".activities.Books.ChoosingPaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Books.TrackingSingleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Books.CreatingReviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Books.SingleOrderViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Books.MyBookOrderHistory"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Books.DeliveryAddressInputActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".activities.Books.CartViewActivity"
             android:exported="false" />
         <activity
             android:name=".activities.Books.SearchingBooksActivity"
@@ -54,7 +75,7 @@
             android:name=".activities.BookOrderHistoryActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.BookOrderPaymentActivity"
+            android:name=".activities.Books.BookOrderPaymentActivity"
             android:exported="false" />
         <activity
             android:name=".activities.AdminOtpActivity"
@@ -100,9 +121,6 @@
             android:exported="false" />
         <activity
             android:name=".activities.CreateDeliveryAddressActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.CartViewActivity"
             android:exported="false" />
         <activity
             android:name=".activities.WishlistActivity"

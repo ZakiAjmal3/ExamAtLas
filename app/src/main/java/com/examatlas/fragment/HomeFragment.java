@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +27,7 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
+import com.examatlas.activities.Books.SearchingBooksActivity;
 import com.examatlas.activities.CurrentAffairsActivity;
 import com.examatlas.activities.DashboardActivity;
 import com.examatlas.activities.HardBookECommPurchaseActivity;
@@ -68,16 +70,19 @@ public class HomeFragment extends Fragment {
     LiveCoursesAdapter liveCoursesAdapter;
     CurrentAffairsAdapter currentAffairAdapter;
     private final String bookURL = Constant.BASE_URL + "v1/books";
-    private final String blogURL = Constant.BASE_URL + "blog/getAllBlogs";
+    private final String blogURL = Constant.BASE_URL + "v1/blog?type=blog";
     private final String liveClassURL = Constant.BASE_URL + "liveclass/getAllLiveClass";
-    private final String currentAffairsURL = Constant.BASE_URL + "currentAffair/getAllCA";
+    private final String currentAffairsURL = Constant.BASE_URL + "v1/blog?type=current_affairs";
     String token;
     ShimmerFrameLayout booksShimmeringLayout,blogShimmeringLayout,currentAffairShimmeringLayout;
-    TextView viewAllBlog,viewAllCA;
+    TextView viewAllBlog,viewAllBook,viewAllCA;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), R.color.seed));
+
         liveClassesRecycler = view.findViewById(R.id.examRecycler);
         currentAffairRecycler = view.findViewById(R.id.currentAffairRecycler);
         blogsRecycler = view.findViewById(R.id.blogsRecycler);
@@ -89,6 +94,7 @@ public class HomeFragment extends Fragment {
         currentAffairShimmeringLayout = view.findViewById(R.id.shimmer_CA_container);
 
         viewAllBlog = view.findViewById(R.id.viewAllBlogTxt);
+        viewAllBook = view.findViewById(R.id.viewAllBooksTxt);
         viewAllCA = view.findViewById(R.id.viewAllCATxt);
 
         slider = view.findViewById(R.id.slider);
@@ -151,6 +157,12 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getContext(), CurrentAffairsActivity.class));
+            }
+        });
+        viewAllBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), SearchingBooksActivity.class));
             }
         });
         return view;
@@ -281,7 +293,7 @@ public class HomeFragment extends Fragment {
                                 }
 
                                 // Update UI and adapters
-                                booksRecycler.setAdapter(new BookForUserAdapter(getContext(), allBooksModelArrayList));
+                                booksRecycler.setAdapter(new BookForUserAdapter(HomeFragment.this.getContext(), allBooksModelArrayList));
                                 booksShimmeringLayout.stopShimmer();
                                 booksShimmeringLayout.setVisibility(View.GONE);
                                 booksRecycler.setVisibility(View.VISIBLE);
@@ -337,20 +349,17 @@ public class HomeFragment extends Fragment {
                                 JSONArray jsonArray = response.getJSONArray("data");
                                 blogModelArrayList.clear(); // Clear the list before adding new items
 
-                                JSONObject jsonObject = response.getJSONObject("pagination");
-                                String totalRows = jsonObject.getString("totalRows");
-                                String totalPages = jsonObject.getString("totalPages");
-                                String currentPage = jsonObject.getString("currentPage");
+                                String totalItems = response.getString("totalItems");
+                                String totalPages = response.getString("totalPage");
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String blogID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
-                                    String keyword = jsonObject2.getString("keyword");
                                     String content = jsonObject2.getString("content");
                                     Log.e("Blog content",content);
-                                    JSONObject image = jsonObject2.getJSONObject("image");
-                                    String url = image.getString("url");
+//                                    JSONObject image = jsonObject2.getJSONObject("image");
+//                                    String url = image.getString("url");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -364,7 +373,7 @@ public class HomeFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    BlogModel blogModel = new BlogModel(blogID,url, title, keyword, content, tags.toString(),totalRows,totalPages,currentPage);
+                                    BlogModel blogModel = new BlogModel(blogID,null, title, content, tags.toString(),totalItems,totalPages);
                                     blogModelArrayList.add(blogModel);
                                 }
 
@@ -381,6 +390,7 @@ public class HomeFragment extends Fragment {
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
+                            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
                         }
                     }
@@ -427,19 +437,17 @@ public class HomeFragment extends Fragment {
                                 JSONArray jsonArray = response.getJSONArray("data");
                                 currentAffairsModelArrayList.clear(); // Clear the list before adding new items
 
-                                JSONObject jsonObject2 = response.getJSONObject("pagination");
-                                String totalRows = jsonObject2.getString("totalRows");
-                                String totalPages = jsonObject2.getString("totalPages");
-                                String currentPage = jsonObject2.getString("currentPage");
+                                String totalItems = response.getString("totalItems");
+                                String totalPages = response.getString("totalPage");
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                                     String affairID = jsonObject.getString("_id");
                                     String title = jsonObject.getString("title");
-                                    String keyword = jsonObject.getString("keyword");
+                                    String categoryId = jsonObject.getString("categoryId");
                                     String content = jsonObject.getString("content");
-                                    JSONObject image = jsonObject.getJSONObject("image");
-                                    String url = image.getString("url");
+//                                    JSONObject image = jsonObject.getJSONObject("image");
+//                                    String url = image.getString("url");
 
 
                                     // Use StringBuilder for tags
@@ -454,7 +462,7 @@ public class HomeFragment extends Fragment {
                                         tags.setLength(tags.length() - 2); // Adjust to remove the last comma and space
                                     }
 
-                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID,url, title, keyword, content, tags.toString(),totalRows, totalPages,currentPage);
+                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID,null, title, categoryId, content, tags.toString(),totalItems, totalPages);
                                     currentAffairsModelArrayList.add(currentAffairModel);
                                 }
 

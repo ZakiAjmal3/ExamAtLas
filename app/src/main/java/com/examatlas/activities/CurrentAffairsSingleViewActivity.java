@@ -2,6 +2,7 @@ package com.examatlas.activities;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -33,7 +34,7 @@ import java.util.Map;
 
 public class CurrentAffairsSingleViewActivity extends AppCompatActivity {
     ImageView cAIMG,backBtn;
-    TextView cATitle;
+    TextView caTitleHeader;
     WebView webviewContent;
     String cAURL;
     String cAID;
@@ -48,7 +49,7 @@ public class CurrentAffairsSingleViewActivity extends AppCompatActivity {
 
         cAIMG = findViewById(R.id.cAIMG);
         backBtn = findViewById(R.id.backBtn);
-        cATitle = findViewById(R.id.txtCATitle);
+        caTitleHeader = findViewById(R.id.caTitleHeader);
         webviewContent = findViewById(R.id.content);
 
         shimmerFrameLayout = findViewById(R.id.shimmer_blog_container);
@@ -58,7 +59,7 @@ public class CurrentAffairsSingleViewActivity extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
         token = sessionManager.getUserData().get("authToken");
-        cAURL = Constant.BASE_URL + "currentAffair/getById/" + getIntent().getStringExtra("CAID");
+        cAURL = Constant.BASE_URL + "v1/blog/getBlogById/" + getIntent().getStringExtra("CAID");
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +85,7 @@ public class CurrentAffairsSingleViewActivity extends AppCompatActivity {
                             boolean status = response.getBoolean("status");
                             Log.e("CA Response",response.toString());
                             if (status) {
-                                JSONObject jsonObject = response.getJSONObject("currentAffair");
+                                JSONObject jsonObject = response.getJSONObject("data");
                                 JSONObject imgJsonObject = jsonObject.getJSONObject("image");
                                 String imageURL = imgJsonObject.getString("url");
 
@@ -95,7 +96,10 @@ public class CurrentAffairsSingleViewActivity extends AppCompatActivity {
                                 String title = jsonObject.getString("title");
 //                                String tags = jsonObject.getString("tags");
                                 String content = jsonObject.getString("content");
-                                cATitle.setText(title);
+                                caTitleHeader.setText(title);
+                                caTitleHeader.setEllipsize(TextUtils.TruncateAt.END);
+                                caTitleHeader.setMaxLines(1);
+                                caTitleHeader.setVisibility(View.VISIBLE);
                                 // Enable JavaScript (optional, depending on your content)
                                 WebSettings webSettings = webviewContent.getSettings();
                                 webSettings.setJavaScriptEnabled(true);

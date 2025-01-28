@@ -187,7 +187,6 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
             String lowerCaseQuery = query.toLowerCase();
             for (AdminShowAllBlogModel blog : orginalAdminShowAllBlogModelArrayList) {
                 if (blog.getTitle().toLowerCase().contains(lowerCaseQuery) ||
-                        blog.getKeyword().toLowerCase().contains(lowerCaseQuery) ||
                         blog.getContent().toLowerCase().contains(lowerCaseQuery)) {
                     adminShowAllBlogModelArrayList.add(blog); // Add matching blog to the filtered list
                 }
@@ -220,7 +219,6 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
         EditText tagsEditTxt = editBlogDialogBox.findViewById(R.id.tagsEditText);
 
         titleEditTxt.setText(blogModel.getTitle());
-        keywordEditTxt.setText(blogModel.getKeyword());
         contentEditTxt.setText(blogModel.getContent());
 
         String[] tagsArray = blogModel.getTags().split(",");

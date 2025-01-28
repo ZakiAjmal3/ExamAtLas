@@ -19,17 +19,36 @@
             android:src="@drawable/newlogo"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             />
-        <ImageView
-            android:id="@+id/cartBtn"
+        <RelativeLayout
+            android:id="@+id/cartRl"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_cart"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="20dp"
-            android:layout_marginRight="15dp"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:visibility="gone"
-            />
+            android:layout_marginRight="15dp">
+            <ImageView
+                android:id="@+id/cartBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_cart"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                android:visibility="visible"
+                />
+            <TextView
+                android:id="@+id/cartItemCountTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="2dp"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                android:background="@drawable/one_circle_blue_bg"
+                android:layout_alignParentEnd="true"
+                />
+        </RelativeLayout>
         <FrameLayout
             android:id="@+id/searchViewFrameLayout"
             android:layout_width="match_parent"
@@ -87,35 +106,62 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/hardbook_ecomm_purchase_toolbar">
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/slider_cardView"
+            <RelativeLayout
+                android:id="@+id/sliderRL"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="10dp"
-                app:cardBackgroundColor="@color/white"
-                app:strokeWidth="0dp"
-                >
-                <com.denzcoskun.imageslider.ImageSlider
-                    android:id="@+id/slider"
+                android:layout_height="wrap_content">
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_Slider_container"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    app:iss_selected_dot="@drawable/active_dot"
-                    app:iss_unselected_dot="@drawable/inactive_dot"
-                    app:iss_auto_cycle="true"
-                    app:iss_period="1500"
-                    app:iss_delay="0" />
-            </com.google.android.material.card.MaterialCardView>
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    android:layout_marginTop="10dp">
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/img"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:gravity="center"
+                        android:layout_margin="10dp"
+                        android:orientation="vertical"
+                        app:cardCornerRadius="6dp"
+                        >
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:background="@drawable/skeleton_background"
+                            />
+                    </androidx.cardview.widget.CardView>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/slider_cardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="10dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:strokeWidth="0dp"
+                    android:visibility="gone"
+                    >
+                    <com.denzcoskun.imageslider.ImageSlider
+                        android:id="@+id/slider"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        app:iss_selected_dot="@drawable/active_dot"
+                        app:iss_unselected_dot="@drawable/inactive_dot"
+                        app:iss_auto_cycle="true"
+                        app:iss_period="1500"
+                        app:iss_delay="0" />
+                </com.google.android.material.card.MaterialCardView>
+            </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/categoryItemsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/slider_cardView">
+                android:layout_below="@id/sliderRL">
 
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/shimmer_category_container"

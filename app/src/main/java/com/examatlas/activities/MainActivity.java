@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.examatlas.R;
+import com.examatlas.activities.Books.CartViewActivity;
 import com.examatlas.utils.SessionManager;
 
 import java.util.Objects;
@@ -18,7 +19,6 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     SessionManager sessionManager;
     ImageView logo;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,11 +42,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (sessionManager.IsLoggedIn()) {
+                    sessionManager.setCartItemQuantity();
                     String role = sessionManager.getUserData().get("role");
                     Intent intent;
                     if (role.equalsIgnoreCase("student")) {
-                        if (Objects.equals(sessionManager.getUserData().get("step"), "1") || Objects.equals(sessionManager.getUserData().get("step"), (Integer.parseInt("1")))) {
-                            intent = new Intent(MainActivity.this, SignUpActivity5CategorySelect.class);
+                        if (!sessionManager.getUserData().get("isActive").equals("true")) {
+                            intent = new Intent(MainActivity.this, DashboardActivity.class);
+//                            intent = new Intent(MainActivity.this, SignUpActivity5CategorySelect.class);
                             Log.e("SignUp2", "User logged in, navigating to SignUp2");
                         }else {
                             intent = new Intent(MainActivity.this, DashboardActivity.class);

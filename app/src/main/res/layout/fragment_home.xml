@@ -121,7 +121,7 @@
                         android:textStyle="normal"
                         android:layout_marginRight="10dp"
                         android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         />
                 </RelativeLayout>
 

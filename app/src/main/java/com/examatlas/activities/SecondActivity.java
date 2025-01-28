@@ -22,7 +22,7 @@ public class SecondActivity extends AppCompatActivity {
         userNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(SecondActivity.this, LoginActivity.class));
+                startActivity(new Intent(SecondActivity.this, LoginWithEmailActivity.class));
             }
         });
     }

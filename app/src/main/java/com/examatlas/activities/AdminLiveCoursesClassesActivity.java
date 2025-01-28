@@ -319,11 +319,11 @@ public class AdminLiveCoursesClassesActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getLiveClassesList(); // Always refresh data when the activity is resumed
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        getLiveClassesList(); // Always refresh data when the activity is resumed
+//    }
     private void getLiveClassesList() {
         progressBar.setVisibility(View.VISIBLE);
         noDataLayout.setVisibility(View.GONE);

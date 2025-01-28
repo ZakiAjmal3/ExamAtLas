@@ -165,7 +165,7 @@ public class SearchingActivityAdapter extends RecyclerView.Adapter<SearchingActi
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(context, SingleBookDetailsActivity.class);
-                    intent.putExtra("bookID", allBooksModelArrayList.get(getAbsoluteAdapterPosition()).getString("_id"));
+                    intent.putExtra("bookId", allBooksModelArrayList.get(getAbsoluteAdapterPosition()).getString("_id"));
                     context.startActivity(intent);
                 }
             });

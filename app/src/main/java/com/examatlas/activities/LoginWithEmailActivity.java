@@ -1,10 +1,16 @@
 package com.examatlas.activities;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,6 +37,7 @@ public class LoginWithEmailActivity extends AppCompatActivity {
     EditText edtEmail;
     TextView signUpTxt;
     Button btnLogin;
+    Dialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,13 +57,17 @@ public class LoginWithEmailActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (edtEmail.getText().toString().trim().isEmpty()) {
+                    edtEmail.setError("Email is required");
+                    return;
+                }
                 sendingOTP();
             }
         });
     }
 
     private void sendingOTP() {
-        String verifyEmailUrl = Constant.BASE_URL + "otp/email";
+        String verifyEmailUrl = Constant.BASE_URL + "v1/otp/email";
 
         Log.e("sendingOTP method", verifyEmailUrl);
 
@@ -69,9 +80,13 @@ public class LoginWithEmailActivity extends AppCompatActivity {
             return;
         }
 
-        ProgressDialog progressDialog = new ProgressDialog(LoginWithEmailActivity.this);
-        progressDialog.setMessage("Sending OTP...");
+        progressDialog = new Dialog(LoginWithEmailActivity.this);
+        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        progressDialog.setContentView(R.layout.progress_bar_drawer);
         progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
         progressDialog.show();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, verifyEmailUrl, jsonObject,
@@ -90,16 +105,15 @@ public class LoginWithEmailActivity extends AppCompatActivity {
                                 intent.putExtra("task","login");
                                 intent.putExtra("email",edtEmail.getText().toString().trim());
                                 startActivity(intent);
-                                finish();
                             }
                         } catch (JSONException e) {
-
                             Toast.makeText(LoginWithEmailActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Toast.makeText(LoginWithEmailActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
                 String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {

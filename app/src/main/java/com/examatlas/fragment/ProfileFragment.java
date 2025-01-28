@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.examatlas.R;
+import com.examatlas.activities.Books.MyBookOrderHistory;
+import com.examatlas.activities.LoginWithEmailActivity;
 import com.examatlas.activities.MainActivity;
 import com.examatlas.utils.SessionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -22,7 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileFragment extends Fragment {
 
     SessionManager sessionManager;
-    RelativeLayout logoutLayout, layoutSubscription;
+    RelativeLayout loginLayout,logoutLayout, layoutMyOrders;
     CircleImageView imgUser;
     ImageView imgEdit;
     ProgressBar profileProgress;
@@ -39,16 +41,25 @@ public class ProfileFragment extends Fragment {
         txtName = view.findViewById(R.id.txtName);
         txtEmail = view.findViewById(R.id.txtEmail);
         txtNumber = view.findViewById(R.id.txtNumber);
+        loginLayout = view.findViewById(R.id.loginLayout);
         logoutLayout = view.findViewById(R.id.logoutLayout);
         profileProgress = view.findViewById(R.id.profileProgress);
-        layoutSubscription = view.findViewById(R.id.layoutSubscription);
+        layoutMyOrders = view.findViewById(R.id.layoutMyOrders);
         imgUser = view.findViewById(R.id.imgUser);
         imgEdit = view.findViewById(R.id.imgEdit);
         sessionManager = new  SessionManager(getContext());
 
-        txtName.setText(sessionManager.getUserData().get("name"));
+        txtName.setText(sessionManager.getUserData().get("firstName") + " " + sessionManager.getUserData().get("lastName"));
         txtEmail.setText(sessionManager.getUserData().get("email"));
         txtNumber.setText(sessionManager.getUserData().get("mobile"));
+
+        if (sessionManager.IsLoggedIn()){
+            logoutLayout.setVisibility(View.VISIBLE);
+            loginLayout.setVisibility(View.GONE);
+        }else {
+            logoutLayout.setVisibility(View.GONE);
+            loginLayout.setVisibility(View.VISIBLE);
+        }
 
         imgEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +68,12 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        loginLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), LoginWithEmailActivity.class));
+            }
+        });
         logoutLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,10 +81,10 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        layoutSubscription.setOnClickListener(new View.OnClickListener() {
+        layoutMyOrders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                startActivity(new Intent(getContext().getApplicationContext(), SubscriptionActivity.class));
+                startActivity(new Intent(getContext().getApplicationContext(), MyBookOrderHistory.class));
             }
         });
 

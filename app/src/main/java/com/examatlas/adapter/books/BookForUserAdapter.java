@@ -1,6 +1,7 @@
 package com.examatlas.adapter.books;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.Spannable;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,27 +24,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.activities.Books.SingleBookDetailsActivity;
+import com.examatlas.activities.LoginWithEmailActivity;
 import com.examatlas.models.Books.AllBooksModel;
 import com.examatlas.models.Books.BookImageModels;
+import com.examatlas.utils.SessionManager;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 
 public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.ViewHolder> {
     private final Context context;
     private final ArrayList<AllBooksModel> allBooksModelArrayList;
-
+    SessionManager sessionManager;
     public BookForUserAdapter(Context context, ArrayList<AllBooksModel> allBooksModelArrayList) {
         this.allBooksModelArrayList = new ArrayList<>(allBooksModelArrayList);
         this.context = context;
-    }
-
+// Check if context is valid before initializing SessionManager
+        if (context != null) {
+            sessionManager = new SessionManager(context.getApplicationContext());
+        }    }
     @NonNull
     @Override
     public BookForUserAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hardcopybook_item_list2, parent, false);
         return new BookForUserAdapter.ViewHolder(view);
     }
-
     @Override
     public void onBindViewHolder(@NonNull BookForUserAdapter.ViewHolder holder, int position) {
         AllBooksModel currentBook = allBooksModelArrayList.get(position);
@@ -78,7 +84,6 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
                 // Create a SpannableString for the original price with strikethrough
                 SpannableString spannableOriginalPrice = new SpannableString("₹" + originalPrice);
                 spannableOriginalPrice.setSpan(new StrikethroughSpan(), 0, spannableOriginalPrice.length(), 0);
-
                 // Create the discount text
                 String discountText = "(-" + discount + "%)";
                 SpannableStringBuilder spannableText = new SpannableStringBuilder();
@@ -138,9 +143,26 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, SingleBookDetailsActivity.class);
-                    intent.putExtra("bookID", allBooksModelArrayList.get(getAdapterPosition()).getString("_id"));
-                    context.startActivity(intent);
+                    if (sessionManager.IsLoggedIn()) {
+                        Intent intent = new Intent(context, SingleBookDetailsActivity.class);
+                        intent.putExtra("bookId", allBooksModelArrayList.get(getAdapterPosition()).getString("_id"));
+                        context.startActivity(intent);
+                    }else {
+                        new MaterialAlertDialogBuilder(context)
+                                .setTitle("Login")
+                                .setMessage("You need to login to view book")
+                                .setPositiveButton("Proceed to Login", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        context.startActivity(new Intent(context, LoginWithEmailActivity.class));
+                                    }
+                                }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Toast.makeText(context, "Cancelled", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).show();
+                    }
                 }
             });
         }

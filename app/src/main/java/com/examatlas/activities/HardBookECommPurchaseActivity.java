@@ -30,6 +30,7 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
+import com.examatlas.activities.Books.CartViewActivity;
 import com.examatlas.activities.Books.SearchingBooksActivity;
 import com.examatlas.adapter.books.BookForUserAdapter;
 import com.examatlas.adapter.books.CategoryAdapter;
@@ -127,6 +128,13 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(HardBookECommPurchaseActivity.this, SearchingBooksActivity.class);
+                startActivity(intent);
+            }
+        });
+        cartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HardBookECommPurchaseActivity.this, CartViewActivity.class);
                 startActivity(intent);
             }
         });

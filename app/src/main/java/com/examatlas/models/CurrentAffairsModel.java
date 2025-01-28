@@ -1,18 +1,17 @@
 package com.examatlas.models;
 
 public class CurrentAffairsModel {
-    String cfID,cfImageURL,cfTitle,cfKeyword,cfContent,cfTags,totalRows,totalPages,currentPage;
+    String cfID,cfImageURL,cfTitle, cfCategoryId,cfContent,cfTags,totalItems,totalPages;
 
-    public CurrentAffairsModel(String cfID,String cfImageURL, String cfTitle, String cfKeyword, String cfContent, String cfTags,String totalRows,String totalPages,String currentPage) {
+    public CurrentAffairsModel(String cfID, String cfImageURL, String cfTitle, String cfCategoryId, String cfContent, String cfTags, String totalItems, String totalPages) {
         this.cfID = cfID;
         this.cfImageURL = cfImageURL;
         this.cfTitle = cfTitle;
-        this.cfKeyword = cfKeyword;
+        this.cfCategoryId = cfCategoryId;
         this.cfContent = cfContent;
         this.cfTags = cfTags;
-        this.totalRows = totalRows;
+        this.totalItems = totalItems;
         this.totalPages = totalPages;
-        this.currentPage = currentPage;
     }
 
     public String getCfImageURL() {
@@ -24,11 +23,11 @@ public class CurrentAffairsModel {
     }
 
     public String getTotalRows() {
-        return totalRows;
+        return totalItems;
     }
 
-    public void setTotalRows(String totalRows) {
-        this.totalRows = totalRows;
+    public void setTotalRows(String totalItems) {
+        this.totalItems = totalItems;
     }
 
     public String getTotalPages() {
@@ -37,14 +36,6 @@ public class CurrentAffairsModel {
 
     public void setTotalPages(String totalPages) {
         this.totalPages = totalPages;
-    }
-
-    public String getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(String currentPage) {
-        this.currentPage = currentPage;
     }
 
     public String getCfID() {
@@ -63,12 +54,12 @@ public class CurrentAffairsModel {
         this.cfTitle = cfTitle;
     }
 
-    public String getCfKeyword() {
-        return cfKeyword;
+    public String getCfCategoryId() {
+        return cfCategoryId;
     }
 
-    public void setCfKeyword(String cfKeyword) {
-        this.cfKeyword = cfKeyword;
+    public void setCfCategoryId(String cfCategoryId) {
+        this.cfCategoryId = cfCategoryId;
     }
 
     public String getCfContent() {

@@ -53,26 +53,28 @@
             android:textStyle="bold"
             android:layout_marginTop="2dp"
             android:layout_toRightOf="@id/sent1Txt"/>
-        <TextView
-            android:id="@+id/inTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" in "
-            android:textColor="@color/dark_grey"
-            android:textSize="14sp"
-            android:layout_marginTop="2dp"
-            android:layout_toRightOf="@id/numberTxt"/>
+<!--        <TextView-->
+<!--            android:id="@+id/inTxt"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text=" in "-->
+<!--            android:textColor="@color/dark_grey"-->
+<!--            android:textSize="14sp"-->
+<!--            android:layout_marginTop="2dp"-->
+<!--            android:layout_toRightOf="@id/numberTxt"/>-->
         <ImageView
             android:id="@+id/whatsappIcon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_whatsapp"
-            android:layout_toRightOf="@id/inTxt"/>
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/email"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_toRightOf="@id/numberTxt"/>
         <TextView
             android:id="@+id/whatsappTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" WhatsApp"
+            android:text=" E-Mail"
             android:textColor="@color/dark_grey"
             android:textSize="14sp"
             android:layout_marginTop="2dp"

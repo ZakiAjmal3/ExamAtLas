@@ -1,15 +1,14 @@
 package com.examatlas.models;
 
 public class AdminShowAllBlogModel {
-    String blogID,categoryId,categoryName,imageURL,title,keyword,content,tags,totalRows,totalPages,currentPage;
+    String blogID,categoryId,categoryName,imageURL,title,content,tags,totalRows,totalPages,currentPage;
 
-    public AdminShowAllBlogModel(String blogID,String categoryId,String categoryName,String imageURL, String title, String keyword, String content, String tags, String totalRows, String totalPages, String currentPage) {
+    public AdminShowAllBlogModel(String blogID,String categoryId,String categoryName,String imageURL, String title, String content, String tags, String totalRows, String totalPages, String currentPage) {
         this.blogID = blogID;
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.imageURL = imageURL;
         this.title = title;
-        this.keyword = keyword;
         this.content = content;
         this.tags = tags;
         this.totalRows = totalRows;
@@ -79,14 +78,6 @@ public class AdminShowAllBlogModel {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
     }
 
     public String getContent() {

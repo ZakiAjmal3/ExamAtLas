@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginEnd="20dp"
-            android:background="@color/dark_grey"
+            android:background="@color/md_theme_dark_surfaceTint"
             android:orientation="vertical"
             android:padding="20dp">
 
@@ -109,58 +109,54 @@
                             android:fontFamily="@font/poppins"
                             android:text="Home"
                             android:textColor="@color/white"
-                            android:textStyle="normal"
-                            android:letterSpacing="0.05"                            android:shadowColor="#000000"
-                            android:shadowDx="2"
-                            android:shadowDy="2"
-                            android:shadowRadius="1" />
+                            android:textStyle="normal"/>
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:id="@+id/layoutLiveClasses"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+<!--                    <LinearLayout-->
+<!--                        android:id="@+id/layoutLiveClasses"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="48dp"-->
+<!--                        android:clickable="true"-->
+<!--                        android:focusable="true"-->
+<!--                        android:foreground="?android:attr/selectableItemBackgroundBorderless"-->
+<!--                        android:gravity="center_vertical"-->
+<!--                        android:orientation="horizontal">-->
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
-                            android:src="@drawable/stories" />
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_margin="10dp"-->
+<!--                            android:src="@drawable/stories" />-->
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp">
+<!--                        <RelativeLayout-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="10dp">-->
 
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:orientation="vertical">
+<!--                            <LinearLayout-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_centerVertical="true"-->
+<!--                                android:orientation="vertical">-->
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/poppins"
-                                    android:text="Live Classes"
-                                    android:textColor="@color/white"
-                                    android:textStyle="bold"
-                                    android:letterSpacing="0.05"                                    android:shadowColor="#000000"
-                                    android:shadowDx="2"
-                                    android:shadowDy="2"
-                                    android:shadowRadius="1" />
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:fontFamily="@font/poppins"-->
+<!--                                    android:text="Live Classes"-->
+<!--                                    android:textColor="@color/white"-->
+<!--                                    android:textStyle="bold"-->
+<!--                                    android:letterSpacing="0.05"                                    android:shadowColor="#000000"-->
+<!--                                    android:shadowDx="2"-->
+<!--                                    android:shadowDy="2"-->
+<!--                                    android:shadowRadius="1" />-->
 
-                            </LinearLayout>
+<!--                            </LinearLayout>-->
 
-                        </RelativeLayout>
+<!--                        </RelativeLayout>-->
 
-                    </LinearLayout>
+<!--                    </LinearLayout>-->
 
                     <LinearLayout
                         android:id="@+id/layoutBlogs"
@@ -185,11 +181,7 @@
                             android:fontFamily="@font/poppins"
                             android:text="Blogs"
                             android:textColor="@color/white"
-                            android:textStyle="bold"
-                            android:letterSpacing="0.05"                            android:shadowColor="#000000"
-                            android:shadowDx="2"
-                            android:shadowDy="2"
-                            android:shadowRadius="1" />
+                            android:textStyle="bold"/>
 
                     </LinearLayout>
                     <LinearLayout
@@ -215,11 +207,7 @@
                             android:fontFamily="@font/poppins"
                             android:text="Current Affairs"
                             android:textColor="@color/white"
-                            android:textStyle="bold"
-                            android:letterSpacing="0.05"                            android:shadowColor="#000000"
-                            android:shadowDx="2"
-                            android:shadowDy="2"
-                            android:shadowRadius="1" />
+                            android:textStyle="bold"/>
 
                     </LinearLayout>
 <!--                    <LinearLayout-->
@@ -278,11 +266,34 @@
                             android:text="Purchase Books"
                             android:textColor="@color/white"
                             android:textStyle="bold"
-                            android:letterSpacing="0.05"
-                            android:shadowColor="#000000"
-                            android:shadowDx="2"
-                            android:shadowDy="2"
-                            android:shadowRadius="1" />
+                            android:letterSpacing="0.05" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layoutMyOrders"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/ic_order" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:fontFamily="@font/poppins"
+                            android:text="My Orders"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
 
                     </LinearLayout>
 
@@ -572,11 +583,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:fontFamily="@font/poppins"
-                            android:letterSpacing="0.05"
-                            android:shadowColor="#000000"
-                            android:shadowDx="2"
-                            android:shadowDy="2"
-                            android:shadowRadius="1"
                             android:text="Login"
                             android:textColor="@color/white"
                             android:textStyle="bold" />
@@ -604,11 +610,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:fontFamily="@font/poppins"
-                            android:letterSpacing="0.05"
-                            android:shadowColor="#000000"
-                            android:shadowDx="2"
-                            android:shadowDy="2"
-                            android:shadowRadius="1"
                             android:text="Logout"
                             android:textColor="@color/white"
                             android:textStyle="bold" />

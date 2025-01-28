@@ -3,6 +3,8 @@ package com.examatlas.activities.Books;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -11,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +33,7 @@ import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -43,13 +47,18 @@ import java.util.Map;
 public class SearchingBooksActivity extends AppCompatActivity {
     ImageView backBtn;
     EditText searchEditText;
+    String searchText;
     RecyclerView allBooksRecyclerView;
     SearchingActivityAdapter hardBookECommPurchaseAdapter;
     ArrayList<AllBooksModel> allBooksModelArrayList;
     SessionManager sessionManager;
     String token;
     LinearLayout englishLL,hindiLL,rs_100_200_LinearLayout;
+    TextView englishTxt,hindiTxt,priceTxt;
+    Boolean isEnglish = false,isHindi = false,isPrice100_200 = false;
     int totalPage,totalItems;
+    ShimmerFrameLayout itemsShimmerFrameLayout;
+    String bookURL = Constant.BASE_URL + "v1/books";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,9 +66,24 @@ public class SearchingBooksActivity extends AppCompatActivity {
 
         getWindow().setStatusBarColor(ContextCompat.getColor(SearchingBooksActivity.this,R.color.md_theme_dark_surfaceTint));
 
+        itemsShimmerFrameLayout = findViewById(R.id.shimmer_for_user_container);
+        itemsShimmerFrameLayout.startShimmer();
+        itemsShimmerFrameLayout.setVisibility(View.VISIBLE);
+
+        searchEditText = findViewById(R.id.search_icon);
+        sessionManager = new SessionManager(this);
+        token = sessionManager.getUserData().get("authToken");
+        allBooksRecyclerView = findViewById(R.id.allBookRecycler);
+        allBooksRecyclerView.setVisibility(View.GONE);
+        allBooksRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        allBooksModelArrayList = new ArrayList<>();
+
         rs_100_200_LinearLayout = findViewById(R.id.RS_100_200_LL);
         englishLL = findViewById(R.id.englishLL);
         hindiLL = findViewById(R.id.hindiLL);
+        englishTxt = findViewById(R.id.englishTxt);
+        hindiTxt = findViewById(R.id.hindiTxt);
+        priceTxt = findViewById(R.id.priceTxt);
 
         Animation english = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.right_to_left_anim_for_hindi_english_search);
         englishLL.startAnimation(english);
@@ -81,7 +105,6 @@ public class SearchingBooksActivity extends AppCompatActivity {
 
             }
         },700);
-
         backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,15 +112,108 @@ public class SearchingBooksActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        searchEditText = findViewById(R.id.search_icon);
-        sessionManager = new SessionManager(this);
-        token = sessionManager.getUserData().get("authToken");
-        allBooksRecyclerView = findViewById(R.id.allBookRecycler);
-        allBooksRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
-        allBooksModelArrayList = new ArrayList<>();
+
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                searchText = editable.toString();
+                getAllBooks(bookURL + "?searchQuery=" + searchText);
+            }
+        });
+        englishLL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isEnglish) {
+                    englishTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.seed));
+                    englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_selected);
+                    isEnglish = true;
+                    priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isPrice100_200 = false;
+                    hindiTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isHindi = false;
+                    getAllBooks(bookURL + "?language=English");
+                }else {
+                    englishTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isEnglish = false;
+                    hindiTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isHindi = false;
+                    priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isPrice100_200 = false;
+                }
+            }
+        });
+        hindiLL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isHindi) {
+                    hindiTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.seed));
+                    hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_selected);
+                    isHindi = true;
+                    englishTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isEnglish = false;
+                    priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isPrice100_200 = false;
+                    getAllBooks(bookURL + "?language=Hindi");
+                }else {
+                    hindiTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isHindi = false;
+                    englishTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isEnglish = false;
+                    priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isPrice100_200 = false;
+                }
+            }
+        });
+        rs_100_200_LinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isPrice100_200) {
+                    priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.seed));
+                    rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_selected);
+                    isPrice100_200 = true;
+                    englishTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isEnglish = false;
+                    hindiTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isHindi = false;
+                    getAllBooks(bookURL + "?fromPrice=100" + "&toPrice=200");
+                }else {
+                    priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isPrice100_200 = false;
+                    hindiTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isHindi = false;
+                    englishTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
+                    englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
+                    isEnglish = false;
+                }
+            }
+        });
 
         openKeyboard();
-        getAllBooks();
+        getAllBooks(bookURL);
     }
 
     private void openKeyboard() {
@@ -108,15 +224,13 @@ public class SearchingBooksActivity extends AppCompatActivity {
             imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT);
         }
     }
-    private void getAllBooks() {
-        String bookURL = Constant.BASE_URL + "v1/books";
-        String paginatedURL = bookURL;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
+    private void getAllBooks(String url) {
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            allBooksRecyclerView.setVisibility(View.VISIBLE);
 //                            progressBar.setVisibility(View.GONE);
                             boolean status = response.getBoolean("success");
                             if (status) {
@@ -137,6 +251,9 @@ public class SearchingBooksActivity extends AppCompatActivity {
                                 }
                                 hardBookECommPurchaseAdapter = new SearchingActivityAdapter(SearchingBooksActivity.this, allBooksModelArrayList);
                                 allBooksRecyclerView.setAdapter(hardBookECommPurchaseAdapter);
+                                allBooksRecyclerView.setVisibility(View.VISIBLE);
+                                itemsShimmerFrameLayout.stopShimmer();
+                                itemsShimmerFrameLayout.setVisibility(View.GONE);
                             } else {
                                 Toast.makeText(SearchingBooksActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }

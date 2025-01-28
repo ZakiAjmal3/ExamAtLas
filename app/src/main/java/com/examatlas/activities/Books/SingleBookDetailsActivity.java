@@ -1,14 +1,24 @@
 package com.examatlas.activities.Books;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -18,6 +28,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -28,6 +39,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
+import com.examatlas.activities.LoginActivity;
+import com.examatlas.activities.LoginWithEmailActivity;
 import com.examatlas.adapter.books.BookForUserAdapter;
 import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.Books.AllBooksModel;
@@ -35,6 +48,8 @@ import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
+import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -48,18 +63,22 @@ import java.util.Map;
 public class SingleBookDetailsActivity extends AppCompatActivity {
     String bookId;
     float ratingValue;
-    ImageView productDetailsImg,backBtn;
+    ImageView productDetailsImg, backBtn,searchIcon,shareIcon,cartBtn;
     ViewPager2 bookImgViewPager;
     RelativeLayout productDetailsClickRL;
-    LinearLayout productDetailsLinearLayout,indicatorLayout;
-    boolean isProductDetailsExpanded = false;
-    TextView ratingTxtDisplay,bookTitle,bookPriceInfo,bookTitleTxtDisplay,authorTxtDisplay, publisherTxt,publishingDateTxtDisplay,publisherTxtDisplay,editionDisplay, stockTxtDisplay,languageTxtDisplay;
+    LinearLayout addToCartLL,goToCartLL,buyNowLL,addBuyNowLinearLayout, productDetailsLinearLayout, indicatorLayout;
+    ShimmerFrameLayout shimmerFrameLayout;
+    NestedScrollView nestedScrollView;
+    boolean isProductDetailsExpanded = false,isBuyNowClicked = false;
+    TextView cartItemQuantityTxt,ratingTxtDisplay, bookTitle, bookPriceInfo, bookTitleTxtDisplay, authorTxtDisplay, publisherTxt, publishingDateTxtDisplay, publisherTxtDisplay, editionDisplay, stockTxtDisplay, languageTxtDisplay;
     private final String bookURL = Constant.BASE_URL + "v1/books";
     private RecyclerView booksRecyclerView;
     private ArrayList<AllBooksModel> allBooksModelArrayList;
     SessionManager sessionManager;
     String token;
-    int totalPage,totalItems;
+    int totalPage, totalItems;
+    String shareBookURL;
+    Dialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,21 +93,41 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
         CustomRatingBar customRatingBar = findViewById(R.id.customRatingBar);
         customRatingBar.setRating(ratingValue);  // Set rating dynamically
 
+        sessionManager = new SessionManager(this);
+        token = sessionManager.getUserData().get("authToken");
+
         ratingTxtDisplay = findViewById(R.id.ratingTxtDisplay);
         ratingTxtDisplay.setText(String.valueOf(ratingValue));
 
+        goToCartLL = findViewById(R.id.goToCartLL);
+        addToCartLL = findViewById(R.id.addToCartLL);
+        buyNowLL = findViewById(R.id.buyNowLL);
+        addBuyNowLinearLayout = findViewById(R.id.buttonLayout);
+        addBuyNowLinearLayout.setVisibility(View.GONE);
         productDetailsImg = findViewById(R.id.productDetailsImg);
         productDetailsClickRL = findViewById(R.id.productDetailsClickRL);
         productDetailsLinearLayout = findViewById(R.id.productDetailsLinearLayout);
         backBtn = findViewById(R.id.backBtn);
+        searchIcon = findViewById(R.id.searchIcon);
+        shareIcon = findViewById(R.id.shareIcon);
+        cartBtn = findViewById(R.id.cartBtn);
+        cartItemQuantityTxt = findViewById(R.id.cartItemCountTxt);
+        nestedScrollView = findViewById(R.id.mainNestedContainer);
+        nestedScrollView.setVisibility(View.GONE);
+        shimmerFrameLayout = findViewById(R.id.shimmer_for_user_container);
+        shimmerFrameLayout.startShimmer();
+        String quantity = sessionManager.getCartQuantity();
+        if (!quantity.equals("0")) {
+            cartItemQuantityTxt.setVisibility(View.VISIBLE);
+            cartItemQuantityTxt.setText(quantity);
+        }else {
+            cartItemQuantityTxt.setVisibility(View.GONE);
+        }
 
-        sessionManager = new SessionManager(this);
-        token = sessionManager.getUserData().get("authToken");
-
-        bookId = getIntent().getStringExtra("bookID");
+        bookId = getIntent().getStringExtra("bookId");
 
         booksRecyclerView = findViewById(R.id.similarBookRecycler);
-        booksRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        booksRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         bookImgViewPager = findViewById(R.id.bookImg);
         indicatorLayout = findViewById(R.id.indicatorLayout);
@@ -108,11 +147,11 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
         productDetailsClickRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isProductDetailsExpanded){
+                if (isProductDetailsExpanded) {
                     productDetailsLinearLayout.setVisibility(View.GONE);
                     productDetailsImg.setImageResource(R.drawable.ic_down);
                     isProductDetailsExpanded = false;
-                }else {
+                } else {
                     productDetailsLinearLayout.setVisibility(View.VISIBLE);
                     productDetailsImg.setImageResource(R.drawable.ic_up);
                     isProductDetailsExpanded = true;
@@ -127,9 +166,212 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
             }
         });
 
+        cartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (sessionManager.IsLoggedIn()) {
+                    startActivity(new Intent(SingleBookDetailsActivity.this, CartViewActivity.class));
+                }else {
+                    new MaterialAlertDialogBuilder(SingleBookDetailsActivity.this)
+                            .setTitle("Login")
+                            .setMessage("You need to login to view cart")
+                            .setPositiveButton("Proceed to Login", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(SingleBookDetailsActivity.this, LoginWithEmailActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Toast.makeText(SingleBookDetailsActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+                                }
+                            }).show();
+                }
+            }
+        });
+
+        goToCartLL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SingleBookDetailsActivity.this, CartViewActivity.class));
+            }
+        });
+        addToCartLL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressDialog = new Dialog(SingleBookDetailsActivity.this);
+                progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                progressDialog.setContentView(R.layout.progress_bar_drawer);
+                progressDialog.setCancelable(false);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                progressDialog.show();
+                addItemToCart();
+            }
+        });
+        buyNowLL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressDialog = new Dialog(SingleBookDetailsActivity.this);
+                progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                progressDialog.setContentView(R.layout.progress_bar_drawer);
+                progressDialog.setCancelable(false);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                progressDialog.show();
+                addItemToCart();
+                isBuyNowClicked = true;
+            }
+        });
+
+        shareIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareBookURL = "https://www.examatlas.com/books/History/" + bookId;
+                shareBookFunction();
+            }
+        });
+
+        searchIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SingleBookDetailsActivity.this,SearchingBooksActivity.class));
+            }
+        });
+
         getSingleBook();
         getAllBooks();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String quantity = sessionManager.getCartQuantity();
+        if (!quantity.equals("0")) {
+            cartItemQuantityTxt.setVisibility(View.VISIBLE);
+            cartItemQuantityTxt.setText(quantity);
+        }else {
+            cartItemQuantityTxt.setVisibility(View.GONE);
+        }
+        getSingleBook();
+    }
+    private void setCartItemTxt() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String quantity = sessionManager.getCartQuantity();
+                if (!quantity.equals("0")) {
+                    cartItemQuantityTxt.setVisibility(View.VISIBLE);
+                    cartItemQuantityTxt.setText(quantity);
+                    progressDialog.dismiss();
+                }else {
+                    cartItemQuantityTxt.setVisibility(View.GONE);
+                    progressDialog.dismiss();
+                }            }
+        },3000);
+    }
+
+    private void shareBookFunction() {
+        Intent shareBookIntent = new Intent(Intent.ACTION_SEND);
+        shareBookIntent.setType("text/plain");
+
+        String shareMessage = "Check out this book: " + bookTitle.getText().toString() + " " + shareBookURL;
+
+        shareBookIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+
+        startActivity(Intent.createChooser(shareBookIntent, "Share via"));
+    }
+
+    public void addItemToCart() {
+
+        if (sessionManager.IsLoggedIn()) {
+
+            String addToCartUrl = Constant.BASE_URL + "v1/cart";
+
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("productId", bookId);
+                jsonObject.put("quantity", 1);
+                jsonObject.put("type", "book");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, addToCartUrl, jsonObject,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                String status = response.getString("success");
+                                if (status.equals("true")) {
+                                    sessionManager.setCartItemQuantity();
+                                    if (isBuyNowClicked){
+                                        Intent intent = new Intent(SingleBookDetailsActivity.this, CartViewActivity.class);
+                                        intent.putExtra("bookId",bookId);
+                                        intent.putExtra("buyNow",true);
+                                        isBuyNowClicked = false;
+                                        setCartItemTxt();
+                                        startActivity(intent);
+                                    }else {
+                                        goToCartLL.setVisibility(View.VISIBLE);
+                                        addToCartLL.setVisibility(View.GONE);
+                                        setCartItemTxt();
+                                        Toast.makeText(SingleBookDetailsActivity.this, "Item Added to Cart", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                Toast.makeText(SingleBookDetailsActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    String errorMessage = "Error: " + error.toString();
+                    if (error.networkResponse != null) {
+                        try {
+                            String responseData = new String(error.networkResponse.data, "UTF-8");
+                            errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                            errorMessage += "\nResponse Data: " + responseData;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Toast.makeText(SingleBookDetailsActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    Log.e("LoginActivity", errorMessage);
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Content-Type", "application/json");
+                    headers.put("Authorization", "Bearer " + token);
+                    return headers;
+                }
+            };
+            MySingleton.getInstance(SingleBookDetailsActivity.this).addToRequestQueue(jsonObjectRequest);
+        } else {
+            new MaterialAlertDialogBuilder(SingleBookDetailsActivity.this)
+                    .setTitle("Login")
+                    .setMessage("You need to login to add items to cart")
+                    .setPositiveButton("Proceed to Login", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(SingleBookDetailsActivity.this, LoginWithEmailActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Toast.makeText(SingleBookDetailsActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+                        }
+                    }).show();
+        }
     }
 
     private void getSingleBook() {
@@ -142,6 +384,14 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
                             boolean status = response.getBoolean("success");
                             if (status) {
                                 JSONObject jsonObject = response.getJSONObject("data");
+                                boolean isInCart = response.getBoolean("isInCart");
+                                if (isInCart) {
+                                    addToCartLL.setVisibility(View.GONE);
+                                    goToCartLL.setVisibility(View.VISIBLE);
+                                }else {
+                                    addToCartLL.setVisibility(View.VISIBLE);
+                                    goToCartLL.setVisibility(View.GONE);
+                                }
                                 // Parse books directly here
                                 ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
                                 JSONArray jsonArray1 = jsonObject.getJSONArray("images");
@@ -192,6 +442,10 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
 
                                 String author = jsonObject.getString("author");
                                 authorTxtDisplay.setText(author);
+                                shimmerFrameLayout.stopShimmer();
+                                shimmerFrameLayout.setVisibility(View.GONE);
+                                nestedScrollView.setVisibility(View.VISIBLE);
+                                addBuyNowLinearLayout.setVisibility(View.VISIBLE);
                             } else {
                                 Toast.makeText(SingleBookDetailsActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
@@ -306,4 +560,5 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
         }
         return tags.toString();
     }
+
 }

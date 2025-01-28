@@ -1,10 +1,16 @@
 package com.examatlas.activities;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -39,6 +45,8 @@ public class SignUpActivity2DetailsInput extends AppCompatActivity {
     Spinner stateSpinner,citySpinner;
     String[] states = {"Select State","Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal" };
     String selectedState = null,selectedCity = null;
+    Dialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -280,7 +288,7 @@ public class SignUpActivity2DetailsInput extends AppCompatActivity {
     }
 
     private void sendingOTP() {
-        String verifyEmailUrl = Constant.BASE_URL + "otp/email";
+        String verifyEmailUrl = Constant.BASE_URL + "v1/otp/email";
 
         Log.e("sendingOTP method", verifyEmailUrl);
 
@@ -293,9 +301,13 @@ public class SignUpActivity2DetailsInput extends AppCompatActivity {
             return;
         }
 
-        ProgressDialog progressDialog = new ProgressDialog(SignUpActivity2DetailsInput.this);
-        progressDialog.setMessage("Sending OTP...");
+        progressDialog = new Dialog(SignUpActivity2DetailsInput.this);
+        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        progressDialog.setContentView(R.layout.progress_bar_drawer);
         progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
         progressDialog.show();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, verifyEmailUrl, jsonObject,
@@ -322,7 +334,6 @@ public class SignUpActivity2DetailsInput extends AppCompatActivity {
                                 finish();
                             }
                         } catch (JSONException e) {
-
                             Toast.makeText(SignUpActivity2DetailsInput.this, e.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -331,6 +342,7 @@ public class SignUpActivity2DetailsInput extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 progressDialog.dismiss();
                 String errorMessage = "Error: " + error.toString();
+                Toast.makeText(SignUpActivity2DetailsInput.this, error.toString(), Toast.LENGTH_SHORT).show();
                 if (error.networkResponse != null) {
                     try {
                         // Parse the error response

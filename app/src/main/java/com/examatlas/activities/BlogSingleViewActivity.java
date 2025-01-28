@@ -2,6 +2,7 @@ package com.examatlas.activities;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -33,7 +34,7 @@ import java.util.Map;
 
 public class BlogSingleViewActivity extends AppCompatActivity {
     ImageView blogIMG,backBtn;
-    TextView blogTitle;
+    TextView blogTitleHeader;
     WebView webviewContent;
     String blogURL;
     String blogID;
@@ -48,7 +49,7 @@ public class BlogSingleViewActivity extends AppCompatActivity {
 
         blogIMG = findViewById(R.id.blogIMG);
         backBtn = findViewById(R.id.backBtn);
-        blogTitle = findViewById(R.id.txtBlogTitle);
+        blogTitleHeader = findViewById(R.id.blogTitleHeader);
         webviewContent = findViewById(R.id.content);
         shimmer_blog_container = findViewById(R.id.shimmer_blog_container);
         mainContainer = findViewById(R.id.mainContainer);
@@ -56,7 +57,7 @@ public class BlogSingleViewActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         token = sessionManager.getUserData().get("authToken");
 
-        blogURL = Constant.BASE_URL + "blog/getBlogById/" + getIntent().getStringExtra("blogID");
+        blogURL = Constant.BASE_URL + "v1/blog/getBlogById/" + getIntent().getStringExtra("blogID");
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,9 +89,9 @@ public class BlogSingleViewActivity extends AppCompatActivity {
                             boolean status = response.getBoolean("status");
                             Log.e("blog Response",response.toString());
                             if (status) {
-                                JSONObject jsonObject = response.getJSONObject("blog");
-                                JSONObject imgJsonObject = jsonObject.getJSONObject("image");
-                                String imageURL = imgJsonObject.getString("url");
+                                JSONObject jsonObject = response.getJSONObject("data");
+//                                JSONObject imgJsonObject = jsonObject.getJSONObject("coverImage");
+                                String imageURL = jsonObject.getString("coverImage");
 
                                 Glide.with(BlogSingleViewActivity.this)
                                         .load(imageURL)
@@ -99,7 +100,10 @@ public class BlogSingleViewActivity extends AppCompatActivity {
                                 String title = jsonObject.getString("title");
 //                                String tags = jsonObject.getString("tags");
                                 String content = jsonObject.getString("content");
-                                blogTitle.setText(title);
+                                blogTitleHeader.setText(title);
+                                blogTitleHeader.setEllipsize(TextUtils.TruncateAt.END);
+                                blogTitleHeader.setMaxLines(1);
+                                blogTitleHeader.setVisibility(View.VISIBLE);
                                 // Enable JavaScript (optional, depending on your content)
                                 WebSettings webSettings = webviewContent.getSettings();
                                 webSettings.setJavaScriptEnabled(true);
@@ -129,6 +133,7 @@ public class BlogSingleViewActivity extends AppCompatActivity {
                                 mainContainer.setVisibility(View.VISIBLE);
                             }
                         } catch (JSONException e) {
+                            Toast.makeText(BlogSingleViewActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
                         }
                     }

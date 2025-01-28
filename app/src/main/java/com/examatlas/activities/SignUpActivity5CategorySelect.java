@@ -48,7 +48,7 @@ public class SignUpActivity5CategorySelect extends AppCompatActivity implements 
     ArrayList<String> selectedCategoryIds;
     ProgressBar progressBar;
     String userId;
-    private final String serverUrl = Constant.BASE_URL + "auth/createUser";
+    private final String serverUrl = Constant.BASE_URL + "v1/auth/createUser";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,7 +118,6 @@ public class SignUpActivity5CategorySelect extends AppCompatActivity implements 
                             Toast.makeText(SignUpActivity5CategorySelect.this, message, Toast.LENGTH_SHORT).show();
                             Log.e("CategoryResponse",response.toString());
                             if (status.equals("true")) {
-                                String authToken = null;
                                 JSONObject userDataJson = response.getJSONObject("data");
                                 String firstName = userDataJson.getString("firstname");
                                 String lastName = userDataJson.getString("lastname");
@@ -128,7 +127,7 @@ public class SignUpActivity5CategorySelect extends AppCompatActivity implements 
                                 String isActive = userDataJson.getString("isActive");
                                 String createdAt = userDataJson.getString("createdAt");
                                 String updatedAt = userDataJson.getString("updatedAt");
-                                String step = userDataJson.getString("step");
+                                int step = userDataJson.getInt("step");
                                 JSONObject addressObj = userDataJson.getJSONObject("address");
                                 String state = addressObj.getString("state");
                                 String city = addressObj.getString("city");
@@ -140,10 +139,9 @@ public class SignUpActivity5CategorySelect extends AppCompatActivity implements 
                                     String organisationId = organisationArray.getString(i);
                                     Log.d("Organisation", "Organisation ID: " + organisationId);
                                 }
-
-                                sessionManager.saveLoginDetails2(user_id,firstName,lastName,email,state,city,role,isActive,step,authToken,createdAt,updatedAt,null);
+                                sessionManager.saveWithOutToken(user_id,firstName,lastName,email,state,city,role,isActive,String.valueOf(step),createdAt,updatedAt,null);
                                 if (Objects.equals(getIntent().getStringExtra("task"), "signUp")) {
-                                    Intent intent = new Intent(SignUpActivity5CategorySelect.this, LoginActivity.class);
+                                    Intent intent = new Intent(SignUpActivity5CategorySelect.this, LoginWithEmailActivity.class);
                                     sessionManager.logout();
                                     startActivity(intent);
                                     finish();
