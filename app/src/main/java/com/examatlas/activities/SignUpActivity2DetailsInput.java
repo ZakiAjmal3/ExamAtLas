@@ -342,7 +342,6 @@ public class SignUpActivity2DetailsInput extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 progressDialog.dismiss();
                 String errorMessage = "Error: " + error.toString();
-                Toast.makeText(SignUpActivity2DetailsInput.this, error.toString(), Toast.LENGTH_SHORT).show();
                 if (error.networkResponse != null) {
                     try {
                         // Parse the error response
