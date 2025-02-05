@@ -2,8 +2,9 @@ package com.examatlas.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -11,15 +12,21 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.examatlas.activities.Books.CartViewActivity;
-import com.examatlas.adapter.books.CartViewItemAdapter;
-import com.examatlas.models.Books.CartItemModel;
+import com.examatlas.models.Books.BookImageModels;
+import com.examatlas.models.Books.WishListModel;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +54,8 @@ public class SessionManager {
     public static final String CreatedAt = "createdAt";
     public static final String UpdatedAt = "updatedAt";
     public static final String IsLogin = "IsLoggedIn";
+    public static ArrayList<WishListModel> wishListBookIdArrayList = new ArrayList<>();
+    public static String wishListIds = "WishListIds";
     public static String CartQuantity = "0";
 
     public SessionManager(Context context) {
@@ -70,6 +79,7 @@ public class SessionManager {
         user.put("authToken", pref.getString(AuthToken, Default_Value));
         user.put("createdAt", pref.getString(CreatedAt, Default_Value));
         user.put("updatedAt", pref.getString(UpdatedAt, Default_Value));
+        user.put("wishList", pref.getString(wishListIds, Default_Value));
         Log.d("SessionManager", "User data: " + user.toString());
         return user;
     }
@@ -92,7 +102,6 @@ public class SessionManager {
         editor.putString(CreatedAt, createdAt);
         editor.putBoolean(IsLogin, true);
         editor.apply();
-
         Log.d("SessionManager", "Login details saved for UserID: " + user_id);
     }
 
@@ -193,7 +202,195 @@ public class SessionManager {
         };
         MySingleton.getInstance(ctx.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
     }
+    public void getAllWishList(String authToken){
+        String paginatedURL = Constant.BASE_URL + "v1/wishlist";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+//                        progressBar.setVisibility(View.GONE);
+                            boolean status = response.getBoolean("success");
+                            if (status) {
+                                wishListBookIdArrayList = new ArrayList<>();
+                                JSONArray dataArray = response.getJSONArray("data");
+                                for (int i = 0; i < dataArray.length(); i++) {
+                                    JSONObject dataObject = dataArray.getJSONObject(i);
+                                    String wishListId = dataObject.getString("_id");
+                                    String userId = dataObject.getString("userId");
+                                    JSONObject productObject = dataObject.getJSONObject("productId");
+                                    String productId = productObject.getString("_id");
+                                    String categoryId = productObject.getString("categoryId");
+                                    String subCategoryId = productObject.getString("subCategoryId");
+                                    String bookTitle = productObject.getString("title");
+                                    String bookAuthor = productObject.getString("author");
+                                    String bookPrice = productObject.getString("price");
+                                    String bookSellingPrice = productObject.getString("sellingPrice");
+                                    ArrayList<BookImageModels> imageUrlArraylist = new ArrayList<>();
+                                    JSONArray imagesArray = productObject.getJSONArray("images");
+                                    for (int j = 0; j < imagesArray.length(); j++) {
+                                        JSONObject imageObject = imagesArray.getJSONObject(j);
+                                        String imageUrl = imageObject.getString("url");
+                                        imageUrlArraylist.add(new BookImageModels(imageUrl, null));
+                                    }
+                                    wishListBookIdArrayList.add(new WishListModel(wishListId, userId, productId, categoryId, subCategoryId, bookTitle, bookAuthor, bookPrice, bookSellingPrice, imageUrlArraylist));
+                                }
+                                saveWishList();
+                            }
+                        } catch (JSONException e) {
+                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                // Parse the error response
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                // Now you can use the message
+//                                Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.e("BlogFetchError", errorMessage);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
+                return headers;
+            }
+        };
+        MySingleton.getInstance(ctx.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+    }
+    public void addItemsToWishListServer(String authToken){
+        String paginatedURL = Constant.BASE_URL + "v1/wishlist";
+        wishListBookIdArrayList = new ArrayList<>(getWishListBookIdArrayList());
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < wishListBookIdArrayList.size(); i++) {
+            jsonArray.put(wishListBookIdArrayList.get(i).getProductId());
+        }
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("productIds", jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, paginatedURL, jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+//                        progressBar.setVisibility(View.GONE);
+                            boolean status = response.getBoolean("success");
+                            if (status) {
+                                getAllWishList(authToken);
+                            }
+                        } catch (JSONException e) {
+                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                // Parse the error response
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                // Now you can use the message
+//                                Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.e("BlogFetchError", errorMessage);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
+                return headers;
+            }
+        };
+        MySingleton.getInstance(ctx.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+    }
     public String getCartQuantity(){
         return pref.getString(CartQuantity,"0");
     }
+    public ArrayList<WishListModel> getWishListBookIdArrayList() {
+        loadWishList();  // Load the list from SharedPreferences before returning
+        return wishListBookIdArrayList;
+    }
+    public void setAddedItemWishList(WishListModel wishListModel) {
+        wishListBookIdArrayList.add(wishListModel);
+        saveWishList();  // Save the updated wish list to SharedPreferences
+    }
+    public void removeWishListBookIdArrayList(String bookId) {
+        for (int i = 0; i < wishListBookIdArrayList.size(); i++) {
+            if (wishListBookIdArrayList.get(i).getProductId().equals(bookId)) {
+                wishListBookIdArrayList.remove(i);
+                break;
+            }
+        }
+        saveWishList();  // Save the updated wish list to SharedPreferences
+    }
+    public void saveWishList() {
+        try {
+            // Create Gson instance
+            Gson gson = new Gson();
+
+            // Convert ArrayList to JSON string
+            String json = gson.toJson(wishListBookIdArrayList);
+
+            // Log to verify the serialized JSON string
+            Log.d("SessionManager", "Serialized WishList JSON: " + json);
+
+            // Save the JSON string to SharedPreferences
+            editor.putString(wishListIds, json);
+            editor.apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("SessionManager", "Error during saving WishList: " + e.getMessage());
+        }
+    }
+    public void loadWishList() {
+        try {
+            // Retrieve the JSON string from SharedPreferences
+            String json = pref.getString(wishListIds, null);
+
+            // Check if there is a valid JSON string
+            if (json != null) {
+                // Create Gson instance
+                Gson gson = new Gson();
+
+                // Convert the JSON string back to an ArrayList of WishListModel
+                Type listType = new TypeToken<ArrayList<WishListModel>>(){}.getType();
+                wishListBookIdArrayList = gson.fromJson(json, listType);
+
+                // Log to verify the deserialized list
+                Log.d("SessionManager", "Loaded WishList: " + wishListBookIdArrayList.toString());
+            } else {
+                Log.d("SessionManager", "No saved WishList data.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("SessionManager", "Error during loading WishList: " + e.getMessage());
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -47,6 +48,7 @@ public class CurrentAffairsActivity extends AppCompatActivity {
     SessionManager sessionManager;
     String authToken,currentAffairsURL = Constant.BASE_URL + "v1/blog?type=current_affairs";
     ShimmerFrameLayout shimmerFrameLayout;
+    RelativeLayout noDataLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,9 @@ public class CurrentAffairsActivity extends AppCompatActivity {
         currentAffairRecycler.setVisibility(View.GONE);
         shimmerFrameLayout = findViewById(R.id.shimmer_blog_container);
         shimmerFrameLayout.startShimmer();
+        noDataLayout = findViewById(R.id.noDataLayout);
+        noDataLayout.setVisibility(View.GONE);
+
         sessionManager = new SessionManager(this);
         authToken = sessionManager.getUserData().get("authToken");
         currentAffairsModelArrayList = new ArrayList<>();
@@ -101,8 +106,8 @@ public class CurrentAffairsActivity extends AppCompatActivity {
                                     String title = jsonObject.getString("title");
                                     String categoryId = jsonObject.getString("categoryId");
                                     String content = jsonObject.getString("content");
-//                                    JSONObject image = jsonObject.getJSONObject("image");
-//                                    String url = image.getString("url");
+                                    JSONObject image = jsonObject.getJSONObject("image");
+                                    String url = image.getString("url");
 
 
                                     // Use StringBuilder for tags
@@ -117,12 +122,16 @@ public class CurrentAffairsActivity extends AppCompatActivity {
                                         tags.setLength(tags.length() - 2); // Adjust to remove the last comma and space
                                     }
 
-                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID,null, title, categoryId, content, tags.toString(),totalItems, totalPages);
+                                    CurrentAffairsModel currentAffairModel = new CurrentAffairsModel(affairID,url, title, categoryId, content, tags.toString(),totalItems, totalPages);
                                     currentAffairsModelArrayList.add(currentAffairModel);
+                                }if (currentAffairsModelArrayList.isEmpty()){
+                                    currentAffairRecycler.setVisibility(View.GONE);
+                                    noDataLayout.setVisibility(View.VISIBLE );
+                                }else {
+                                    // If you have already created the adapter, just notify the change
+                                    currentAffairAdapter = new CurrentAffairsShowingAllAdapter(currentAffairsModelArrayList, null, CurrentAffairsActivity.this);
+                                    currentAffairRecycler.setAdapter(currentAffairAdapter);
                                 }
-                                // If you have already created the adapter, just notify the change
-                                currentAffairAdapter = new CurrentAffairsShowingAllAdapter(currentAffairsModelArrayList, null,CurrentAffairsActivity.this);
-                                currentAffairRecycler.setAdapter(currentAffairAdapter);
                             } else {
                                 // Handle the case where status is false
                                 String message = response.getString("message");

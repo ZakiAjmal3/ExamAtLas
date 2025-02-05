@@ -1,8 +1,6 @@
 package com.examatlas.activities.Books;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,6 +10,7 @@ import android.os.Handler;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
@@ -39,12 +38,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.activities.LoginActivity;
 import com.examatlas.activities.LoginWithEmailActivity;
-import com.examatlas.adapter.books.BookForUserAdapter;
+import com.examatlas.adapter.books.AllBookShowingAdapter;
 import com.examatlas.adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.models.Books.AllBooksModel;
 import com.examatlas.models.Books.BookImageModels;
+import com.examatlas.models.Books.WishListModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -63,22 +62,27 @@ import java.util.Map;
 public class SingleBookDetailsActivity extends AppCompatActivity {
     String bookId;
     float ratingValue;
-    ImageView productDetailsImg, backBtn,searchIcon,shareIcon,cartBtn;
+    ImageView productDetailsImg, backBtn,searchIcon,wishListIcon,shareIcon,cartBtn;
+    boolean isWishListClicked = false;
     ViewPager2 bookImgViewPager;
     RelativeLayout productDetailsClickRL;
     LinearLayout addToCartLL,goToCartLL,buyNowLL,addBuyNowLinearLayout, productDetailsLinearLayout, indicatorLayout;
     ShimmerFrameLayout shimmerFrameLayout;
     NestedScrollView nestedScrollView;
     boolean isProductDetailsExpanded = false,isBuyNowClicked = false;
-    TextView cartItemQuantityTxt,ratingTxtDisplay, bookTitle, bookPriceInfo, bookTitleTxtDisplay, authorTxtDisplay, publisherTxt, publishingDateTxtDisplay, publisherTxtDisplay, editionDisplay, stockTxtDisplay, languageTxtDisplay;
+    TextView rateProductTxtBtn, cartItemQuantityTxt,ratingTxtDisplay, bookTitleTxt, bookPriceInfo, bookTitleTxtDisplay, authorTxtDisplay, publisherTxt, publishingDateTxtDisplay, publisherTxtDisplay, editionDisplay, stockTxtDisplay, languageTxtDisplay;
     private final String bookURL = Constant.BASE_URL + "v1/books";
     private RecyclerView booksRecyclerView;
     private ArrayList<AllBooksModel> allBooksModelArrayList;
+    private ArrayList<WishListModel> wishListModelArrayList;
+    ArrayList<BookImageModels> bookImageArrayList;
     SessionManager sessionManager;
     String token;
     int totalPage, totalItems;
     String shareBookURL;
     Dialog progressDialog;
+    String bookTitleStr = "",bookAuthorStr = "",bookSellingPriceStr = "",bookOriginalPriceStr = "";
+    ArrayList<BookImageModels> bookImageModelsArrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,8 +113,10 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
         productDetailsLinearLayout = findViewById(R.id.productDetailsLinearLayout);
         backBtn = findViewById(R.id.backBtn);
         searchIcon = findViewById(R.id.searchIcon);
+        wishListIcon = findViewById(R.id.heartIcon);
         shareIcon = findViewById(R.id.shareIcon);
         cartBtn = findViewById(R.id.cartBtn);
+        rateProductTxtBtn = findViewById(R.id.rateProductTxtBtn);
         cartItemQuantityTxt = findViewById(R.id.cartItemCountTxt);
         nestedScrollView = findViewById(R.id.mainNestedContainer);
         nestedScrollView.setVisibility(View.GONE);
@@ -132,7 +138,7 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
         bookImgViewPager = findViewById(R.id.bookImg);
         indicatorLayout = findViewById(R.id.indicatorLayout);
 
-        bookTitle = findViewById(R.id.bookTitle);
+        bookTitleTxt = findViewById(R.id.bookTitle);
         bookPriceInfo = findViewById(R.id.bookPriceInfo);
         bookTitleTxtDisplay = findViewById(R.id.bookTitleTxtDisplay);
         authorTxtDisplay = findViewById(R.id.authorTxtDisplay);
@@ -144,6 +150,17 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
 //        languageTxtDisplay = findViewById(R.id.languageTxtDisplay);
 
         allBooksModelArrayList = new ArrayList<>();
+
+        wishListModelArrayList = new ArrayList<>(sessionManager.getWishListBookIdArrayList());
+        for (int i = 0; i<wishListModelArrayList.size();i++){
+            Toast.makeText(this, wishListModelArrayList.get(i).toString(), Toast.LENGTH_SHORT).show();
+            if (wishListModelArrayList.get(i).getProductId().equals(bookId)) {
+                wishListIcon.setImageResource(R.drawable.ic_heart_red);
+                isWishListClicked = true;
+                break;
+            }
+        }
+
         productDetailsClickRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -189,6 +206,15 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
                                 }
                             }).show();
                 }
+            }
+        });
+
+        rateProductTxtBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SingleBookDetailsActivity.this, CreatingReviewActivity.class);
+                intent.putExtra("bookId",bookId);
+                startActivity(intent);
             }
         });
 
@@ -242,10 +268,94 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
                 startActivity(new Intent(SingleBookDetailsActivity.this,SearchingBooksActivity.class));
             }
         });
+        wishListIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressDialog = new Dialog(SingleBookDetailsActivity.this);
+                progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                progressDialog.setContentView(R.layout.progress_bar_drawer);
+                progressDialog.setCancelable(false);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                progressDialog.show();
+                if (sessionManager.IsLoggedIn()) {
+                    if (!isWishListClicked) {
+                        sessionManager.setAddedItemWishList(new WishListModel(null, null, bookId, null, null, null, bookAuthorStr, bookOriginalPriceStr, bookSellingPriceStr, bookImageArrayList));
+                        addToWishList();
+                        isWishListClicked = true;
+                    } else {
+                        removeWishList();
+                        isWishListClicked = false;
+                    }
+                }else {
+                    if (!isWishListClicked) {
+                        sessionManager.setAddedItemWishList(new WishListModel(null, null, bookId, null, null, null, bookAuthorStr, bookOriginalPriceStr, bookSellingPriceStr, bookImageArrayList));
+                        wishListIcon.setImageResource(R.drawable.ic_heart_red);
+                        isWishListClicked = true;
+                        Toast.makeText(SingleBookDetailsActivity.this, "Item added to WishList", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    }else {
+                        sessionManager.removeWishListBookIdArrayList(bookId);
+                        wishListIcon.setImageResource(R.drawable.ic_heart_grey);
+                        isWishListClicked = false;
+                        Toast.makeText(SingleBookDetailsActivity.this, "Item removed from WishList", Toast.LENGTH_SHORT).show();
 
+                        progressDialog.dismiss();
+                    }
+                }
+            }
+        });
         getSingleBook();
         getAllBooks();
+    }
 
+    private void removeWishList() {
+        String addToWishListURL = Constant.BASE_URL + "v1/wishlist/delete/" + bookId;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, addToWishListURL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String message = response.getString("message");
+                            wishListIcon.setImageResource(R.drawable.ic_heart_grey);
+                            progressDialog.dismiss();
+                            Toast.makeText(SingleBookDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            Toast.makeText(SingleBookDetailsActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+                Toast.makeText(SingleBookDetailsActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        // Parse the error response
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        Toast.makeText(SingleBookDetailsActivity.this, message, Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.e("BlogFetchError", errorMessage);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                if (!TextUtils.isEmpty(token)) {
+                    headers.put("Authorization", "Bearer " + token);
+                }
+                return headers;
+            }
+        };
+        MySingleton.getInstance(SingleBookDetailsActivity.this).addToRequestQueue(jsonObjectRequest);
     }
 
     @Override
@@ -259,6 +369,63 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
             cartItemQuantityTxt.setVisibility(View.GONE);
         }
         getSingleBook();
+    }
+    private void addToWishList() {
+        String addToWishListURL = Constant.BASE_URL + "v1/wishlist";
+
+        JSONArray productIdsArray = new JSONArray();
+        productIdsArray.put(bookId);
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("productIds",productIdsArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, addToWishListURL, jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String status = response.getString("success");
+                            wishListIcon.setImageResource(R.drawable.ic_heart_red);
+                            progressDialog.dismiss();
+                            Toast.makeText(SingleBookDetailsActivity.this, "Item added to wishlist", Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            Toast.makeText(SingleBookDetailsActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+                Toast.makeText(SingleBookDetailsActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        // Parse the error response
+                        String jsonError = new String(error.networkResponse.data);
+                        JSONObject jsonObject = new JSONObject(jsonError);
+                        String message = jsonObject.optString("message", "Unknown error");
+                        // Now you can use the message
+                        Toast.makeText(SingleBookDetailsActivity.this, message, Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.e("BlogFetchError", errorMessage);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + token);
+                return headers;
+            }
+        };
+        MySingleton.getInstance(SingleBookDetailsActivity.this).addToRequestQueue(jsonObjectRequest);
     }
     private void setCartItemTxt() {
         new Handler().postDelayed(new Runnable() {
@@ -280,7 +447,7 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
         Intent shareBookIntent = new Intent(Intent.ACTION_SEND);
         shareBookIntent.setType("text/plain");
 
-        String shareMessage = "Check out this book: " + bookTitle.getText().toString() + " " + shareBookURL;
+        String shareMessage = "Check out this book: " + bookTitleTxt.getText().toString() + " " + shareBookURL;
 
         shareBookIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
 
@@ -364,11 +531,13 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
                             Intent intent = new Intent(SingleBookDetailsActivity.this, LoginWithEmailActivity.class);
                             startActivity(intent);
                             finish();
+                            progressDialog.dismiss();
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Toast.makeText(SingleBookDetailsActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
                         }
                     }).show();
         }
@@ -392,8 +561,8 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
                                     addToCartLL.setVisibility(View.VISIBLE);
                                     goToCartLL.setVisibility(View.GONE);
                                 }
+                                bookImageArrayList = new ArrayList<>();
                                 // Parse books directly here
-                                ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
                                 JSONArray jsonArray1 = jsonObject.getJSONArray("images");
 
                                 for (int j = 0; j < jsonArray1.length(); j++) {
@@ -409,28 +578,29 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
                                 bookImgViewPager.setAdapter(bookImageAdapter);
 
                                 String id = jsonObject.getString("_id");
-                                String title = jsonObject.getString("title");
-                                bookTitle.setText(title);
-                                bookTitleTxtDisplay.setText(title);
+                                bookTitleStr = jsonObject.getString("title");
+                                bookTitleTxt.setText(bookTitleStr);
+                                bookTitleTxtDisplay.setText(bookTitleStr);
                                 String publication = jsonObject.getString("publication");
+                                bookAuthorStr = jsonObject.getString("author");
                                 publisherTxtDisplay.setText(publication);
 //                                stockTxtDisplay.setText(stock);
-                                String price = jsonObject.getString("price");
-                                String sellPrice = jsonObject.getString("sellingPrice");
+                                bookOriginalPriceStr = jsonObject.getString("price");
+                                bookSellingPriceStr = jsonObject.getString("sellingPrice");
 
                                 // Calculate prices and discount
 //                                    String originalPrice = currentBook.getPrice();
-                                int discount = Integer.parseInt(sellPrice) * 100 / Integer.parseInt(price);
+                                int discount = Integer.parseInt(bookSellingPriceStr) * 100 / Integer.parseInt(bookOriginalPriceStr);
                                 discount = 100 - discount;
 
                                 // Create a SpannableString for the original price with strikethrough
-                                SpannableString spannableOriginalPrice = new SpannableString("₹" + price);
+                                SpannableString spannableOriginalPrice = new SpannableString("₹" + bookOriginalPriceStr);
                                 spannableOriginalPrice.setSpan(new StrikethroughSpan(), 0, spannableOriginalPrice.length(), 0);
 
                                 // Create the discount text
                                 String discountText = "(-" + discount + "%)";
                                 SpannableStringBuilder spannableText = new SpannableStringBuilder();
-                                spannableText.append("₹" + sellPrice + " ");
+                                spannableText.append("₹" + bookSellingPriceStr + " ");
                                 spannableText.append(spannableOriginalPrice);
                                 spannableText.append(" " + discountText);
 
@@ -477,7 +647,6 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };
@@ -511,7 +680,7 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
 
                                     allBooksModelArrayList.add(model);
                                 }
-                                booksRecyclerView.setAdapter(new BookForUserAdapter(SingleBookDetailsActivity.this, allBooksModelArrayList));
+                                booksRecyclerView.setAdapter(new AllBookShowingAdapter(SingleBookDetailsActivity.this, allBooksModelArrayList));
                             } else {
                                 Toast.makeText(SingleBookDetailsActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }

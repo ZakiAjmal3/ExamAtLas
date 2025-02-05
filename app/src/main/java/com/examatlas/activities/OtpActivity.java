@@ -248,8 +248,9 @@ public class OtpActivity extends AppCompatActivity {
                                             String organisationId = organisationArray.getString(i);
                                             Log.d("Organisation", "Organisation ID: " + organisationId);
                                         }
-                                        sessionManager.setCartItemQuantity();
                                         sessionManager.saveLoginDetails2(user_id, firstName, lastName,null, email, state, city, role, isActive, step, authToken, createdAt, updatedAt, null);
+                                        sessionManager.setCartItemQuantity();
+                                        sessionManager.addItemsToWishListServer(authToken);
                                         if (role.equalsIgnoreCase("student")) {
                                             if (isActive.equals("true")) {
                                                 Intent intent = new Intent(OtpActivity.this, DashboardActivity.class);

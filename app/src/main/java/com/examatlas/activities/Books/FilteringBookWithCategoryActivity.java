@@ -44,6 +44,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -273,7 +274,16 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
                                     allBooksModelArrayList.add(model);
                                 }
                                 if (!allBooksModelArrayList.isEmpty()) {
-                                    booksRecycler.setAdapter(new SearchingActivityAdapter(FilteringBookWithCategoryActivity.this, allBooksModelArrayList));
+                                    ArrayList<Boolean> heartToggleStates = new ArrayList<>(Collections.nCopies(allBooksModelArrayList.size(), false));
+                                    for (int i = 0; i < allBooksModelArrayList.size(); i++) {
+                                        for (int j = 0; j < sessionManager.getWishListBookIdArrayList().size(); j++) {
+                                            if (allBooksModelArrayList.get(i).getString("_id").equals(sessionManager.getWishListBookIdArrayList().get(j).getProductId())) {
+                                                heartToggleStates.set(i, true);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    booksRecycler.setAdapter(new SearchingActivityAdapter(FilteringBookWithCategoryActivity.this, allBooksModelArrayList,heartToggleStates));
                                     bookShimmerLayout.stopShimmer();
                                     bookShimmerLayout.setVisibility(View.GONE);
                                     booksRecycler.setVisibility(View.VISIBLE);

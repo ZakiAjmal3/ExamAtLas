@@ -104,7 +104,7 @@
         android:layout_marginLeft="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:visibility="visible"
+        android:visibility="gone"
         >
         <ImageView
             android:layout_width="25dp"
@@ -133,7 +133,7 @@
         android:layout_marginLeft="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:visibility="visible"
+        android:visibility="gone"
         >
         <TextView
             android:id="@+id/priceTxt"
@@ -274,5 +274,16 @@
         android:visibility="gone"
         tools:listitem="@layout/books_searching_activity_item_single_layout"
         />
-
+    <TextView
+        android:id="@+id/noBookInThisCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Book in this category"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/seed"
+        android:visibility="gone"
+        />
 </RelativeLayout>

@@ -1,12 +1,10 @@
 package com.examatlas.activities;
 
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -14,7 +12,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -32,11 +29,10 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
 import com.examatlas.activities.Books.CartViewActivity;
 import com.examatlas.activities.Books.SearchingBooksActivity;
-import com.examatlas.adapter.books.BookForUserAdapter;
+import com.examatlas.adapter.books.AllBookShowingAdapter;
 import com.examatlas.adapter.books.CategoryAdapter;
 import com.examatlas.models.Books.CategoryModel;
 import com.examatlas.models.Books.AllBooksModel;
-import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -260,11 +256,11 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                                 }
 
                                 // Update UI and adapters
-                                bookForUserRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this, allBooksModelArrayList));
+                                bookForUserRecyclerView.setAdapter(new AllBookShowingAdapter(HardBookECommPurchaseActivity.this, allBooksModelArrayList));
                                 bookForUsrShimmerLayout.stopShimmer();
                                 bookForUsrShimmerLayout.setVisibility(View.GONE);
                                 bookForUserRecyclerView.setVisibility(View.VISIBLE);
-                                bookBestSellerRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this, allBooksModelArrayList));
+                                bookBestSellerRecyclerView.setAdapter(new AllBookShowingAdapter(HardBookECommPurchaseActivity.this, allBooksModelArrayList));
                                 bookBestSellerShimmerLayout.stopShimmer();
                                 bookBestSellerShimmerLayout.setVisibility(View.GONE);
                                 bookBestSellerRecyclerView.setVisibility(View.VISIBLE);
@@ -273,7 +269,7 @@ public class HardBookECommPurchaseActivity extends AppCompatActivity {
                                     noDataLayout.setVisibility(View.VISIBLE);
                                     booksRecyclerView.setVisibility(View.GONE);
                                 } else {
-                                    booksRecyclerView.setAdapter(new BookForUserAdapter(HardBookECommPurchaseActivity.this, allBooksModelArrayList));
+                                    booksRecyclerView.setAdapter(new AllBookShowingAdapter(HardBookECommPurchaseActivity.this, allBooksModelArrayList));
                                 }
                             } else {
                                 Toast.makeText(HardBookECommPurchaseActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();

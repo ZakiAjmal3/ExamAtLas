@@ -198,7 +198,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/stories" />
+                            android:src="@drawable/terms" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -210,37 +210,33 @@
                             android:textStyle="bold"/>
 
                     </LinearLayout>
-<!--                    <LinearLayout-->
-<!--                        android:id="@+id/layoutEbook"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="48dp"-->
-<!--                        android:clickable="true"-->
-<!--                        android:focusable="true"-->
-<!--                        android:foreground="?android:attr/selectableItemBackgroundBorderless"-->
-<!--                        android:gravity="center_vertical"-->
-<!--                        android:orientation="horizontal"-->
-<!--                        android:padding="10dp">-->
+                    <LinearLayout
+                        android:id="@+id/layoutEbook"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
 
-<!--                        <ImageView-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:src="@drawable/stories" />-->
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/stories" />
 
-<!--                        <TextView-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginStart="20dp"-->
-<!--                            android:fontFamily="@font/poppins"-->
-<!--                            android:text="Free EBooks"-->
-<!--                            android:textColor="@color/white"-->
-<!--                            android:textStyle="bold"-->
-<!--                            android:letterSpacing="0.05"-->
-<!--                            android:shadowColor="#000000"-->
-<!--                            android:shadowDx="2"-->
-<!--                            android:shadowDy="2"-->
-<!--                            android:shadowRadius="1" />-->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:fontFamily="@font/poppins"
+                            android:text="E-Books"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
 
-<!--                    </LinearLayout>-->
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/layoutPurchaseBooks"

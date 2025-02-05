@@ -48,7 +48,7 @@
         android:id="@+id/heartIcon"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:src="@drawable/ic_heart_red"
+        android:src="@drawable/ic_heart_grey"
         android:layout_alignParentEnd="true"
         android:layout_margin="10dp"/>
     <TextView

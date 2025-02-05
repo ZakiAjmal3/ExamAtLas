@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.examatlas.R;
+import com.examatlas.activities.Books.EBooks.EBookHomePageActivity;
 import com.examatlas.activities.Books.MyBookOrderHistory;
 import com.examatlas.fragment.BlogFragment;
 import com.examatlas.fragment.BooksFragment;
@@ -168,7 +169,7 @@ public class DashboardActivity extends AppCompatActivity {
 //    }
 
     Dialog drawerDialog;
-    LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks,layoutCurrentAffairs, layoutLogout,layoutLogin, layoutShare,
+    LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks,layoutCurrentAffairs, layoutLogout,layoutLogin, layoutShare,layoutEbook,
              layoutOrderHistory;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
@@ -184,7 +185,7 @@ public class DashboardActivity extends AppCompatActivity {
 //        layoutLiveClasses = drawerDialog.findViewById(R.id.layoutLiveClasses);
         layoutBlogs = drawerDialog.findViewById(R.id.layoutBlogs);
         layoutPurchaseBooks = drawerDialog.findViewById(R.id.layoutPurchaseBooks);
-//        layoutEbook = drawerDialog.findViewById(R.id.layoutEbook);
+        layoutEbook = drawerDialog.findViewById(R.id.layoutEbook);
         layoutCurrentAffairs = drawerDialog.findViewById(R.id.layoutCurrentAffairs);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
         layoutLogin = drawerDialog.findViewById(R.id.layoutLogin);
@@ -267,13 +268,13 @@ public class DashboardActivity extends AppCompatActivity {
 //            }
 //        });
 
-//        layoutEbook.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                startActivity(new Intent(DashboardActivity.this, EbookActivity.class));
-//            }
-//        });
+        layoutEbook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerDialog.dismiss();
+                startActivity(new Intent(DashboardActivity.this, EBookHomePageActivity.class));
+            }
+        });
 
         layoutLogout.setOnClickListener(new View.OnClickListener() {
             @Override

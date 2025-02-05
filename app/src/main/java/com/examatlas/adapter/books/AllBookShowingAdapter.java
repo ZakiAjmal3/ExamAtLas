@@ -1,7 +1,6 @@
 package com.examatlas.adapter.books;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.Spannable;
@@ -23,34 +22,36 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
+import com.examatlas.activities.Books.FilteringBookWithCategoryActivity;
+import com.examatlas.activities.Books.SearchingBooksActivity;
 import com.examatlas.activities.Books.SingleBookDetailsActivity;
 import com.examatlas.activities.LoginWithEmailActivity;
 import com.examatlas.models.Books.AllBooksModel;
 import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.utils.SessionManager;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 
-public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.ViewHolder> {
+public class AllBookShowingAdapter extends RecyclerView.Adapter<AllBookShowingAdapter.ViewHolder> {
     private final Context context;
     private final ArrayList<AllBooksModel> allBooksModelArrayList;
     SessionManager sessionManager;
-    public BookForUserAdapter(Context context, ArrayList<AllBooksModel> allBooksModelArrayList) {
+    public AllBookShowingAdapter(Context context, ArrayList<AllBooksModel> allBooksModelArrayList) {
         this.allBooksModelArrayList = new ArrayList<>(allBooksModelArrayList);
         this.context = context;
 // Check if context is valid before initializing SessionManager
         if (context != null) {
             sessionManager = new SessionManager(context.getApplicationContext());
-        }    }
+        }
+    }
     @NonNull
     @Override
-    public BookForUserAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AllBookShowingAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hardcopybook_item_list2, parent, false);
-        return new BookForUserAdapter.ViewHolder(view);
+        return new AllBookShowingAdapter.ViewHolder(view);
     }
     @Override
-    public void onBindViewHolder(@NonNull BookForUserAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AllBookShowingAdapter.ViewHolder holder, int position) {
         AllBooksModel currentBook = allBooksModelArrayList.get(position);
         holder.itemView.setTag(currentBook);
 
@@ -59,21 +60,39 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
         holder.title.setEllipsize(TextUtils.TruncateAt.END);
         holder.title.setMaxLines(1);
 
-        // Get prices as strings
+// Get prices as Strings (from getString)
         String purchasingPrice = currentBook.getString("sellingPrice");
         String originalPrice = currentBook.getString("price");
 
-        // Initialize prices
+// Initialize prices
         int purchasingPriceInt = 0;
         int originalPriceInt = 0;
 
         try {
-            // Parse the prices only if they are non-empty and valid numbers
-            if (!purchasingPrice.isEmpty()) {
-                purchasingPriceInt = Integer.parseInt(purchasingPrice);
+            // Parse the purchasing price as Double, then round it to nearest integer
+            if (purchasingPrice != null && !purchasingPrice.isEmpty()) {
+                try {
+                    // Convert to Double first, then round to the nearest integer
+                    purchasingPriceInt = (int) Math.round(Double.parseDouble(purchasingPrice));
+                } catch (NumberFormatException e) {
+                    // Handle invalid format if parsing fails
+                    Toast.makeText(context, "Invalid purchasing price format", Toast.LENGTH_SHORT).show();
+                    holder.price.setText("Invalid Price");
+                    return;
+                }
             }
-            if (!originalPrice.isEmpty()) {
-                originalPriceInt = Integer.parseInt(originalPrice);
+
+            // Parse the original price as Double, then round it to nearest integer
+            if (originalPrice != null && !originalPrice.isEmpty()) {
+                try {
+                    // Convert to Double first, then round to the nearest integer
+                    originalPriceInt = (int) Math.round(Double.parseDouble(originalPrice));
+                } catch (NumberFormatException e) {
+                    // Handle invalid format if parsing fails
+                    Toast.makeText(context, "Invalid original price format", Toast.LENGTH_SHORT).show();
+                    holder.price.setText("Invalid Price");
+                    return;
+                }
             }
 
             // Calculate discount only if both prices are valid
@@ -82,12 +101,13 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
                 discount = 100 - discount;
 
                 // Create a SpannableString for the original price with strikethrough
-                SpannableString spannableOriginalPrice = new SpannableString("₹" + originalPrice);
+                SpannableString spannableOriginalPrice = new SpannableString("₹" + originalPriceInt);
                 spannableOriginalPrice.setSpan(new StrikethroughSpan(), 0, spannableOriginalPrice.length(), 0);
+
                 // Create the discount text
                 String discountText = "(-" + discount + "%)";
                 SpannableStringBuilder spannableText = new SpannableStringBuilder();
-                spannableText.append("₹" + purchasingPrice + " ");
+                spannableText.append("₹" + purchasingPriceInt + " ");
                 spannableText.append(spannableOriginalPrice);
                 spannableText.append(" " + discountText);
 
@@ -101,9 +121,10 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
                 holder.price.setText("Invalid Price");
             }
 
-        } catch (NumberFormatException e) {
-            // Handle any parsing exceptions
-            e.printStackTrace(); // Optional: log the error
+        } catch (Exception e) {
+            // Catch any other unforeseen exceptions and log
+            e.printStackTrace();
+            Toast.makeText(context, "Error calculating price", Toast.LENGTH_SHORT).show();
             holder.price.setText("Invalid Price");
         }
 
@@ -143,26 +164,9 @@ public class BookForUserAdapter extends RecyclerView.Adapter<BookForUserAdapter.
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (sessionManager.IsLoggedIn()) {
-                        Intent intent = new Intent(context, SingleBookDetailsActivity.class);
-                        intent.putExtra("bookId", allBooksModelArrayList.get(getAdapterPosition()).getString("_id"));
-                        context.startActivity(intent);
-                    }else {
-                        new MaterialAlertDialogBuilder(context)
-                                .setTitle("Login")
-                                .setMessage("You need to login to view book")
-                                .setPositiveButton("Proceed to Login", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        context.startActivity(new Intent(context, LoginWithEmailActivity.class));
-                                    }
-                                }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        Toast.makeText(context, "Cancelled", Toast.LENGTH_SHORT).show();
-                                    }
-                                }).show();
-                    }
+                    Intent intent = new Intent(context, SingleBookDetailsActivity.class);
+                    intent.putExtra("bookId", allBooksModelArrayList.get(getAdapterPosition()).getString("_id"));
+                    context.startActivity(intent);
                 }
             });
         }

@@ -150,10 +150,10 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
     @Override
     public void onPaymentError(int i, String s, PaymentData paymentData) {
         Toast.makeText(this, s.toString(), Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(BookOrderPaymentActivity.this, SingleOrderViewActivity.class);
-        intent.putExtra("orderId",orderId);
-        startActivity(intent);
-        finish();
+//        Intent intent = new Intent(BookOrderPaymentActivity.this, SingleOrderViewActivity.class);
+//        intent.putExtra("orderId",orderId);
+//        startActivity(intent);
+//        finish();
     }
 
     private void verifyPaymentStatus(String razorpayPaymentID, PaymentData paymentData) {

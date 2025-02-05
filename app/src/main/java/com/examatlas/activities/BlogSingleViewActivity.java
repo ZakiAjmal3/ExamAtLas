@@ -90,8 +90,8 @@ public class BlogSingleViewActivity extends AppCompatActivity {
                             Log.e("blog Response",response.toString());
                             if (status) {
                                 JSONObject jsonObject = response.getJSONObject("data");
-//                                JSONObject imgJsonObject = jsonObject.getJSONObject("coverImage");
-                                String imageURL = jsonObject.getString("coverImage");
+                                JSONObject imgJsonObject = jsonObject.getJSONObject("image");
+                                String imageURL = imgJsonObject.getString("url");
 
                                 Glide.with(BlogSingleViewActivity.this)
                                         .load(imageURL)

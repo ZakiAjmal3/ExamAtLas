@@ -208,6 +208,124 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        android:id="@+id/ebookTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins"
+                        android:text="E-Books"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:letterSpacing="0.1"
+                        android:shadowColor="#000000"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="1"
+                        android:layout_marginLeft="10dp"
+                        android:layout_alignParentBottom="true"
+                        />
+                    <TextView
+                        android:id="@+id/viewAllEBooksTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="View All"
+                        android:padding="5dp"
+                        android:layout_alignParentEnd="true"
+                        android:textColor="@color/seed2"
+                        android:textSize="12sp"
+                        android:textStyle="normal"
+                        android:layout_marginRight="10dp"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:visibility="visible"
+                        />
+                </RelativeLayout>
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_EBook_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="visible"
+                    android:layout_marginTop="10dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/imgE1"
+                            android:layout_width="120dp"
+                            android:layout_height="220dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="6dp"
+                            >
+                            <ImageView
+                                android:layout_width="120dp"
+                                android:layout_height="220dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/imgE2"
+                            android:layout_width="120dp"
+                            android:layout_height="220dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="7dp"
+                            android:layout_toRightOf="@id/imgE1"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="120dp"
+                                android:layout_height="220dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/imgE3"
+                            android:layout_width="120dp"
+                            android:layout_height="220dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="7dp"
+                            android:layout_toRightOf="@id/imgE2"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="120dp"
+                                android:layout_height="220dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="120dp"
+                            android:layout_height="220dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="7dp"
+                            android:layout_toRightOf="@id/imgE3"
+                            android:layout_marginLeft="10dp">
+                            <ImageView
+                                android:layout_width="120dp"
+                                android:layout_height="220dp"
+                                android:background="@drawable/skeleton_background"
+                                />
+                        </androidx.cardview.widget.CardView>
+                    </RelativeLayout>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ebooksRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    />
+                <RelativeLayout
+                    android:id="@+id/blogTxtRL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
                         android:id="@+id/blogTxt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -321,6 +439,7 @@
                     android:paddingRight="5dp"
                     />
                 <RelativeLayout
+                    android:id="@+id/currentAffairsTxtRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView

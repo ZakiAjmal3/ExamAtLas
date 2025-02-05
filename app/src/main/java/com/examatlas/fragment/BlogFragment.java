@@ -48,7 +48,7 @@ public class BlogFragment extends Fragment {
     RelativeLayout noDataLayout;
     ArrayList<BlogModel> blogModelArrayList;
     BlogAdapterForShowingAllBlogs blogAdapter;
-    private final String blogURL = Constant.BASE_URL + "v1/blog";
+    private final String blogURL = Constant.BASE_URL + "v1/blog?type=blog";
 //    private final String blogURL = Constant.BASE_URL2 + "course/getAllCourse";
     String token;
     SessionManager sessionManager;
@@ -122,12 +122,11 @@ public class BlogFragment extends Fragment {
                                     String blogID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
                                     String content = jsonObject2.getString("content");
-//                                    JSONObject image = jsonObject2.getJSONObject("imageUrl");
-//                                    String url = "";
-//                                    if (image == null) {
-//                                        url = image.getString("url");
-//                                    }
-
+                                    JSONObject image = jsonObject2.getJSONObject("image");
+                                    String url = "";
+                                    if (image != null) {
+                                        url = image.getString("url");
+                                    }
 //                                    // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
                                     JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
@@ -140,7 +139,7 @@ public class BlogFragment extends Fragment {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    BlogModel blogModel = new BlogModel(blogID,null, title, content, tags.toString(),totalItems,totalPages);
+                                    BlogModel blogModel = new BlogModel(blogID,url, title, content, tags.toString(),totalItems,totalPages);
                                     blogModelArrayList.add(blogModel);
                                 }
                                 // If you have already created the adapter, just notify the change

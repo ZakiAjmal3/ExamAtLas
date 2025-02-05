@@ -22,7 +22,6 @@ public class AllBooksModel {
     public String getString(String key) {
         return data.containsKey(key) ? data.get(key).toString() : "";
     }
-
     public int getInt(String key) {
         return data.containsKey(key) ? Integer.parseInt(data.get(key).toString()) : 0;
     }

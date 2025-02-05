@@ -9,6 +9,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.examatlas.R;
 import com.examatlas.activities.Books.CartViewActivity;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MainActivity.this.getWindow().setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.white));
 
         sessionManager = new SessionManager(MainActivity.this);
         logo = findViewById(R.id.logo);

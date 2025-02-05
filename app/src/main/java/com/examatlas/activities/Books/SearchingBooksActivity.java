@@ -30,6 +30,7 @@ import com.examatlas.R;
 import com.examatlas.adapter.books.SearchingActivityAdapter;
 import com.examatlas.models.Books.AllBooksModel;
 import com.examatlas.models.Books.BookImageModels;
+import com.examatlas.models.Books.WishListModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -41,6 +42,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +56,7 @@ public class SearchingBooksActivity extends AppCompatActivity {
     SessionManager sessionManager;
     String token;
     LinearLayout englishLL,hindiLL,rs_100_200_LinearLayout;
-    TextView englishTxt,hindiTxt,priceTxt;
+    TextView englishTxt,hindiTxt,priceTxt,noBookInThisCategory;
     Boolean isEnglish = false,isHindi = false,isPrice100_200 = false;
     int totalPage,totalItems;
     ShimmerFrameLayout itemsShimmerFrameLayout;
@@ -85,6 +87,8 @@ public class SearchingBooksActivity extends AppCompatActivity {
         hindiTxt = findViewById(R.id.hindiTxt);
         priceTxt = findViewById(R.id.priceTxt);
 
+        noBookInThisCategory = findViewById(R.id.noBookInThisCategory);
+
         Animation english = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.right_to_left_anim_for_hindi_english_search);
         englishLL.startAnimation(english);
 
@@ -102,7 +106,6 @@ public class SearchingBooksActivity extends AppCompatActivity {
                 Animation rs = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.right_to_left_anim_for_hindi_english_search);
                 rs_100_200_LinearLayout.startAnimation(rs);
                 rs_100_200_LinearLayout.setVisibility(View.VISIBLE);
-
             }
         },700);
         backBtn = findViewById(R.id.backBtn);
@@ -143,6 +146,10 @@ public class SearchingBooksActivity extends AppCompatActivity {
                     hindiTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
                     hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isHindi = false;
+                    allBooksRecyclerView.setVisibility(View.GONE);
+                    noBookInThisCategory.setVisibility(View.GONE);
+                    itemsShimmerFrameLayout.setVisibility(View.VISIBLE);
+                    itemsShimmerFrameLayout.startShimmer();
                     getAllBooks(bookURL + "?language=English");
                 }else {
                     englishTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
@@ -154,6 +161,12 @@ public class SearchingBooksActivity extends AppCompatActivity {
                     priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
                     rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isPrice100_200 = false;
+                }
+                if (!isEnglish && !isHindi && !isPrice100_200){
+                    itemsShimmerFrameLayout.setVisibility(View.VISIBLE);
+                    itemsShimmerFrameLayout.startShimmer();
+                    allBooksRecyclerView.setVisibility(View.GONE);
+                    getAllBooks(bookURL);
                 }
             }
         });
@@ -170,6 +183,11 @@ public class SearchingBooksActivity extends AppCompatActivity {
                     priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
                     rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isPrice100_200 = false;
+                    allBooksRecyclerView.setVisibility(View.GONE);
+                    noBookInThisCategory.setVisibility(View.GONE);
+                    itemsShimmerFrameLayout.setVisibility(View.VISIBLE);
+                    noBookInThisCategory.setVisibility(View.GONE);
+                    itemsShimmerFrameLayout.startShimmer();
                     getAllBooks(bookURL + "?language=Hindi");
                 }else {
                     hindiTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
@@ -181,6 +199,13 @@ public class SearchingBooksActivity extends AppCompatActivity {
                     priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
                     rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isPrice100_200 = false;
+                }
+                if (!isEnglish && !isHindi && !isPrice100_200){
+                    itemsShimmerFrameLayout.setVisibility(View.VISIBLE);
+                    itemsShimmerFrameLayout.startShimmer();
+                    allBooksRecyclerView.setVisibility(View.GONE);
+                    noBookInThisCategory.setVisibility(View.GONE);
+                    getAllBooks(bookURL);
                 }
             }
         });
@@ -197,6 +222,10 @@ public class SearchingBooksActivity extends AppCompatActivity {
                     hindiTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
                     hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isHindi = false;
+                    allBooksRecyclerView.setVisibility(View.GONE);
+                    noBookInThisCategory.setVisibility(View.GONE);
+                    itemsShimmerFrameLayout.setVisibility(View.VISIBLE);
+                    itemsShimmerFrameLayout.startShimmer();
                     getAllBooks(bookURL + "?fromPrice=100" + "&toPrice=200");
                 }else {
                     priceTxt.setTextColor(ContextCompat.getColor(SearchingBooksActivity.this, R.color.black));
@@ -209,13 +238,18 @@ public class SearchingBooksActivity extends AppCompatActivity {
                     englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isEnglish = false;
                 }
+                if (!isEnglish && !isHindi && !isPrice100_200){
+                    itemsShimmerFrameLayout.setVisibility(View.VISIBLE);
+                    itemsShimmerFrameLayout.startShimmer();
+                    allBooksRecyclerView.setVisibility(View.GONE);
+                    noBookInThisCategory.setVisibility(View.GONE);
+                    getAllBooks(bookURL);
+                }
             }
         });
-
         openKeyboard();
         getAllBooks(bookURL);
     }
-
     private void openKeyboard() {
 //        searchView.setIconified(false);
         searchEditText.requestFocus();
@@ -225,7 +259,6 @@ public class SearchingBooksActivity extends AppCompatActivity {
         }
     }
     private void getAllBooks(String url) {
-
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -249,11 +282,31 @@ public class SearchingBooksActivity extends AppCompatActivity {
 
                                     allBooksModelArrayList.add(model);
                                 }
-                                hardBookECommPurchaseAdapter = new SearchingActivityAdapter(SearchingBooksActivity.this, allBooksModelArrayList);
-                                allBooksRecyclerView.setAdapter(hardBookECommPurchaseAdapter);
-                                allBooksRecyclerView.setVisibility(View.VISIBLE);
-                                itemsShimmerFrameLayout.stopShimmer();
-                                itemsShimmerFrameLayout.setVisibility(View.GONE);
+                                if (allBooksModelArrayList.isEmpty()){
+                                    noBookInThisCategory.setVisibility(View.VISIBLE);
+                                    allBooksRecyclerView.setVisibility(View.GONE);
+                                    itemsShimmerFrameLayout.stopShimmer();
+                                    itemsShimmerFrameLayout.setVisibility(View.GONE);
+                                }else {
+                                    ArrayList<WishListModel> wishListModelArrayList = new ArrayList<>(sessionManager.getWishListBookIdArrayList());
+                                    ArrayList<Boolean> heartToggleStates = new ArrayList<>(Collections.nCopies(allBooksModelArrayList.size(), false));
+                                    if (!wishListModelArrayList.isEmpty()) {
+                                        for (int i = 0; i < allBooksModelArrayList.size(); i++) {
+                                            for (int j = 0; j < wishListModelArrayList.size(); j++) {
+                                                if (allBooksModelArrayList.get(i).getString("_id").equals(wishListModelArrayList.get(j).getProductId())) {
+                                                    heartToggleStates.set(i, true);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    hardBookECommPurchaseAdapter = new SearchingActivityAdapter(SearchingBooksActivity.this, allBooksModelArrayList,heartToggleStates);
+                                    allBooksRecyclerView.setAdapter(hardBookECommPurchaseAdapter);
+                                    noBookInThisCategory.setVisibility(View.GONE);
+                                    allBooksRecyclerView.setVisibility(View.VISIBLE);
+                                    itemsShimmerFrameLayout.stopShimmer();
+                                    itemsShimmerFrameLayout.setVisibility(View.GONE);
+                                }
                             } else {
                                 Toast.makeText(SearchingBooksActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
@@ -285,7 +338,6 @@ public class SearchingBooksActivity extends AppCompatActivity {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };

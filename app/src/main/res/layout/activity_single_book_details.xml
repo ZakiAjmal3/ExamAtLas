@@ -186,15 +186,15 @@
             android:src="@drawable/book1" />
         <ImageView
             android:id="@+id/heartIcon"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@drawable/ic_heart_red"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_heart_grey"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="18dp"
             android:layout_marginTop="25dp"/>
         <ImageView
             android:id="@+id/shareIcon"
-            android:layout_width="20dp"
+            android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/ic_share_arrow"
             android:layout_alignParentEnd="true"
@@ -635,6 +635,7 @@
                 android:textColor="@color/black"
                 android:padding="5dp" />
             <TextView
+                android:id="@+id/rateProductTxtBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_forward"

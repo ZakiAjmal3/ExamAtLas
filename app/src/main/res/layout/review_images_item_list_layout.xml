@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginLeft="10dp">
+
+    <ImageView
+        android:id="@+id/imgView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/rounded_corner_with_border3"
+        android:src="@drawable/noimage"
+        android:scaleType="fitXY"
+        />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/crossBtn"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:elevation="0dp"
+        app:cardBackgroundColor="@color/light_dark_grey"
+        app:cardCornerRadius="50dp"
+        app:strokeColor="@color/light_dark_grey"
+        app:strokeWidth="0dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_cross"
+                />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

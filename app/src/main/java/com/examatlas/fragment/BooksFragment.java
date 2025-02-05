@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -33,18 +32,14 @@ import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
 import com.examatlas.activities.Books.CartViewActivity;
-import com.examatlas.activities.Books.MyBookOrderHistory;
 import com.examatlas.activities.Books.SearchingBooksActivity;
-import com.examatlas.activities.Books.SingleBookDetailsActivity;
-import com.examatlas.activities.DashboardActivity;
-import com.examatlas.activities.HardBookECommPurchaseActivity;
+import com.examatlas.activities.Books.WishListActivity;
 import com.examatlas.activities.LoginWithEmailActivity;
-import com.examatlas.adapter.books.BookForUserAdapter;
+import com.examatlas.adapter.books.AllBookShowingAdapter;
 import com.examatlas.adapter.books.CategoryAdapter;
 import com.examatlas.models.Books.AllBooksModel;
 import com.examatlas.models.Books.CategoryModel;
 import com.examatlas.utils.Constant;
-import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.MySingletonFragment;
 import com.examatlas.utils.SessionManager;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -60,7 +55,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BooksFragment extends Fragment {
-    ImageView cartBtn,logo;
+    ImageView cartBtn,wishListBtn,logo;
     TextView cartItemCountTxt;
     private ImageSlider slider;
     CardView sliderCardView;
@@ -69,7 +64,7 @@ public class BooksFragment extends Fragment {
     private ArrayList<AllBooksModel> allBooksModelArrayList;
     private SessionManager sessionManager;
     private String token;
-    private RelativeLayout noDataLayout;
+//    private RelativeLayout noDataLayout;
     private EditText searchView;
     private final String bookURL = Constant.BASE_URL + "v1/books";
     private final String categoryURL = Constant.BASE_URL + "v1/category";
@@ -88,6 +83,7 @@ public class BooksFragment extends Fragment {
 
         logo = view.findViewById(R.id.logo);
         cartBtn = view.findViewById(R.id.cartBtn);
+        wishListBtn = view.findViewById(R.id.wishListBtn);
         slider = view.findViewById(R.id.slider);
         nestedScrollView = view.findViewById(R.id.nestScrollView);
         searchViewFrameLayout = view.findViewById(R.id.searchViewFrameLayout);
@@ -115,7 +111,7 @@ public class BooksFragment extends Fragment {
         bookBestSellerShimmerLayout.setVisibility(View.VISIBLE);
         bookBestSellerShimmerLayout.startShimmer();
 
-        noDataLayout = view.findViewById(R.id.noDataLayout);
+//        noDataLayout = view.findViewById(R.id.noDataLayout);
 
         searchView = view.findViewById(R.id.search_icon);
         searchView.setFocusable(false);
@@ -167,6 +163,12 @@ public class BooksFragment extends Fragment {
                                 }
                             }).show();
                 }
+            }
+        });
+        wishListBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), WishListActivity.class));
             }
         });
 
@@ -284,7 +286,6 @@ public class BooksFragment extends Fragment {
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
-
     private void getAllBooks() {
         String paginatedURL = bookURL;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
@@ -312,20 +313,20 @@ public class BooksFragment extends Fragment {
                                 }
 
                                 // Update UI and adapters
-                                bookForUserRecyclerView.setAdapter(new BookForUserAdapter(getContext(), allBooksModelArrayList));
+                                bookForUserRecyclerView.setAdapter(new AllBookShowingAdapter(getContext(), allBooksModelArrayList));
                                 bookForUsrShimmerLayout.stopShimmer();
                                 bookForUsrShimmerLayout.setVisibility(View.GONE);
                                 bookForUserRecyclerView.setVisibility(View.VISIBLE);
-                                bookBestSellerRecyclerView.setAdapter(new BookForUserAdapter(getContext(), allBooksModelArrayList));
+                                bookBestSellerRecyclerView.setAdapter(new AllBookShowingAdapter(getContext(), allBooksModelArrayList));
                                 bookBestSellerShimmerLayout.stopShimmer();
                                 bookBestSellerShimmerLayout.setVisibility(View.GONE);
                                 bookBestSellerRecyclerView.setVisibility(View.VISIBLE);
 
                                 if (allBooksModelArrayList.isEmpty()) {
-                                    noDataLayout.setVisibility(View.VISIBLE);
+//                                    noDataLayout.setVisibility(View.VISIBLE);
                                     booksRecyclerView.setVisibility(View.GONE);
                                 } else {
-                                    booksRecyclerView.setAdapter(new BookForUserAdapter(getContext(), allBooksModelArrayList));
+                                    booksRecyclerView.setAdapter(new AllBookShowingAdapter(getContext(), allBooksModelArrayList));
                                 }
                             } else {
                                 Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_SHORT).show();

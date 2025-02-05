@@ -75,7 +75,7 @@ public class CartViewActivity extends AppCompatActivity {
     ProgressBar quantityProgressBar;
     RelativeLayout mainRelativeLayout, noItemRL,singleBookRL,pageIndicatorRL, deliveryAddressFullRL,priceDetailsRL,bottomButtonRL;
     ShimmerFrameLayout shimmerFrameLayout;
-    boolean buyNow = false;
+    boolean buyNow = false,isEBookPresent = false;
     private final String[] quantityArray = {"1", "2", "3", "more"};
     ArrayList<DeliveryAddressItemModel> deliveryAddressModelArrayList;
     TextView deliveryName,deliveryAddress,deliveryPhone;
@@ -114,10 +114,13 @@ public class CartViewActivity extends AppCompatActivity {
         bookImgView = findViewById(R.id.bookImage);
         singleBookRL = findViewById(R.id.singleItemRL);
         pageIndicatorRL = findViewById(R.id.indicatorRL);
+
         deliveryAddressFullRL = findViewById(R.id.deliveryFullRL);
         deliveryAddressFullRL.setVisibility(View.GONE);
+
         priceDetailsRL = findViewById(R.id.priceRelativeLayout);
         bottomButtonRL = findViewById(R.id.bottomStickyRelativeLayout);
+
         addNewAddressTxt = findViewById(R.id.addAddressTxt);
         addNewAddressTxt.setVisibility(View.GONE);
 
@@ -175,6 +178,7 @@ public class CartViewActivity extends AppCompatActivity {
                     intent.putExtra("finalAmount",totalSellingPrice);
                     intent.putExtra("addressId",billingIdStr);
                     intent.putExtra("itemCount",allBooksModelArrayList.size());
+                    intent.putExtra("isEBookPresent",isEBookPresent);
                     startActivity(intent);
                 }else {
                     Toast.makeText(CartViewActivity.this, "Please add delivery address", Toast.LENGTH_SHORT).show();
@@ -184,7 +188,7 @@ public class CartViewActivity extends AppCompatActivity {
             }
         });
         deliveryAddressModelArrayList = new ArrayList<>();
-        getDeliveryAddress();
+        getDeliveryAddress(Constant.BASE_URL + "v1/address");
     }
 //    RecyclerView itemDetailsRecyclerView;
 //    BookOrderSummaryItemsDetailsRecyclerViewModel bookOrderSummaryItemsDetailsRecyclerViewModel;
@@ -290,6 +294,10 @@ public class CartViewActivity extends AppCompatActivity {
                                         .into(bookImgView);
 
                                 String id = jsonObject.getString("_id");
+                                String type = jsonObject.getString("type");
+                                if (type.equals("ebook")){
+                                    isEBookPresent = true;
+                                }
                                 singleBookTitle= jsonObject.getString("title");
                                 singleBookTitleTxt.setText(singleBookTitle);
                                 String author = jsonObject.getString("author");
@@ -326,7 +334,6 @@ public class CartViewActivity extends AppCompatActivity {
                                 cartItemRecycler.setVisibility(View.GONE);
                                 shimmerFrameLayout.setVisibility(View.GONE);
                                 singleBookRL.setVisibility(View.VISIBLE);
-                                deliveryAddressFullRL.setVisibility(View.VISIBLE);
                                 mainRelativeLayout.setBackgroundColor(ContextCompat.getColor(CartViewActivity.this, R.color.light_dark_grey));
                                 noItemRL.setVisibility(View.GONE);
 
@@ -521,6 +528,10 @@ public class CartViewActivity extends AppCompatActivity {
                                 for (int i = 0; i < itemsArray.length(); i++) {
                                     JSONObject itemObject = itemsArray.getJSONObject(i);
                                     JSONObject productObject = itemObject.getJSONObject("product");
+                                    String type = productObject.getString("type");
+                                    if (type.equals("ebook")){
+                                        isEBookPresent = true;
+                                    }
                                     String quantity = itemObject.getString("quantity");
                                     // Convert the product object to a map to make it dynamic
                                     Map<String, Object> productData = new Gson().fromJson(productObject.toString(), Map.class);
@@ -587,8 +598,7 @@ public class CartViewActivity extends AppCompatActivity {
 
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-    private void getDeliveryAddress() {
-        String paginatedURL = Constant.BASE_URL + "v1/address";;
+    private void getDeliveryAddress(String paginatedURL) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -596,6 +606,7 @@ public class CartViewActivity extends AppCompatActivity {
                         try {
                             boolean status = response.getBoolean("success");
                             if (status) {
+                                String selected = "";int selectedPosition = 0;DeliveryAddressItemModel model = null;
                                 JSONArray jsonArray = response.getJSONArray("data");
                                 if (jsonArray.length() > 0){
                                 // Parse books directly here
@@ -614,26 +625,17 @@ public class CartViewActivity extends AppCompatActivity {
                                         String countryName = jsonObject2.getString("country");
                                         String phone = jsonObject2.getString("phone");
                                         String emailAddress = jsonObject2.getString("email");
-                                        String selected = jsonObject2.getString("isDefault");
-
-                                        DeliveryAddressItemModel model = new DeliveryAddressItemModel(billingId, addressType, firstName, lastName, houseNoOrApartmentNo, streetAddress, townCity, state, pinCode, countryName, phone, emailAddress, selected);
+                                        selected = jsonObject2.getString("isDefault");
+                                        selectedPosition = i;
+                                        model = new DeliveryAddressItemModel(billingId, addressType, firstName, lastName, houseNoOrApartmentNo, streetAddress, townCity, state, pinCode, countryName, phone, emailAddress, selected);
                                         deliveryAddressModelArrayList.add(model);
-//                                    if (selected.equals("true")) {
-//                                        billingIdStr = model.getBillingId();
-//                                        setDeliveryAddress(i);
-//                                        break;
-//                                    }else {
-                                        setDeliveryAddress(0);
                                     }
+                                }
+                                if (selected.equals("1")) {
+                                    billingIdStr = model.getBillingId();
+                                    setDeliveryAddress(selectedPosition);
                                 }else {
-                                    if (allBooksModelArrayList.isEmpty()){
-                                        deliveryAddressFullRL.setVisibility(View.GONE);
-                                        addNewAddressTxt.setVisibility(View.GONE);
-                                    }else {
-                                    billingIdStr = "";
-                                    deliveryAddressFullRL.setVisibility(View.GONE);
-                                    addNewAddressTxt.setVisibility(View.VISIBLE);
-                                    }
+                                    setDeliveryAddress(selectedPosition);
                                 }
                             } else {
                                 Toast.makeText(CartViewActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
@@ -689,105 +691,33 @@ public class CartViewActivity extends AppCompatActivity {
                         + deliveryAddressModelArrayList.get(i).getStreetAddress() + " "
                         + deliveryAddressModelArrayList.get(i).getTownCity() + " "
                         + deliveryAddressModelArrayList.get(i).getState() + " "
-                        + deliveryAddressModelArrayList.get(i).getCountryName()
+                        + deliveryAddressModelArrayList.get(i).getCountryName() + " "
                         + deliveryAddressModelArrayList.get(i).getPinCode();
                 deliveryAddress.setText(addressFullStr);
                 deliveryPhone.setText(deliveryAddressModelArrayList.get(i).getPhone());
 
                 billingIdStr = deliveryAddressModelArrayList.get(i).getBillingId();
 
-                if (!allBooksModelArrayList.isEmpty()) {
-                    deliveryAddressFullRL.setVisibility(View.VISIBLE);
-                    addNewAddressTxt.setVisibility(View.GONE);
-                } else if (buyNow) {
-                    deliveryAddressFullRL.setVisibility(View.VISIBLE);
-                    addNewAddressTxt.setVisibility(View.GONE);
-                } else {
+                if (allBooksModelArrayList.isEmpty() && singleBookId.isEmpty()){
                     billingIdStr = "";
                     deliveryAddressFullRL.setVisibility(View.GONE);
                     addNewAddressTxt.setVisibility(View.GONE);
+                }else {
+                    deliveryAddressFullRL.setVisibility(View.VISIBLE);
+                    addNewAddressTxt.setVisibility(View.GONE);
                 }
             } else {
-                billingIdStr = "";
-                deliveryAddressFullRL.setVisibility(View.GONE);
-                addNewAddressTxt.setVisibility(View.VISIBLE);
+                if (allBooksModelArrayList.isEmpty() && singleBookId.isEmpty()){
+                    billingIdStr = "";
+                    deliveryAddressFullRL.setVisibility(View.GONE);
+                    addNewAddressTxt.setVisibility(View.GONE);
+                }else {
+                    billingIdStr = "";
+                    deliveryAddressFullRL.setVisibility(View.GONE);
+                    addNewAddressTxt.setVisibility(View.VISIBLE);
+                }
             }
     }
-
-//    private void getBillingAddressById(String id) {
-//        String paginatedURL = Constant.BASE_URL + "v1/address/" + id;
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        try {
-////                            progressBar.setVisibility(View.GONE);
-//                            boolean status = response.getBoolean("success");
-//                            if (status) {
-//                                JSONObject jsonObject = response.getJSONObject("data");
-//
-//                                    String billingId = jsonObject.getString("_id");
-//                                    String addressType = jsonObject.getString("addressType");
-//                                    String firstName = jsonObject.getString("firstname");
-//                                    String lastName = jsonObject.getString("lastname");
-//                                    String houseNoOrApartmentNo = jsonObject.getString("apartment");
-//                                    String streetAddress = jsonObject.getString("streetAddress");
-//                                    String townCity = jsonObject.getString("city");
-//                                    String state = jsonObject.getString("state");
-//                                    String pinCode = jsonObject.getString("pinCode");
-//                                    String countryName = jsonObject.getString("country");
-//                                    String phone = jsonObject.getString("phone");
-//                                    String emailAddress = jsonObject.getString("email");
-//                                deliveryName.setText(firstName + " " + lastName);
-//                                String addressFullStr = houseNoOrApartmentNo + " "
-//                                        + streetAddress + " "
-//                                        + townCity + " "
-//                                        + state + " "
-//                                        + countryName + " "
-//                                        + pinCode;
-//                                deliveryAddress.setText(addressFullStr);
-//                                deliveryPhone.setText(phone);
-//                                deliveryAddressFullRL.setVisibility(View.VISIBLE);
-//                                addNewAddressTxt.setVisibility(View.GONE);
-//                            } else {
-//                                Toast.makeText(CartViewActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
-//                            }
-//                        } catch (JSONException e) {
-//                            Toast.makeText(CartViewActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-//                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        String errorMessage = "Error: " + error.toString();
-//                        if (error.networkResponse != null) {
-//                            try {
-//                                // Parse the error response
-//                                String jsonError = new String(error.networkResponse.data);
-//                                JSONObject jsonObject = new JSONObject(jsonError);
-//                                String message = jsonObject.optString("message", "Unknown error");
-//                                // Now you can use the message
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        Log.e("BlogFetchError", errorMessage);
-//                    }
-//                }) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> headers = new HashMap<>();
-//                headers.put("Content-Type", "application/json");
-//                headers.put("Authorization", "Bearer " + authToken);
-//                return headers;
-//            }
-//        };
-//
-//        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
-//    }
-
     @SuppressLint("ResourceType")
     public void setUpSingleBookPriceDetails() {
         // Check for null or empty strings before parsing
@@ -825,7 +755,6 @@ public class CartViewActivity extends AppCompatActivity {
         totalAmountTxt2.setText("₹ " + finalDiscountedAmount);
 
     }
-    @SuppressLint("ResourceType")
     public void setUpPriceDetails() {
         totalItems = allBooksModelArrayList.size();
         totalCostPrice = 0;
@@ -840,14 +769,32 @@ public class CartViewActivity extends AppCompatActivity {
             String priceStr = allBooksModelArrayList.get(i).getPrice();
             String sellingPriceStr = allBooksModelArrayList.get(i).getSellingPrice();
 
-            // Check for null or empty strings before parsing
+            // Safely parse quantity
             int quantity = (quantityStr != null && !quantityStr.isEmpty()) ? Integer.parseInt(quantityStr) : 0;
-            int price = (priceStr != null && !priceStr.isEmpty()) ? Integer.parseInt(priceStr) : 0;
-            int sellingPrice = (sellingPriceStr != null && !sellingPriceStr.isEmpty()) ? Integer.parseInt(sellingPriceStr) : 0;
 
-            // Calculate the total prices
-            int origPrice = quantity * price;
-            int sellPrice = quantity * sellingPrice;
+            // Handle price as Double and then convert it to int
+            double price = 0;
+            if (priceStr != null && !priceStr.isEmpty()) {
+                try {
+                    price = Double.parseDouble(priceStr);  // Parse as double if it has decimals
+                } catch (NumberFormatException e) {
+                    price = 0;  // If parsing fails, set it to 0
+                }
+            }
+
+            // Handle selling price as Double and then convert it to int
+            double sellingPrice = 0;
+            if (sellingPriceStr != null && !sellingPriceStr.isEmpty()) {
+                try {
+                    sellingPrice = Double.parseDouble(sellingPriceStr);  // Parse as double if it has decimals
+                } catch (NumberFormatException e) {
+                    sellingPrice = 0;  // If parsing fails, set it to 0
+                }
+            }
+
+            // Calculate the total prices using rounded integers
+            int origPrice = (int) (quantity * price);  // Convert the calculated price to integer
+            int sellPrice = (int) (quantity * sellingPrice);  // Convert the calculated selling price to integer
             totalCostPrice = totalCostPrice + origPrice;
             totalSellingPrice = totalSellingPrice + sellPrice;
         }
@@ -870,6 +817,7 @@ public class CartViewActivity extends AppCompatActivity {
         totalAmountTxt1.setText("₹ " + finalDiscountedAmount);
         totalAmountTxt2.setText("₹ " + finalDiscountedAmount);
     }
+
     public  void hideEachLayout(){
         pageIndicatorRL.setVisibility(View.GONE);
         priceDetailsRL.setVisibility(View.GONE);
@@ -886,6 +834,6 @@ public class CartViewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getDeliveryAddress();
+        getDeliveryAddress(Constant.BASE_URL + "v1/address");
     }
 }

@@ -3,7 +3,6 @@ package com.examatlas.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -65,7 +64,7 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.ViewHo
         @Override
         public WishListAdapter.ViewHolder onCreateViewHolder (@NonNull ViewGroup parent,
         int viewType){
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hardcopybook_item_list, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.wishlist_book_item_layout, parent, false);
             return new WishListAdapter.ViewHolder(view);
         }
 

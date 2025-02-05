@@ -60,32 +60,18 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp">
-            <androidx.cardview.widget.CardView
-                android:id="@+id/img1"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:cardCornerRadius="5dp"
-                >
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="@drawable/skeleton_background"
-                    />
-            </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/img2"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="200dp"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:cardCornerRadius="5dp"
-                android:layout_below="@id/img1"
                 android:layout_marginTop="10dp">
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="200dp"
                     android:background="@drawable/skeleton_background"
                     />
             </androidx.cardview.widget.CardView>
@@ -124,7 +110,7 @@
             <ImageView
                 android:id="@+id/blogIMG"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="200dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/image1" />
 

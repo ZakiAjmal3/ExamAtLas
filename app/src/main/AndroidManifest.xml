@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -25,6 +26,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
+        <activity
+            android:name=".activities.Books.EBooks.SingleEBooksDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Books.EBooks.EBookHomePageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Books.WishListActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.Books.OrderSuccessFullyPlacedActivity"
             android:exported="false" />
@@ -118,9 +128,6 @@
             android:exported="false" />
         <activity
             android:name=".activities.LiveCoursesClassesListActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.CreateDeliveryAddressActivity"
             android:exported="false" />
         <activity
             android:name=".activities.WishlistActivity"

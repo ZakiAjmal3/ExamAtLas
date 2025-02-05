@@ -19,6 +19,17 @@
             android:src="@drawable/newlogo"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             />
+        <ImageView
+            android:id="@+id/wishListBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_heart_red"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            android:visibility="visible"
+            android:layout_toLeftOf="@id/cartRl"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="5dp"
+            />
         <RelativeLayout
             android:id="@+id/cartRl"
             android:layout_width="30dp"
@@ -371,6 +382,8 @@
                     android:id="@+id/categoryRecycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
                     android:visibility="gone"/>
             </RelativeLayout>
             <View
