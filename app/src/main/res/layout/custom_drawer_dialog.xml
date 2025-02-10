@@ -292,6 +292,33 @@
                             android:letterSpacing="0.05" />
 
                     </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layoutAdminDashboard"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/user" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:fontFamily="@font/poppins"
+                            android:text="Admin Dashboard"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"

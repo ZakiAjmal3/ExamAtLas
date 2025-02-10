@@ -2,6 +2,7 @@ package com.examatlas.adapter.books;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,9 +79,10 @@ public class SingleOrderTrackingItemAdapter extends RecyclerView.Adapter<SingleO
                     @Override
                     public void onClick(View view) {
                         String orderPlacedDate = ((SingleOrderViewActivity) context).getOrderPlacedDate();
+                        Log.e("order-date",orderPlacedDate);
                         Intent intent = new Intent(context, TrackingSingleActivity.class);
-                        intent.putExtra("shipment_id,", singleBookTrackingItemModelArrayList.get(getAdapterPosition()).getShipmentId());
-                        intent.putExtra("orderPlacedDate,", orderPlacedDate);
+                        intent.putExtra("shipment_id", singleBookTrackingItemModelArrayList.get(getAdapterPosition()).getShipmentId());
+                        intent.putExtra("orderPlacedDate", orderPlacedDate);
                         context.startActivity(intent);
                     }
                 });

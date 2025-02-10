@@ -34,7 +34,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.CartViewAdapter;
-import com.examatlas.adapter.CreateDeliveryAddressAdapter;
 import com.examatlas.adapter.extraAdapter.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
 import com.examatlas.models.CartViewModel;
 import com.examatlas.models.CreateDeliveryAddressModel;
@@ -55,7 +54,7 @@ import java.util.Map;
 public class CreateDeliveryAddressActivity extends AppCompatActivity {
     RecyclerView bookCartRecyclerView,deliveryAddressRecyclerView;
     CreateDeliveryAddressModel createDeliveryAddressModel;
-    CreateDeliveryAddressAdapter createDeliveryAddressAdapter;
+//    CreateDeliveryAddressAdapter createDeliveryAddressAdapter;
     ArrayList<CreateDeliveryAddressModel> createDeliveryAddressModelArrayList;
     CartViewAdapter cartViewAdapter;
     CartViewModel cartViewModel;
@@ -108,38 +107,38 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         fetchCartItems();
         getBillingAddress();
 
-        changeAddressBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CreateDeliveryAddressAdapter adapter = (CreateDeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
-                CreateDeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
-                if (adapter != null) {
-                    if (selectedAddress != null) {
-                        openPopUpAddAddress(selectedAddress);
-                    } else {
-                        Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to edit.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
+//        changeAddressBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                CreateDeliveryAddressAdapter adapter = (CreateDeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
+////                CreateDeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
+////                if (adapter != null) {
+////                    if (selectedAddress != null) {
+////                        openPopUpAddAddress(selectedAddress);
+////                    } else {
+//                        Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to edit.", Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//            }
+//        });
         addNewAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openPopUpAddAddress(null);
             }
         });
-        goToCheckout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CreateDeliveryAddressAdapter adapter = (CreateDeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
-                CreateDeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
-                if (selectedAddress == null) {
-                    Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to continue.", Toast.LENGTH_SHORT).show();
-                }else {
-                    openOrderSummaryDialog(selectedAddress);
-                }
-            }
-        });
+//        goToCheckout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                CreateDeliveryAddressAdapter adapter = (CreateDeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
+//                CreateDeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
+//                if (selectedAddress == null) {
+//                    Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to continue.", Toast.LENGTH_SHORT).show();
+//                }else {
+//                    openOrderSummaryDialog(selectedAddress);
+//                }
+//            }
+//        });
 
     }
     RecyclerView itemDetailsRecyclerView;
@@ -349,8 +348,8 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
 
                                 addressCombineStr = firstName +" " + lastName + ", " + houseNoOrApartmentNo + ", " + streetAddress + ", " + townCity + ", " + state + ", " + pinCode + ", " + countryName + ", " + phone + ", " + emailAddress;
                             }
-                            createDeliveryAddressAdapter = new CreateDeliveryAddressAdapter(CreateDeliveryAddressActivity.this, createDeliveryAddressModelArrayList);
-                            deliveryAddressRecyclerView.setAdapter(createDeliveryAddressAdapter);
+//                            createDeliveryAddressAdapter = new CreateDeliveryAddressAdapter(CreateDeliveryAddressActivity.this, createDeliveryAddressModelArrayList);
+//                            deliveryAddressRecyclerView.setAdapter(createDeliveryAddressAdapter);
                         } catch (JSONException e) {
 
                             Log.e("JSON_ERROR", e.getMessage());

@@ -27,9 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.activities.Books.SearchingBooksActivity;
 import com.examatlas.adapter.books.AllEBookHomepageAdapter;
-import com.examatlas.adapter.books.SearchingActivityAdapter;
 import com.examatlas.models.Books.AllBooksModel;
 import com.examatlas.models.Books.WishListModel;
 import com.examatlas.utils.Constant;
@@ -47,7 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EBookHomePageActivity extends AppCompatActivity {
+public class EBookSeachingActivity extends AppCompatActivity {
     ImageView backBtn;
     EditText searchEditText;
     String searchText;
@@ -66,7 +64,7 @@ public class EBookHomePageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ebook_home_page);
-        getWindow().setStatusBarColor(ContextCompat.getColor(EBookHomePageActivity.this,R.color.md_theme_dark_surfaceTint));
+        getWindow().setStatusBarColor(ContextCompat.getColor(EBookSeachingActivity.this,R.color.md_theme_dark_surfaceTint));
 
         itemsShimmerFrameLayout = findViewById(R.id.shimmer_for_user_container);
         itemsShimmerFrameLayout.startShimmer();
@@ -137,13 +135,13 @@ public class EBookHomePageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isEnglish) {
-                    englishTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.seed));
+                    englishTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.seed));
                     englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_selected);
                     isEnglish = true;
-                    priceTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    priceTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isPrice100_200 = false;
-                    hindiTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    hindiTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isHindi = false;
                     allBooksRecyclerView.setVisibility(View.GONE);
@@ -152,13 +150,13 @@ public class EBookHomePageActivity extends AppCompatActivity {
                     itemsShimmerFrameLayout.startShimmer();
                     getAllBooks(bookURL + "?language=English");
                 }else {
-                    englishTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    englishTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isEnglish = false;
-                    hindiTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    hindiTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isHindi = false;
-                    priceTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    priceTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isPrice100_200 = false;
                 }
@@ -175,13 +173,13 @@ public class EBookHomePageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isHindi) {
-                    hindiTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.seed));
+                    hindiTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.seed));
                     hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_selected);
                     isHindi = true;
-                    englishTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    englishTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isEnglish = false;
-                    priceTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    priceTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isPrice100_200 = false;
                     allBooksRecyclerView.setVisibility(View.GONE);
@@ -190,13 +188,13 @@ public class EBookHomePageActivity extends AppCompatActivity {
                     itemsShimmerFrameLayout.startShimmer();
                     getAllBooks(bookURL + "?language=Hindi");
                 }else {
-                    hindiTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    hindiTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isHindi = false;
-                    englishTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    englishTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isEnglish = false;
-                    priceTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    priceTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isPrice100_200 = false;
                 }
@@ -213,13 +211,13 @@ public class EBookHomePageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isPrice100_200) {
-                    priceTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.seed));
+                    priceTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.seed));
                     rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_selected);
                     isPrice100_200 = true;
-                    englishTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    englishTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isEnglish = false;
-                    hindiTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    hindiTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isHindi = false;
                     allBooksRecyclerView.setVisibility(View.GONE);
@@ -228,13 +226,13 @@ public class EBookHomePageActivity extends AppCompatActivity {
                     itemsShimmerFrameLayout.startShimmer();
                     getAllBooks(bookURL + "?fromPrice=100" + "&toPrice=200");
                 }else {
-                    priceTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    priceTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     rs_100_200_LinearLayout.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isPrice100_200 = false;
-                    hindiTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    hindiTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     hindiLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isHindi = false;
-                    englishTxt.setTextColor(ContextCompat.getColor(EBookHomePageActivity.this, R.color.black));
+                    englishTxt.setTextColor(ContextCompat.getColor(EBookSeachingActivity.this, R.color.black));
                     englishLL.setBackgroundResource(R.drawable.rounded_corner_for_rate_product_plain);
                     isEnglish = false;
                 }
@@ -300,7 +298,7 @@ public class EBookHomePageActivity extends AppCompatActivity {
                                             }
                                         }
                                     }
-                                    hardBookECommPurchaseAdapter = new AllEBookHomepageAdapter(EBookHomePageActivity.this, allBooksModelArrayList,heartToggleStates);
+                                    hardBookECommPurchaseAdapter = new AllEBookHomepageAdapter(EBookSeachingActivity.this, allBooksModelArrayList,heartToggleStates);
                                     allBooksRecyclerView.setAdapter(hardBookECommPurchaseAdapter);
                                     noBookInThisCategory.setVisibility(View.GONE);
                                     allBooksRecyclerView.setVisibility(View.VISIBLE);
@@ -308,7 +306,7 @@ public class EBookHomePageActivity extends AppCompatActivity {
                                     itemsShimmerFrameLayout.setVisibility(View.GONE);
                                 }
                             } else {
-                                Toast.makeText(EBookHomePageActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EBookSeachingActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
@@ -326,7 +324,7 @@ public class EBookHomePageActivity extends AppCompatActivity {
                                 JSONObject jsonObject = new JSONObject(jsonError);
                                 String message = jsonObject.optString("message", "Unknown error");
                                 // Now you can use the message
-                                Toast.makeText(EBookHomePageActivity.this, message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(EBookSeachingActivity.this, message, Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

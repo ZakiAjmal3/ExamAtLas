@@ -28,7 +28,7 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.R;
-import com.examatlas.activities.Books.EBooks.EBookHomePageActivity;
+import com.examatlas.activities.Books.EBooks.EBookSeachingActivity;
 import com.examatlas.activities.Books.SearchingBooksActivity;
 import com.examatlas.activities.CurrentAffairsActivity;
 import com.examatlas.activities.DashboardActivity;
@@ -36,7 +36,6 @@ import com.examatlas.adapter.BlogAdapter;
 import com.examatlas.adapter.CurrentAffairsAdapter;
 import com.examatlas.adapter.LiveCoursesAdapter;
 import com.examatlas.adapter.books.AllBookShowingAdapter;
-import com.examatlas.adapter.books.AllEBookHomepageAdapter;
 import com.examatlas.models.BlogModel;
 import com.examatlas.models.Books.AllBooksModel;
 import com.examatlas.models.Books.WishListModel;
@@ -75,7 +74,7 @@ public class HomeFragment extends Fragment {
     BlogAdapter blogAdapter;
     LiveCoursesAdapter liveCoursesAdapter;
     CurrentAffairsAdapter currentAffairAdapter;
-    private final String bookURL = Constant.BASE_URL + "v1/books";
+    private final String bookURL = Constant.BASE_URL + "v1/books?type=book";
     private final String blogURL = Constant.BASE_URL + "v1/blog?type=blog";
     private final String liveClassURL = Constant.BASE_URL + "liveclass/getAllLiveClass";
     private final String currentAffairsURL = Constant.BASE_URL + "v1/blog?type=current_affairs";
@@ -111,10 +110,13 @@ public class HomeFragment extends Fragment {
         slider = view.findViewById(R.id.slider);
         ArrayList<SlideModel> sliderArrayList = new ArrayList<>();
         allBooksModelArrayList = new ArrayList<>();
+        all_E_BooksModelArrayList = new ArrayList<>();
         blogModelArrayList = new ArrayList<>();
         liveCoursesModelArrayList = new ArrayList<>();
         currentAffairsModelArrayList = new ArrayList<>();
+
         sessionManager = new SessionManager(getContext());
+        token = sessionManager.getUserData().get("authToken");
 
         sliderArrayList.add(new SlideModel(R.drawable.image1, ScaleTypes.CENTER_CROP));
         sliderArrayList.add(new SlideModel(R.drawable.image2, ScaleTypes.CENTER_CROP));
@@ -128,7 +130,6 @@ public class HomeFragment extends Fragment {
         blogsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         currentAffairRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));liveClassesRecycler.setVisibility(View.GONE);
         blogsRecycler.setVisibility(View.GONE);
-        token = sessionManager.getUserData().get("authToken");
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -165,7 +166,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         viewAllCA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,7 +181,7 @@ public class HomeFragment extends Fragment {
         viewAllEBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), EBookHomePageActivity.class));
+                startActivity(new Intent(getActivity(), EBookSeachingActivity.class));
             }
         });
         return view;
@@ -328,7 +328,7 @@ public class HomeFragment extends Fragment {
                                             }
                                         }
                                     }
-                                    e_booksRecycler.setAdapter(new AllBookShowingAdapter(HomeFragment.this.getContext(), allBooksModelArrayList));
+                                    e_booksRecycler.setAdapter(new AllBookShowingAdapter(HomeFragment.this.getContext(), all_E_BooksModelArrayList));
                                     e_booksShimmeringLayout.stopShimmer();
                                     e_booksShimmeringLayout.setVisibility(View.GONE);
                                     e_booksRecycler.setVisibility(View.VISIBLE);

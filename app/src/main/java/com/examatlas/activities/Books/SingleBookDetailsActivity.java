@@ -153,7 +153,6 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
 
         wishListModelArrayList = new ArrayList<>(sessionManager.getWishListBookIdArrayList());
         for (int i = 0; i<wishListModelArrayList.size();i++){
-            Toast.makeText(this, wishListModelArrayList.get(i).toString(), Toast.LENGTH_SHORT).show();
             if (wishListModelArrayList.get(i).getProductId().equals(bookId)) {
                 wishListIcon.setImageResource(R.drawable.ic_heart_red);
                 isWishListClicked = true;
@@ -481,6 +480,7 @@ public class SingleBookDetailsActivity extends AppCompatActivity {
                                         Intent intent = new Intent(SingleBookDetailsActivity.this, CartViewActivity.class);
                                         intent.putExtra("bookId",bookId);
                                         intent.putExtra("buyNow",true);
+//                                        intent.putExtra("quantity",);
                                         isBuyNowClicked = false;
                                         setCartItemTxt();
                                         startActivity(intent);

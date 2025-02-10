@@ -15,7 +15,9 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.examatlas.R;
+import com.examatlas.activities.AdminDashboardActivity;
 import com.examatlas.activities.Books.MyBookOrderHistory;
+import com.examatlas.activities.DashboardActivity;
 import com.examatlas.activities.LoginWithEmailActivity;
 import com.examatlas.activities.MainActivity;
 import com.examatlas.utils.SessionManager;
@@ -24,7 +26,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileFragment extends Fragment {
 
     SessionManager sessionManager;
-    RelativeLayout loginLayout,logoutLayout, layoutMyOrders;
+    RelativeLayout loginLayout,logoutLayout, layoutMyOrders,layoutAdminDashboard;
     CircleImageView imgUser;
     ImageView imgEdit;
     ProgressBar profileProgress;
@@ -45,6 +47,12 @@ public class ProfileFragment extends Fragment {
         logoutLayout = view.findViewById(R.id.logoutLayout);
         profileProgress = view.findViewById(R.id.profileProgress);
         layoutMyOrders = view.findViewById(R.id.layoutMyOrders);
+        layoutAdminDashboard = view.findViewById(R.id.layoutAdminDashboard);
+        if (sessionManager.getUserData().get("role").equalsIgnoreCase("student")){
+            layoutAdminDashboard.setVisibility(View.GONE);
+        }else {
+            layoutAdminDashboard.setVisibility(View.VISIBLE);
+        }
         imgUser = view.findViewById(R.id.imgUser);
         imgEdit = view.findViewById(R.id.imgEdit);
         sessionManager = new  SessionManager(getContext());
@@ -85,6 +93,12 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getContext().getApplicationContext(), MyBookOrderHistory.class));
+            }
+        });
+        layoutAdminDashboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), AdminDashboardActivity.class));
             }
         });
 

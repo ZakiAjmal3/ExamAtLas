@@ -66,7 +66,7 @@ public class BooksFragment extends Fragment {
     private String token;
 //    private RelativeLayout noDataLayout;
     private EditText searchView;
-    private final String bookURL = Constant.BASE_URL + "v1/books";
+    private final String bookURL = Constant.BASE_URL + "v1/books?type=book";
     private final String categoryURL = Constant.BASE_URL + "v1/category";
     int totalPage,totalItems;
     ArrayList<CategoryModel> categoryArrayList = new ArrayList<>();

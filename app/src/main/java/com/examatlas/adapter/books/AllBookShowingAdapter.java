@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
+import com.examatlas.activities.Books.EBooks.PurchasedEBookViewingBookActivity;
+import com.examatlas.activities.Books.EBooks.SingleEBooksDetailActivity;
 import com.examatlas.activities.Books.FilteringBookWithCategoryActivity;
 import com.examatlas.activities.Books.SearchingBooksActivity;
 import com.examatlas.activities.Books.SingleBookDetailsActivity;
@@ -164,9 +166,17 @@ public class AllBookShowingAdapter extends RecyclerView.Adapter<AllBookShowingAd
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, SingleBookDetailsActivity.class);
-                    intent.putExtra("bookId", allBooksModelArrayList.get(getAdapterPosition()).getString("_id"));
-                    context.startActivity(intent);
+                    String bookType = allBooksModelArrayList.get(getAdapterPosition()).getString("ebookFiles");
+                    if (bookType.isEmpty()) {
+                        Intent intent = new Intent(context, SingleBookDetailsActivity.class);
+                        intent.putExtra("bookId", allBooksModelArrayList.get(getAdapterPosition()).getString("_id"));
+                        context.startActivity(intent);
+                    }else {
+//                        Intent intent = new Intent(context, SingleEBooksDetailActivity.class);
+                        Intent intent = new Intent(context, SingleEBooksDetailActivity.class);
+                        intent.putExtra("bookId", allBooksModelArrayList.get(getAdapterPosition()).getString("_id"));
+                        context.startActivity(intent);
+                    }
                 }
             });
         }

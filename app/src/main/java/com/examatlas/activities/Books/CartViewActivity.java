@@ -1,11 +1,8 @@
 package com.examatlas.activities.Books;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -13,14 +10,9 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -42,11 +34,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.adapter.books.CartViewItemAdapter;
-import com.examatlas.adapter.books.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
 import com.examatlas.models.Books.BookImageModels;
 import com.examatlas.models.Books.CartItemModel;
 import com.examatlas.models.Books.DeliveryAddressItemModel;
-import com.examatlas.models.Books.BookOrderSummaryItemsDetailsRecyclerViewModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -71,7 +61,7 @@ public class CartViewActivity extends AppCompatActivity {
     TextView singleBookTitleTxt,singleBookAuthorTxt,singleBookPriceTxt,singleBookQuantityTxt,addNewAddressTxt,changeAddressBtn;
     ImageView backBtn,bookImgView;
     String singleBookPriceStr = "", singleBookSellingPriceStr = "";
-    String singleBookQuantityInt = "1";
+    String singleBookQuantity = "1";
     ProgressBar quantityProgressBar;
     RelativeLayout mainRelativeLayout, noItemRL,singleBookRL,pageIndicatorRL, deliveryAddressFullRL,priceDetailsRL,bottomButtonRL;
     ShimmerFrameLayout shimmerFrameLayout;
@@ -177,6 +167,8 @@ public class CartViewActivity extends AppCompatActivity {
                     intent.putExtra("discounts",totalDiscount);
                     intent.putExtra("finalAmount",totalSellingPrice);
                     intent.putExtra("addressId",billingIdStr);
+                    intent.putExtra("productId",singleBookId);
+                    intent.putExtra("quantity", singleBookQuantity);
                     intent.putExtra("itemCount",allBooksModelArrayList.size());
                     intent.putExtra("isEBookPresent",isEBookPresent);
                     startActivity(intent);
@@ -289,10 +281,11 @@ public class CartViewActivity extends AppCompatActivity {
                                     );
                                     bookImageArrayList.add(bookImageModels);
                                 }
-                                Glide.with(CartViewActivity.this)
-                                        .load(bookImageArrayList.get(0).getUrl())
-                                        .into(bookImgView);
-
+                                if (!bookImageArrayList.isEmpty()) {
+                                    Glide.with(CartViewActivity.this)
+                                            .load(bookImageArrayList.get(0).getUrl())
+                                            .into(bookImgView);
+                                }
                                 String id = jsonObject.getString("_id");
                                 String type = jsonObject.getString("type");
                                 if (type.equals("ebook")){
@@ -326,7 +319,7 @@ public class CartViewActivity extends AppCompatActivity {
                                 spannableText.setSpan(new ForegroundColorSpan(Color.GREEN), startIndex, spannableText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                                 singleBookPriceTxt.setText(spannableText);
-                                singleBookQuantityTxt.setText("Qty: " +singleBookQuantityInt);
+                                singleBookQuantityTxt.setText("Qty: " + singleBookQuantity);
                                 setUpSingleBookPriceDetails();
                                 pageIndicatorRL.setVisibility(View.VISIBLE);
                                 priceDetailsRL.setVisibility(View.VISIBLE);
@@ -428,9 +421,9 @@ public class CartViewActivity extends AppCompatActivity {
         builder.setView(layout);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
-            singleBookQuantityInt = input.getText().toString();
+            singleBookQuantity = input.getText().toString();
             try {
-                int quantity = Integer.parseInt(singleBookQuantityInt);
+                int quantity = Integer.parseInt(singleBookQuantity);
 
                 // Validate the quantity
                 if (quantity < 1 || quantity > 100) {
@@ -480,7 +473,7 @@ public class CartViewActivity extends AppCompatActivity {
 
                         if (success) {
                             singleBookQuantityTxt.setText(String.valueOf("Qty: " + quantity));
-                            singleBookQuantityInt = String.valueOf(quantity);
+                            singleBookQuantity = String.valueOf(quantity);
                             setUpSingleBookPriceDetails();
                         }
                     } catch (JSONException e) {
@@ -721,7 +714,7 @@ public class CartViewActivity extends AppCompatActivity {
     @SuppressLint("ResourceType")
     public void setUpSingleBookPriceDetails() {
         // Check for null or empty strings before parsing
-        int quantity = Integer.parseInt(singleBookQuantityInt);
+        int quantity = Integer.parseInt(singleBookQuantity);
         int price = (singleBookPriceStr != null && !singleBookPriceStr.isEmpty()) ? Integer.parseInt(singleBookPriceStr) : 0;
         int sellingPrice = (singleBookSellingPriceStr != null && !singleBookSellingPriceStr.isEmpty()) ? Integer.parseInt(singleBookSellingPriceStr) : 0;
         totalCostPrice = 0;
@@ -737,14 +730,17 @@ public class CartViewActivity extends AppCompatActivity {
 
         totalDiscount = totalCostPrice - totalSellingPrice;
         finalDiscountedAmount = totalSellingPrice;
-
-        if (totalSellingPrice > 399) {
-            deliveryTxt.setText("FREE DELIVERY");
-            deliveryTxt.setTextColor(Color.GREEN);
-        } else {
-            deliveryTxt.setText("₹ " + 50);
-            shippingCharges = 50;
-            finalDiscountedAmount = totalSellingPrice + shippingCharges;
+        if (isEBookPresent){
+            deliveryTxt.setVisibility(View.GONE);
+        }else {
+            if (totalSellingPrice > 399) {
+                deliveryTxt.setText("FREE DELIVERY");
+                deliveryTxt.setTextColor(Color.GREEN);
+            } else {
+                deliveryTxt.setText("₹ " + 50);
+                shippingCharges = 50;
+                finalDiscountedAmount = totalSellingPrice + shippingCharges;
+            }
         }
 
         priceItemsTxt.setText("Price");

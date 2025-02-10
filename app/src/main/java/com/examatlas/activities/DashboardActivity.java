@@ -21,17 +21,15 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.examatlas.R;
-import com.examatlas.activities.Books.EBooks.EBookHomePageActivity;
+import com.examatlas.activities.Books.EBooks.EBookSeachingActivity;
 import com.examatlas.activities.Books.MyBookOrderHistory;
 import com.examatlas.fragment.BlogFragment;
 import com.examatlas.fragment.BooksFragment;
-import com.examatlas.fragment.CourseFragment;
-import com.examatlas.fragment.LiveCoursesFragment;
+import com.examatlas.fragment.EbookLibraryFragment;
 import com.examatlas.fragment.HomeFragment;
 import com.examatlas.fragment.ProfileFragment;
 import com.examatlas.utils.SessionManager;
@@ -86,6 +84,10 @@ public class DashboardActivity extends AppCompatActivity {
                     currentFrag = "BOOKS";
                     topBar.setVisibility(View.GONE);
                     loadFragment(new BooksFragment());
+                } else if (item.getItemId() == R.id.library) {
+                    currentFrag = "EBOOKS";
+                    topBar.setVisibility(View.GONE);
+                    loadFragment(new EbookLibraryFragment());
                 } else {
                     if (sessionManager.IsLoggedIn()) {
                         currentFrag = "PROFILE";
@@ -169,7 +171,7 @@ public class DashboardActivity extends AppCompatActivity {
 //    }
 
     Dialog drawerDialog;
-    LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks,layoutCurrentAffairs, layoutLogout,layoutLogin, layoutShare,layoutEbook,
+    LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks,layoutCurrentAffairs, layoutLogout,layoutLogin, layoutShare,layoutEbook,layoutAdminDashboard,
              layoutOrderHistory;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
@@ -182,7 +184,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         transLayer = drawerDialog.findViewById(R.id.transLayer);
         layoutHome = drawerDialog.findViewById(R.id.layoutHome);
-//        layoutLiveClasses = drawerDialog.findViewById(R.id.layoutLiveClasses);
         layoutBlogs = drawerDialog.findViewById(R.id.layoutBlogs);
         layoutPurchaseBooks = drawerDialog.findViewById(R.id.layoutPurchaseBooks);
         layoutEbook = drawerDialog.findViewById(R.id.layoutEbook);
@@ -192,14 +193,16 @@ public class DashboardActivity extends AppCompatActivity {
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
         txtUsername = drawerDialog.findViewById(R.id.txtUsername);
         txtUserEmail = drawerDialog.findViewById(R.id.txtUserEmail);
-//        layoutAboutUs = drawerDialog.findViewById(R.id.layoutAboutUs);
-//        layoutPrivacy = drawerDialog.findViewById(R.id.layoutPrivacy);
-//        layoutTerms = drawerDialog.findViewById(R.id.layoutTerms);
         layoutOrderHistory = drawerDialog.findViewById(R.id.layoutMyOrders);
         cardBack = drawerDialog.findViewById(R.id.cardBack);
         imgUser = drawerDialog.findViewById(R.id.imgUser);
-//        layoutFaq = drawerDialog.findViewById(R.id.layoutFaq);
-//        layoutServices = drawerDialog.findViewById(R.id.layoutServices);
+
+        layoutAdminDashboard = drawerDialog.findViewById(R.id.layoutAdminDashboard);
+        if (sessionManager.getUserData().get("role").equalsIgnoreCase("student")){
+            layoutAdminDashboard.setVisibility(View.GONE);
+        }else {
+            layoutAdminDashboard.setVisibility(View.VISIBLE);
+        }
 
         String firstName = sessionManager.getUserData().get("firstName");
         String lastName = sessionManager.getUserData().get("lastName");
@@ -255,24 +258,11 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-//        layoutLiveClasses.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                if (!currentFrag.equals("LIVE")) {
-//                    currentFrag = "LIVE";
-//                    loadFragment(new LiveCoursesFragment());
-//                    bottom_navigation.setSelectedItemId(R.id.live);
-//                    bottom_navigation.setSelected(true);
-//                }
-//            }
-//        });
-
         layoutEbook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
-                startActivity(new Intent(DashboardActivity.this, EBookHomePageActivity.class));
+                startActivity(new Intent(DashboardActivity.this, EBookSeachingActivity.class));
             }
         });
 
@@ -299,58 +289,6 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-//        layoutShare.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                shareApplication();
-//            }
-//        });
-
-//        layoutAboutUs.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                Intent intent = new Intent(DashboardActivity.this, WebViewActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                intent.putExtra("title", "About Us");
-//                intent.putExtra("url", "https://examatlas.com");
-//                startActivity(intent);
-//            }
-//        });
-
-//        layoutPrivacy.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                Intent intent = new Intent(DashboardActivity.this, WebViewActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                intent.putExtra("title", "Privacy Policy");
-//                intent.putExtra("url", "https://examatlas.com");
-//                startActivity(intent);
-//            }
-//        });
-
-//        layoutTerms.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                Intent intent = new Intent(DashboardActivity.this, WebViewActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                intent.putExtra("title", "Terms & Conditions");
-//                intent.putExtra("url", "https://examatlas.com");
-//                startActivity(intent);
-//            }
-//        });
-
-//        layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                Intent intent = new Intent(DashboardActivity.this, BookOrderHistoryActivity.class);
-//                startActivity(intent);
-//            }
-//        });
         layoutCurrentAffairs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -358,29 +296,6 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-//        layoutFaq.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                Intent intent = new Intent(DashboardActivity.this, WebActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                intent.putExtra("title", "FAQs");
-//                intent.putExtra("url", "https://examatlas.com/faq");
-//                startActivity(intent);
-//            }
-//        });
-//        layoutServices.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerDialog.dismiss();
-//                Intent intent = new Intent(DashboardActivity.this, WebActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                intent.putExtra("title", "Our Services");
-//                intent.putExtra("url", "https://examatlas.com/services");
-//                startActivity(intent);
-//            }
-//        });
 
         cardBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -393,6 +308,13 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
+            }
+        });
+        layoutAdminDashboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(DashboardActivity.this,AdminDashboardActivity.class));
+                finish();
             }
         });
 

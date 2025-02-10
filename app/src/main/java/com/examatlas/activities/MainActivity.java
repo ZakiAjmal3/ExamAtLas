@@ -44,34 +44,11 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (sessionManager.IsLoggedIn()) {
-                    sessionManager.setCartItemQuantity();
-                    String role = sessionManager.getUserData().get("role");
-                    Intent intent;
-                    if (role.equalsIgnoreCase("student")) {
-                        if (!sessionManager.getUserData().get("isActive").equals("true")) {
-                            intent = new Intent(MainActivity.this, DashboardActivity.class);
-//                            intent = new Intent(MainActivity.this, SignUpActivity5CategorySelect.class);
-                            Log.e("SignUp2", "User logged in, navigating to SignUp2");
-                        }else {
-                            intent = new Intent(MainActivity.this, DashboardActivity.class);
-                            Log.e("Dashboard", "User logged in, navigating to Dashboard");
-                        }
-                    } else if (role.equalsIgnoreCase("admin")) {
-                        intent = new Intent(MainActivity.this, AdminDashboardActivity.class);
-                        Log.e("AdminDashboard", "Admin logged in, navigating to Admin Dashboard");
-                    } else {
-                        intent = new Intent(MainActivity.this, DashboardActivity.class);
-                        Log.e("RoleError", "Role not recognized, navigating to Dashboard");
-                    }
-                    startActivity(intent);
-                    finish();  // Finish the MainActivity to prevent back navigation
-                } else {
-                    Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
-                    Log.e("NotLoggedIn", "User not logged in, navigating to Dashboard");
-                    startActivity(intent);
-                    finish();
-                }
+                sessionManager.setCartItemQuantity();
+                Intent intent;
+                intent = new Intent(MainActivity.this, DashboardActivity.class);
+                startActivity(intent);
+                finish();  // Finish the MainActivity to prevent back navigation
             }
         }, 1600);  // Match the duration of the logo animation
     }

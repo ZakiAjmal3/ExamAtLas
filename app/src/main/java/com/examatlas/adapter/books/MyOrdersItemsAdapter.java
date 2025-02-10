@@ -54,19 +54,18 @@ public class MyOrdersItemsAdapter extends RecyclerView.Adapter<MyOrdersItemsAdap
     @Override
     public void onBindViewHolder(@NonNull MyOrdersItemsAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
+        holder.writeReviewTxt.setVisibility(View.GONE);
+        holder.editYourReviewTxt.setVisibility(View.GONE);
+
         String orderStatus = myOrdersItemModelArrayList.get(position).getOrderSuccess();
         if (orderStatus.equalsIgnoreCase("Pending")){
             holder.successTxt.setTextColor(context.getResources().getColor(R.color.red_orange));
-            holder.writeReviewTxt.setVisibility(View.GONE);
-            holder.editYourReviewTxt.setVisibility(View.GONE);
         }
         else if (orderStatus.equalsIgnoreCase("Confirmed") || orderStatus.equalsIgnoreCase("Paid")|| orderStatus.equalsIgnoreCase("Shipped") || orderStatus.equalsIgnoreCase("Delivered")) {
             holder.successTxt.setTextColor(context.getResources().getColor(R.color.green));
         }
         else if (orderStatus.equalsIgnoreCase("Failed") || orderStatus.equalsIgnoreCase("Cancelled")) {
             holder.successTxt.setTextColor(context.getResources().getColor(R.color.red));
-            holder.writeReviewTxt.setVisibility(View.GONE);
-            holder.editYourReviewTxt.setVisibility(View.GONE);
         }
         if (orderStatus.equalsIgnoreCase("Delivered")){
             if (myOrdersItemModelArrayList.get(position).getReviewerUserId().equals(userId)){

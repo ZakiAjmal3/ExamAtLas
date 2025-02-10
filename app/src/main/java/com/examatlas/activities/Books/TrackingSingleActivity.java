@@ -81,6 +81,7 @@ public class TrackingSingleActivity extends AppCompatActivity {
                         try {
                             boolean status = response.getBoolean("success");
                             if (status) {
+                                Log.e("orderplacedate",orderPlacedDate);
                                 singleBookTrackingItemModelArrayList.add(new SingleBookTrackingItemModel(shipment_id,"Order Confirmed," + orderPlacedDate,"Your order has been confirmed"));
                                 JSONObject data = response.optJSONObject("data");
 

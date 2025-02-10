@@ -47,7 +47,7 @@ public class ChoosingPaymentActivity extends AppCompatActivity {
     CardView codCardView,upiCardView;
     boolean isTotalAmountClicked = false,isCODClicked = false,isUPIClicked = false,isEBookPresent = false;
     int totalSellingPrice = 0,shippingCharges = 0,totalDiscount = 0,finalAmount = 0;
-    String billingIdStr = "0",codOrUpi = "";
+    String billingIdStr = "0",codOrUpi = "",singleBookProductId = "",singleBookQuantity  = "";;
     int itemCount = 0;
     SessionManager sessionManager;
     String authToken;
@@ -89,6 +89,11 @@ public class ChoosingPaymentActivity extends AppCompatActivity {
         itemCount = getIntent().getIntExtra("itemCount", 0);
         billingIdStr = getIntent().getStringExtra("addressId");
         isEBookPresent = getIntent().getBooleanExtra("isEBookPresent",false);
+
+        singleBookQuantity = getIntent().getStringExtra("quantity");
+        Log.e("singleBookQuantity",String.valueOf(singleBookQuantity));
+        singleBookProductId = getIntent().getStringExtra("productId");
+        Log.e("singleBookProductId",singleBookProductId);
 
         if (isEBookPresent) {
             cashOnDeliveryRL.setVisibility(View.GONE);
@@ -225,17 +230,35 @@ public class ChoosingPaymentActivity extends AppCompatActivity {
         Log.e("sendingOTP method", orderCheckOutURL);
 
         JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("totalAmount",totalSellingPrice);
-            jsonObject.put("shippingCharges",shippingCharges);
-            jsonObject.put("taxAmount",0);
-            jsonObject.put("discounts",totalDiscount);
-            jsonObject.put("finalAmount",totalSellingPrice);
-            jsonObject.put("paymentMethod","Razorpay");
-            jsonObject.put("addressId",billingIdStr);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
+        if (!singleBookProductId.isEmpty()) {
+            try {
+                jsonObject.put("totalAmount", 1);
+                jsonObject.put("shippingCharges", 0);
+                jsonObject.put("taxAmount", 0);
+                jsonObject.put("discounts", totalDiscount);
+                jsonObject.put("finalAmount", 1);
+                jsonObject.put("paymentMethod", "Razorpay");
+                jsonObject.put("addressId", billingIdStr);
+                jsonObject.put("productId", singleBookProductId);
+                jsonObject.put("quantity", singleBookQuantity);
+                jsonObject.put("type", "book");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+        }else {
+            try {
+                jsonObject.put("totalAmount", totalSellingPrice);
+                jsonObject.put("shippingCharges", shippingCharges);
+                jsonObject.put("taxAmount", 0);
+                jsonObject.put("discounts", totalDiscount);
+                jsonObject.put("finalAmount", totalSellingPrice);
+                jsonObject.put("paymentMethod", "Razorpay");
+                jsonObject.put("addressId", billingIdStr);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
         }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, orderCheckOutURL , jsonObject,
                 new Response.Listener<JSONObject>() {

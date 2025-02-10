@@ -177,8 +177,9 @@ public class SingleOrderViewActivity extends AppCompatActivity {
                 Toast.makeText(SingleOrderViewActivity.this, "Order ID - " + orderId + " copied", Toast.LENGTH_SHORT).show();
             }
         });
-        if (orderStatus.equalsIgnoreCase("Cancelled")){
+        if (!orderStatus.equalsIgnoreCase("Confirmed")){
             rsbLinearLayout.setVisibility(View.GONE);
+            trackingRL.setVisibility(View.GONE);
         }
         cancelOrderRl.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,7 +233,6 @@ public class SingleOrderViewActivity extends AppCompatActivity {
                 }
             }
         });
-        getTrackingOrderDetails();
         getSingleOrderHistory();
         getAllBooks();
 
@@ -395,6 +395,14 @@ public class SingleOrderViewActivity extends AppCompatActivity {
                                 for (int j = 0; j < bookItemsArray.length(); j++) {
                                     JSONObject productObj = bookItemsArray.getJSONObject(j).getJSONObject("product");
                                     String bookId = productObj.getString("_id");
+                                    String type = productObj.getString("type");
+                                    if (type.equals("book")){
+                                        getTrackingOrderDetails();
+                                        trackingOrderLineRV.setVisibility(View.VISIBLE);
+                                    }else {
+                                        trackingRL.setVisibility(View.GONE);
+                                        trackingOrderLineRV.setVisibility(View.GONE);
+                                    }
                                     String bookTitle = productObj.getString("title");
                                     String singleCP = productObj.getString("price");
                                     costPriceStr = String.valueOf(Integer.parseInt(costPriceStr) + Integer.parseInt(singleCP));

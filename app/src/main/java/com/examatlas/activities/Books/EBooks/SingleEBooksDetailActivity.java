@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 
 import com.android.volley.AuthFailureError;
@@ -79,20 +80,9 @@ public class SingleEBooksDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_ebooks_detail);
-        // Make the layout extend under the status bar but keep it visible
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // For Android 11 and above
-            getWindow().getDecorView().getWindowInsetsController().setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_DEFAULT);
-        } else {
-            // For Android 10 and below
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN // Allow the layout to extend under the status bar
-            );
-        }
-        // Ensures layout extends under status bar, but keeps status bar visible
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
+        getWindow().setStatusBarColor(ContextCompat.getColor(SingleEBooksDetailActivity.this, R.color.black));
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         bookIdByIntent = getIntent().getStringExtra("bookId");
 
         sessionManager = new SessionManager(this);
@@ -286,14 +276,12 @@ public class SingleEBooksDetailActivity extends AppCompatActivity {
 
 //                                BookImageAdapter bookImageAdapter = new BookImageAdapter(bookImageArrayList,bookImgViewPager,indicatorLayout);
 //                                bookImgViewPager.setAdapter(bookImageAdapter);
-                                Glide.with(SingleEBooksDetailActivity.this)
-                                        .load(bookImageArrayList.get(0).getUrl())
-                                        .error(R.drawable.noimage)
-                                        .into(bookImg);
-                                Glide.with(SingleEBooksDetailActivity.this)
-                                        .load(bookImageArrayList.get(0).getUrl())
-                                        .error(R.drawable.noimage)
-                                        .into(coverImg);
+                                if (!bookImageArrayList.isEmpty()) {
+                                    Glide.with(SingleEBooksDetailActivity.this)
+                                            .load(bookImageArrayList.get(0).getUrl())
+                                            .error(R.drawable.noimage)
+                                            .into(bookImg);
+                                }
                                 String id = jsonObject.getString("_id");
                                 bookTitleStr = jsonObject.getString("title");
                                 bookTitleTxt.setText(bookTitleStr);

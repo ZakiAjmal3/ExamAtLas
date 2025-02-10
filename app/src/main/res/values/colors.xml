@@ -10,8 +10,10 @@
     <color name="whiteSeed">#F0F4FB</color>
     <color name="seed">#15b0fd</color>
     <color name="seed2">#4ABEFF</color>
+    <color name="light_seed">#C4E7FF</color>
     <color name="dark_seed">#001EC7</color>
     <color name="green">#0C9700</color>
+    <color name="light_green">#BAEDB4</color>
     <color name="timelineBGColor">#E4FDE4</color>
     <color name="md_theme_light_primary">#006493</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
@@ -77,6 +79,7 @@
     <color name="light_dark_grey2">#C5C4C4</color>
     <color name="dark_grey">#776F6F</color>
     <color name="darker_grey">#423D3D</color>
-    <color name="mat_yellow">#F1B501</color>
+    <color name="mat_yellow">#EBE2C4</color>
+    <color name="yellow">#A67600</color>
     <color name="red_orange">#FF7700</color>
 </resources>

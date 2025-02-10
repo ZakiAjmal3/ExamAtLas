@@ -21,6 +21,11 @@
         android:icon="@drawable/courses"
         android:title="Books" />
     <item
+        android:id="@+id/library"
+        android:enabled="true"
+        android:icon="@drawable/courses"
+        android:title="Library" />
+    <item
         android:id="@+id/profile"
         android:enabled="true"
         android:icon="@drawable/user"

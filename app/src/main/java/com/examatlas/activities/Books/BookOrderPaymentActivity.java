@@ -66,7 +66,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
 
         Checkout.preload(getApplicationContext());
         Checkout checkout = new Checkout();
-        checkout.setKeyID("rzp_test_Fzr0ZJZIcQFk1D");
+        checkout.setKeyID("rzp_live_sGeXLsWjbuWFsR");
 
         referenceNoId = findViewById(R.id.referenceNoTxt);
         orderIdTxt = findViewById(R.id.priceDetailsTxt);
@@ -149,11 +149,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
 
     @Override
     public void onPaymentError(int i, String s, PaymentData paymentData) {
-        Toast.makeText(this, s.toString(), Toast.LENGTH_SHORT).show();
-//        Intent intent = new Intent(BookOrderPaymentActivity.this, SingleOrderViewActivity.class);
-//        intent.putExtra("orderId",orderId);
-//        startActivity(intent);
-//        finish();
+        onBackPressed();
     }
 
     private void verifyPaymentStatus(String razorpayPaymentID, PaymentData paymentData) {
@@ -214,7 +210,6 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
             Log.e("JSON_ERROR", "Error creating JSON: " + e.getMessage());
         }
     }
-
     private void clearCartApi() {
         String clearCartURL = Constant.BASE_URL + "v1/cart/clear";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, clearCartURL, null,
