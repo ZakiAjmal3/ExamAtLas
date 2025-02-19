@@ -20,7 +20,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.SignUp5CategoryAdapter;
-import com.examatlas.models.AdminShowAllCategoryModel;
 import com.examatlas.models.Books.CategoryModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;

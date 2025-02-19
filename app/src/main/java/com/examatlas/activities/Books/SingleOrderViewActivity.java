@@ -34,7 +34,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.activities.LoginWithEmailActivity;
+import com.examatlas.activities.Books.EBooks.PurchasedEBookViewingBookActivity;
 import com.examatlas.adapter.books.AllBookShowingAdapter;
 import com.examatlas.adapter.books.SingleOrderTrackingItemAdapter;
 import com.examatlas.adapter.books.SingleOrderViewBookItemAdapter;
@@ -71,12 +71,13 @@ public class SingleOrderViewActivity extends AppCompatActivity {
     ArrayList<AllBooksModel> allBooksModelArrayList;
     private SessionManager sessionManager;
     private String token,orderId = "",shipment_id = "",orderStatus = "";
-    RelativeLayout trackingRL,cancelOrderRl,emailUSRL;
+    RelativeLayout trackingRL,writeReviewRL, viewEBookRL, cancelOrderRL,emailUSRL;
     LinearLayout rsbLinearLayout;
     String finalAmount = "0",costPriceStr = "0",sellingPriceStr = "0",discountStr,shippingChargesStr;
     String addressNameStr, addressRoadStr, addressCityStr, addressStateStr, addressPhoneStr,orderPlacedDate;
     TextView orderIdTxtView,nameTxt,addressLine1Txt,addressLine2Txt,addressLine3Txt,phoneLineTxt,originalAmountTxt,sellingAmountTxt,discountAmountTxt,deliveryChargeAmountTxt,totalAmountTxt;
     Dialog progressDialog;
+    String bookId,bookTitle,bookImg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,7 +128,9 @@ public class SingleOrderViewActivity extends AppCompatActivity {
         bookItemRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         trackingRL = findViewById(R.id.trackingRL);
-        cancelOrderRl = findViewById(R.id.cancelOrderRL);
+        writeReviewRL = findViewById(R.id.writeReviewRL);
+        viewEBookRL = findViewById(R.id.viewEBookRL);
+        cancelOrderRL = findViewById(R.id.cancelOrderRL);
         emailUSRL = findViewById(R.id.emailUSRL);
         rsbLinearLayout = findViewById(R.id.rsbLinearLayout);
 
@@ -168,6 +171,16 @@ public class SingleOrderViewActivity extends AppCompatActivity {
                 startActivity(new Intent(SingleOrderViewActivity.this,TrackingSingleActivity.class));
             }
         });
+        writeReviewRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SingleOrderViewActivity.this, CreatingReviewActivity.class);
+                intent.putExtra("bookId", bookId);
+                intent.putExtra("bookTitle", bookTitle);
+                intent.putExtra("bookImg", bookTitle);
+                startActivity(intent);
+            }
+        });
         copyOrderIdBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,7 +194,17 @@ public class SingleOrderViewActivity extends AppCompatActivity {
             rsbLinearLayout.setVisibility(View.GONE);
             trackingRL.setVisibility(View.GONE);
         }
-        cancelOrderRl.setOnClickListener(new View.OnClickListener() {
+        viewEBookRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SingleOrderViewActivity.this, PurchasedEBookViewingBookActivity.class);
+                intent.putExtra("bookId", bookId);
+                intent.putExtra("title", bookTitle);
+                startActivity(intent);
+                finish();
+            }
+        });
+        cancelOrderRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new MaterialAlertDialogBuilder(SingleOrderViewActivity.this)
@@ -394,16 +417,20 @@ public class SingleOrderViewActivity extends AppCompatActivity {
                                 JSONArray bookItemsArray = dataObject.getJSONArray("items");
                                 for (int j = 0; j < bookItemsArray.length(); j++) {
                                     JSONObject productObj = bookItemsArray.getJSONObject(j).getJSONObject("product");
-                                    String bookId = productObj.getString("_id");
+                                    bookId = productObj.getString("_id");
                                     String type = productObj.getString("type");
                                     if (type.equals("book")){
                                         getTrackingOrderDetails();
+                                        cancelOrderRL.setVisibility(View.VISIBLE);
+                                        viewEBookRL.setVisibility(View.GONE);
                                         trackingOrderLineRV.setVisibility(View.VISIBLE);
                                     }else {
+                                        cancelOrderRL.setVisibility(View.GONE);
+                                        viewEBookRL.setVisibility(View.VISIBLE);
                                         trackingRL.setVisibility(View.GONE);
                                         trackingOrderLineRV.setVisibility(View.GONE);
                                     }
-                                    String bookTitle = productObj.getString("title");
+                                    bookTitle = productObj.getString("title");
                                     String singleCP = productObj.getString("price");
                                     costPriceStr = String.valueOf(Integer.parseInt(costPriceStr) + Integer.parseInt(singleCP));
                                     String singleSP = productObj.getString("sellingPrice");
@@ -411,8 +438,8 @@ public class SingleOrderViewActivity extends AppCompatActivity {
                                     String author = productObj.getString("author");
                                     String publication = productObj.getString("publication");
                                     JSONArray bookImagesArray = productObj.getJSONArray("images");
-                                    String bookImgURL = bookImagesArray.getJSONObject(0).getString("url");
-                                    singleOrderViewItemBookModelArrayList.add(new SingleOrderViewItemBookModel(bookId, bookTitle, singleCP, singleSP, bookImgURL, author, publication));
+                                    bookImg = bookImagesArray.getJSONObject(0).getString("url");
+                                    singleOrderViewItemBookModelArrayList.add(new SingleOrderViewItemBookModel(bookId, bookTitle, singleCP, singleSP, bookImg, author, publication));
                                 }
                                 bookItemRecyclerView.setAdapter(new SingleOrderViewBookItemAdapter(SingleOrderViewActivity.this, singleOrderViewItemBookModelArrayList));
 
@@ -530,6 +557,8 @@ public class SingleOrderViewActivity extends AppCompatActivity {
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("data");
                                 allBooksModelArrayList.clear();
+                                int totalPage = Integer.parseInt(response.getString("totalPage"));
+                                int totalItems = Integer.parseInt(response.getString("totalItems"));
 
                                 // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -537,8 +566,44 @@ public class SingleOrderViewActivity extends AppCompatActivity {
 
                                     // Convert the book object into a Map to make it dynamic
                                     Map<String, Object> bookData = new Gson().fromJson(jsonObject2.toString(), Map.class);
-                                    AllBooksModel model = new AllBooksModel(bookData); // Pass the map to the model
 
+                                    // Extract dimensions (assuming they are present in the 'dimensions' field of the book data)
+                                    String length = "";
+                                    String width = "";
+                                    String height = "";
+                                    String weight = "";
+
+
+                                    if (bookData.containsKey("dimensions")) {
+                                        Object dimensionsObj = bookData.get("dimensions");
+
+                                        if (dimensionsObj instanceof Map) {
+                                            // If it's already a Map, we can safely cast
+                                            Map<String, Object> dimensions = (Map<String, Object>) dimensionsObj;
+                                            length = dimensions.containsKey("length") ? dimensions.get("length").toString() : "";
+                                            width = dimensions.containsKey("width") ? dimensions.get("width").toString() : "";
+                                            height = dimensions.containsKey("height") ? dimensions.get("height").toString() : "";
+                                            weight = dimensions.containsKey("weight") ? dimensions.get("weight").toString() : "";
+                                        } else if (dimensionsObj instanceof String) {
+                                            // If it's a String (likely JSON), parse it into a Map
+                                            String dimensionsJson = dimensionsObj.toString();
+                                            try {
+                                                Map<String, Object> dimensions = new Gson().fromJson(dimensionsJson, Map.class);
+                                                length = dimensions.containsKey("length") ? dimensions.get("length").toString() : "";
+                                                width = dimensions.containsKey("width") ? dimensions.get("width").toString() : "";
+                                                height = dimensions.containsKey("height") ? dimensions.get("height").toString() : "";
+                                                weight = dimensions.containsKey("weight") ? dimensions.get("weight").toString() : "";
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                // Handle parsing errors here if necessary
+                                            }
+                                        }
+                                    }
+
+                                    // Pass the data and dimensions to the model constructor
+                                    AllBooksModel model = new AllBooksModel(bookData, length, width, height, weight); // Pass map and dimensions
+
+                                    // Add the model to the list
                                     allBooksModelArrayList.add(model);
                                 }
 

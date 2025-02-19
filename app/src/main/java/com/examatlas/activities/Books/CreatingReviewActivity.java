@@ -137,7 +137,7 @@ public class CreatingReviewActivity extends AppCompatActivity {
         setupActivityResultLaunchers();
 
         imagesRV.setLayoutManager(new LinearLayoutManager(CreatingReviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
-        imageAdapter = new ReviewImagesListAdapter(CreatingReviewActivity.this,imageFiles);
+        imageAdapter = new ReviewImagesListAdapter(CreatingReviewActivity.this,imageFiles,null);
         imagesRV.setAdapter(imageAdapter);
 
 //        if (savedInstanceState != null) {

@@ -8,20 +8,12 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <ImageView
-            android:id="@+id/editTitleBtn"
+            android:id="@+id/threeDots"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@drawable/ic_edit"
-            android:padding="5dp"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            />
-        <ImageView
-            android:id="@+id/deleteSubjectBtn"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@drawable/ic_delete"
+            android:src="@drawable/ic_three_dot"
+            android:layout_margin="5dp"
             android:padding="5dp"
             android:layout_alignParentEnd="true"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
@@ -36,7 +28,7 @@
             android:textColor="@color/black"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_below="@id/editTitleBtn"
+            android:layout_marginTop="15dp"
             android:layout_centerHorizontal="true"/>
         <TextView
             android:id="@+id/titleTxt"
@@ -52,37 +44,6 @@
             android:layout_marginRight="10dp"
             android:layout_below="@id/categoryImageView"
             android:layout_centerHorizontal="true"/>
-        <LinearLayout
-            android:id="@+id/layout1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:orientation="horizontal"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="15dp"
-            android:layout_below="@id/titleTxt"
-            >
-
-            <TextView
-                android:id="@+id/txtAuthor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:text="TAGS:"
-                android:textColor="@color/dark_grey"
-                android:textSize="10sp" />
-
-            <TextView
-                android:id="@+id/tagTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:fontFamily="@font/poppins"
-                android:text="Tag Text"
-                android:textColor="@color/seed"
-                android:textSize="10sp" />
-        </LinearLayout>
 
     </RelativeLayout>
 

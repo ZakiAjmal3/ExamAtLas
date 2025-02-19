@@ -1,4 +1,4 @@
-package com.examatlas.fragment;
+package com.examatlas.fragment.Admin;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -42,6 +42,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -53,14 +54,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.adapter.AdminShowAllBlogAdapter;
+import com.examatlas.adapter.Admin.AdminShowAllBlogAdapter;
+import com.examatlas.adapter.Admin.AdminShowAllCAAdapter;
 import com.examatlas.adapter.AdminTagsForDataALLAdapter;
-import com.examatlas.models.AdminShowAllCategoryModel;
-import com.examatlas.models.extraModels.AdminCategoryModel;
+import com.examatlas.models.Admin.AdminShowAllCategoryModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MultipartRequest;
 import com.examatlas.utils.MySingletonFragment;
-import com.examatlas.models.AdminShowAllBlogModel;
+import com.examatlas.models.Admin.AdminShowAllBlogModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
 import com.examatlas.utils.SessionManager;
 
@@ -76,12 +77,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AdminBlogCreateDeleteFragment extends Fragment {
+public class AdminCreateCurrentAffairFragment extends Fragment {
 
     private SearchView searchView;
-    private Button createBlogBtn;
+    private TextView createBlogBtn;
     private Dialog createBlogDialogBox;
-    private EditText titleEditTxt, keywordEditTxt, contentEditTxt, tagsEditTxt;
+    private EditText titleEditTxt, keywordEditTxt, slugEditTxt, contentEditTxt, tagsEditTxt;
     private Spinner categorySpinner;
     ArrayList<AdminShowAllCategoryModel> categoryModelArrayList;
     String categoryId,categoryName;
@@ -90,16 +91,19 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
     private AdminTagsForDataALLModel adminTagsForDataALLModel;
     private ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList;
     private ImageView uploadImage,btnCross;
-    private TextView uploadImageName;
+    private TextView uploadImageName,headerTxt,dialogHeaderTxt;
     Button uploadBlogDetailsBtn;
     private Uri image_uri;
     private final String createBlogURL = Constant.BASE_URL + "v1/blog";
     RecyclerView showAllBlogRecyclerView;
-    AdminShowAllBlogAdapter adminShowAllBlogAdapter;
+    AdminShowAllCAAdapter adminShowAllBlogAdapter;
     AdminShowAllBlogModel adminShowAllBlogModel;
     ArrayList<AdminShowAllBlogModel> adminShowAllBlogModelArrayList;
-    private final String blogURL = Constant.BASE_URL + "v1/blog";
-    ProgressBar showAllBlogProgressBar;
+    private final String blogURL = Constant.BASE_URL + "v1/blog?type=current_affairs";
+    private int totalPages = 1,currentPage = 1;
+    private final int itemsPerPage = 10;
+    ProgressBar showAllBlogProgressBar, nextItemLoadingProgressBar;
+    private NestedScrollView nestedSV;
     RelativeLayout noDataLayout;
     SessionManager sessionManager;
     String authToken;
@@ -115,10 +119,13 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
 
         searchView = view.findViewById(R.id.searchView);
         createBlogBtn = view.findViewById(R.id.btnCreate);
+        headerTxt = view.findViewById(R.id.txtBlog);
+        headerTxt.setText("Current Affairs");
 
         showAllBlogRecyclerView = view.findViewById(R.id.showBlogRecycler);
         showAllBlogProgressBar = view.findViewById(R.id.showAllBlogProgressBar);
-
+        nextItemLoadingProgressBar = view.findViewById(R.id.nextItemLoadingProgressBar);
+        nestedSV = view.findViewById(R.id.nestScrollView);
         noDataLayout = view.findViewById(R.id.noDataLayout);
 
         adminShowAllBlogModelArrayList = new ArrayList<>();
@@ -153,7 +160,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                 return false; // Allow other events to be handled
             }
         });
-
+        initializeDialogContent();
         createBlogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -178,13 +185,33 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                 return true;
             }
         });
-
+        nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // on scroll change we are checking when users scroll as bottom.
+                if (scrollY == v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
+                    // in this method we are incrementing page number,
+                    // making progress bar visible and calling get data method.
+                    currentPage++;
+                    int scrollThreshold = 50; // threshold to trigger load more data
+                    int diff = (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) - scrollY;
+                    Log.e("ScrollDebug", "diff: " + diff);
+                    // Check if we have scrolled to the bottom or near bottom
+                    if (diff <= scrollThreshold && currentPage <= totalPages) {
+                        nextItemLoadingProgressBar.setVisibility(View.VISIBLE);
+                        // on below line we are again calling
+                        // a method to load data in our array list.
+                        showAllBlogFunction();
+                    }
+                }
+            }
+        });
         return view;
     }
-
     public void showAllBlogFunction() {
+        String subjectURLPage = blogURL  + "&pageNumber=" + currentPage + "&pageSize=" + itemsPerPage;
         noDataLayout.setVisibility(View.GONE);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, blogURL, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, subjectURLPage, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -194,7 +221,6 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                adminShowAllBlogModelArrayList.clear(); // Clear the list before adding new items
 
                                 String totalItems = response.getString("totalItems");
                                 String totalPages = response.getString("totalPage");
@@ -206,29 +232,51 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                                     String blogID = jsonObject2.getString("_id");
                                     String title = jsonObject2.getString("title");
                                     String content = jsonObject2.getString("content");
-                                    Log.e("Blog content",content);
-//                                    JSONObject image = jsonObject2.getJSONObject("image");
-//                                    String url = image.getString("url");
-//                                    String categoryName;
-//                                    if (jsonObject2.has("category")) {
-//                                        categoryName = jsonObject2.getString("category");
-//                                    }else {
-//                                        categoryName =  "null";
-//                                    }
-                                    // Use StringBuilder for tags
-//                                    StringBuilder tags = new StringBuilder();
-//                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
-//                                    for (int j = 0; j < jsonArray1.length(); j++) {
-//                                        String singleTag = jsonArray1.getString(j);
-//                                        tags.append(singleTag).append(", ");
-//                                    }
-                                    // Remove trailing comma and space if any
-//                                    if (tags.length() > 0) {
-//                                        tags.setLength(tags.length() - 2);
-//                                    }
+                                    String keyword = jsonObject2.getString("keyword");
+                                    String updatedAt = jsonObject2.getString("updatedAt");
 
-                                    adminShowAllBlogModel = new AdminShowAllBlogModel(blogID,null,categoryName,null, title, content, null, totalItems,totalPages,null);
-                                    adminShowAllBlogModelArrayList.add(adminShowAllBlogModel);
+//                                    String slug = jsonObject2.getString("slug");
+                                    String slug = null;
+                                    Log.e("Blog content",content);
+                                    String imageUrl = "";
+                                    if (jsonObject2.has("image") && !jsonObject2.isNull("image")) {
+                                        JSONObject imageObj = jsonObject2.getJSONObject("image");
+                                        if (imageObj != null && !imageObj.isNull("url")) {
+                                            imageUrl = imageObj.getString("url");
+                                        }
+                                    }
+                                    String categoryName,categoryId;
+                                    if (jsonObject2.has("category")) {
+                                        JSONObject categoryObj = jsonObject2.getJSONObject("category");
+                                        categoryId = categoryObj.getString("_id");
+                                        categoryName = categoryObj.getString("categoryName");
+                                    }else {
+                                        categoryId = null;
+                                        categoryName =  null;
+                                    }
+                                    // Use StringBuilder for tags
+                                    StringBuilder tags = new StringBuilder();
+                                    JSONArray jsonArray1 = jsonObject2.getJSONArray("tags");
+                                    for (int j = 0; j < jsonArray1.length(); j++) {
+                                        String singleTag = jsonArray1.getString(j);
+                                        tags.append(singleTag).append(", ");
+                                    }
+//                                     Remove trailing comma and space if any
+                                    if (tags.length() > 0) {
+                                        tags.setLength(tags.length() - 2);
+                                    }
+
+                                    adminShowAllBlogModel = new AdminShowAllBlogModel(blogID,categoryId,categoryName,imageUrl, title, content,keyword,slug, tags.toString(), totalItems,totalPages,updatedAt);
+                                    boolean isPresent = false;
+                                    for (int j = 0; j < adminShowAllBlogModelArrayList.size(); j++) {
+                                        if (adminShowAllBlogModelArrayList.get(j).getBlogID().equals(adminShowAllBlogModel.getBlogID())) {
+                                            isPresent = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!isPresent) {
+                                        adminShowAllBlogModelArrayList.add(adminShowAllBlogModel);
+                                    }
                                 }
                                 // Update the original list in the adapter
                                 if (adminShowAllBlogAdapter != null) {
@@ -238,9 +286,10 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                                 if (adminShowAllBlogModelArrayList.isEmpty()) {
                                     showAllBlogProgressBar.setVisibility(View.GONE);
                                     noDataLayout.setVisibility(View.VISIBLE);
+                                    adminShowAllBlogAdapter = new AdminShowAllCAAdapter(adminShowAllBlogModelArrayList, AdminCreateCurrentAffairFragment.this);
                                 } else {
                                     if (adminShowAllBlogAdapter == null) {
-                                        adminShowAllBlogAdapter = new AdminShowAllBlogAdapter(adminShowAllBlogModelArrayList, AdminBlogCreateDeleteFragment.this);
+                                        adminShowAllBlogAdapter = new AdminShowAllCAAdapter(adminShowAllBlogModelArrayList, AdminCreateCurrentAffairFragment.this);
                                         showAllBlogRecyclerView.setAdapter(adminShowAllBlogAdapter);
                                     } else {
                                         adminShowAllBlogAdapter.notifyDataSetChanged();
@@ -252,7 +301,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
-                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                            Log.e("JSON_ERRORBlog", "Error parsing JSON: " + e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -282,14 +331,17 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         };
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-
-    private void openCreateBlogDialog() {
+    public void initializeDialogContent(){
         createBlogDialogBox = new Dialog(requireContext());
         createBlogDialogBox.setContentView(R.layout.admin_create_blog_dialog_box);
+
+        dialogHeaderTxt = createBlogDialogBox.findViewById(R.id.txtAddData);
+        dialogHeaderTxt.setText("Add Current Affairs");
 
         categorySpinner = createBlogDialogBox.findViewById(R.id.categorySpinner);
         titleEditTxt = createBlogDialogBox.findViewById(R.id.titleEditTxt);
         keywordEditTxt = createBlogDialogBox.findViewById(R.id.keywordEditText);
+        slugEditTxt = createBlogDialogBox.findViewById(R.id.slugEditText);
         contentEditTxt = createBlogDialogBox.findViewById(R.id.contentEditText);
         tagsEditTxt = createBlogDialogBox.findViewById(R.id.tagsEditText);
 
@@ -300,6 +352,8 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         btnCross = createBlogDialogBox.findViewById(R.id.btnCross);
         uploadImage = createBlogDialogBox.findViewById(R.id.uploadImage);
         uploadImageName = createBlogDialogBox.findViewById(R.id.txtNoFileChosen);
+    }
+    private void openCreateBlogDialog() {
 
         adminTagsForDataALLModelArrayList = new ArrayList<>();
         tagsRecyclerView = createBlogDialogBox.findViewById(R.id.tagsRecycler);
@@ -307,7 +361,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         adminTagsForDataALLAdapter = new AdminTagsForDataALLAdapter(adminTagsForDataALLModelArrayList);
         tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
 
-        setupCategorySpinner(categorySpinner, titleEditTxt,keywordEditTxt,contentEditTxt,tagsEditTxt,null);
+        setupCategorySpinner(categorySpinner, titleEditTxt,keywordEditTxt,slugEditTxt,contentEditTxt,tagsEditTxt,null);
 
         tagsEditTxt = createBlogDialogBox.findViewById(R.id.tagsEditText);
 
@@ -368,7 +422,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
 
     }
 
-    public void setupCategorySpinner(Spinner categorySpinners,EditText titleEditTxt,EditText keywordEditTxt,EditText contentEditTxt,EditText tagsEditTxt ,AdminShowAllBlogModel currentCategory) {
+    public void setupCategorySpinner(Spinner categorySpinners,EditText titleEditTxt,EditText keywordEditTxt,EditText slugEditTxt,EditText contentEditTxt,EditText tagsEditTxt ,AdminShowAllBlogModel currentCategory) {
         // Assuming `subCategoryModelArrayList` contains the categories data
         ArrayList<String> categoryNameList = new ArrayList<>();
         categoryNameList.add("Select Category"); // First item is "Select Category"
@@ -397,6 +451,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                 if (position > 0) { // Ensure that a category is selected (not "Select Category")
                     titleEditTxt.setEnabled(true);
                     keywordEditTxt.setEnabled(true);
+                    slugEditTxt.setEnabled(true);
                     contentEditTxt.setEnabled(true);
                     tagsEditTxt.setEnabled(true);
                     categoryId = categoryModelArrayList.get(position - 1).getId();
@@ -405,6 +460,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                     categoryId = null;
                     titleEditTxt.setEnabled(false);
                     keywordEditTxt.setEnabled(false);
+                    slugEditTxt.setEnabled(false);
                     contentEditTxt.setEnabled(false);
                     tagsEditTxt.setEnabled(false);
                 }
@@ -479,6 +535,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                 if (data != null) {
                     image_uri = data.getData();
                     handleImageUri(image_uri);
+                    adminShowAllBlogAdapter.setCategoryImage(image_uri,null);
                 }
             }
         });
@@ -488,6 +545,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                 Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
                 if (bitmap != null) {
                     handleBitmap(bitmap);
+                    adminShowAllBlogAdapter.setCategoryImage(null,bitmap);
                 }
             }
         });
@@ -560,7 +618,7 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         }
         return file;
     }
-    private void openGallery() {
+    public void openGallery() {
         final CharSequence[] options = {"Open Camera", "Choose from Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Add Image");
@@ -605,19 +663,19 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         // Prepare form data
         Map<String, String> params = new HashMap<>();
         params.put("title", title);
+        params.put("slug", keyword);
         params.put("keyword", keyword);
         params.put("content", content);
-        params.put("category",categoryName);
+        params.put("categoryId",categoryId);
+        params.put("type","current_affairs");
 
-        // Add the tags as a comma-separated string
-        StringBuilder tagsBuilder = new StringBuilder();
+        JSONArray tagsArray = new JSONArray();
+// Loop through the tags and add them to the JSONArray
         for (AdminTagsForDataALLModel tag : adminTagsForDataALLModelArrayList) {
-            if (tagsBuilder.length() > 0) {
-                tagsBuilder.append(",");
-            }
-            tagsBuilder.append(tag.getTagName());
+            tagsArray.put(tag.getTagName());  // Add each tag to the array
         }
-        params.put("tags", tagsBuilder.toString());
+// Add the tags array to the params map
+        params.put("tags", tagsArray.toString());
 
         // Create a Map for files
         Map<String, File> files = new HashMap<>();
@@ -634,10 +692,9 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                     public void onResponse(String response) {
                         try {
                             JSONObject responseObject = new JSONObject(response);
-                            boolean status = responseObject.getBoolean("status");
+                            boolean status = responseObject.getBoolean("success");
                             if (status) {
-                                String message = responseObject.getString("message");
-                                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Current Affairs Created Successfully", Toast.LENGTH_SHORT).show();
                                 showAllBlogFunction();
                                 createBlogDialogBox.dismiss();
                             }
@@ -668,13 +725,13 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         MySingletonFragment.getInstance(this).addToRequestQueue(multipartRequest);
     }
     public  void getCategory(){
-        String categoryURL = Constant.BASE_URL + "category/getCategory";
+        String categoryURL = Constant.BASE_URL + "v1/category";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, categoryURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            boolean status = response.getBoolean("status");
+                            boolean status = response.getBoolean("success");
                             if (status) {
                                 categoryModelArrayList = new ArrayList<>();
                                 JSONArray jsonArray = response.getJSONArray("data");
@@ -684,17 +741,22 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
                                     String id = jsonObject2.getString("_id");
                                     String categoryName = jsonObject2.getString("categoryName");
                                     String description = jsonObject2.getString("slug");
-                                    String is_active = jsonObject2.getString("is_active");
-                                    JSONObject imageObj = jsonObject2.getJSONObject("image");
-                                    String imageUrl = imageObj.getString("url");
-
-                                    AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,imageUrl);
+                                    String is_active = jsonObject2.getString("isActive");
+                                    String updatedAt = jsonObject2.getString("updatedAt");
+                                    String imageUrl = "";
+                                    if (jsonObject2.has("image") && !jsonObject2.isNull("image")) {
+                                        JSONObject imageObj = jsonObject2.getJSONObject("image");
+                                        if (imageObj != null && !imageObj.isNull("url")) {
+                                            imageUrl = imageObj.getString("url");
+                                        }
+                                    }
+                                    AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(id, categoryName, description, is_active, imageUrl,updatedAt);
                                     categoryModelArrayList.add(categoryModel);
                                 }
                             }
                         } catch (JSONException e) {
                             Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                            Log.e("catch",e.toString());
+                            Log.e("cccatch",e.toString());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -715,6 +777,9 @@ public class AdminBlogCreateDeleteFragment extends Fragment {
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
     public String getCategoryName(){
-        return categoryName;
+        return categoryId;
+    }
+    public File getImageFile(){
+        return imageFile;
     }
 }

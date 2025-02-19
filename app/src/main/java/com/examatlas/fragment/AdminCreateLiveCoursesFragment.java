@@ -55,9 +55,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
 import com.examatlas.adapter.AdminShowAllLiveCoursesAdapter;
 import com.examatlas.adapter.AdminTagsForDataALLAdapter;
-import com.examatlas.models.AdminShowAllCategoryModel;
+import com.examatlas.models.Admin.AdminShowAllCategoryModel;
 import com.examatlas.models.AdminShowAllLiveCoursesModel;
-import com.examatlas.models.AdminShowAllSubCategoryModel;
+import com.examatlas.models.Admin.AdminShowAllSubCategoryModel;
 import com.examatlas.models.AdminShowAllSubjectModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
 import com.examatlas.models.extraModels.AdminCategoryModel;
@@ -649,6 +649,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String subCategoryId = jsonObject2.getString("_id");
+                                    String updatedAt = jsonObject2.getString("updatedAt");
 
                                     // Check if categoryId is null
                                     JSONObject jsonObject3 = jsonObject2.optJSONObject("categoryId");
@@ -663,7 +664,7 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                                     String subCategoryName = jsonObject2.getString("subCategoryName");
                                     String icActive = jsonObject2.getString("is_active");
 
-                                    AdminShowAllSubCategoryModel subCategoryModel = new AdminShowAllSubCategoryModel(categoryId,categoryName,subCategoryId,subCategoryName,icActive,0,0,0);
+                                    AdminShowAllSubCategoryModel subCategoryModel = new AdminShowAllSubCategoryModel(categoryId,categoryName,subCategoryId,subCategoryName,null,icActive,updatedAt,0,0,0);
                                     subCategoryModelArrayList.add(subCategoryModel);
                                     setUpSubCategorySpinner(null);
                                 }
@@ -866,10 +867,11 @@ public class AdminCreateLiveCoursesFragment extends Fragment {
                                     String categoryName = jsonObject2.getString("categoryName");
                                     String description = jsonObject2.getString("slug");
                                     String is_active = jsonObject2.getString("is_active");
+                                    String updatedAt = jsonObject2.getString("updatedAt");
                                     JSONObject imageObj = jsonObject2.getJSONObject("image");
                                     String imageUrl = imageObj.getString("url");
 
-                                    AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,imageUrl);
+                                    AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,imageUrl,updatedAt);
                                     categoryModelArrayList.add(categoryModel);
                                 }
                             }

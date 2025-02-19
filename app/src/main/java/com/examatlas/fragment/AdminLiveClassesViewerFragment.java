@@ -18,10 +18,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.examatlas.R;
-import com.examatlas.activities.AdminDashboardActivity;
+import com.examatlas.activities.Admin.AdminDashboardActivity;
 import com.examatlas.activities.AdminJoinLiveClassActivity;
-import com.examatlas.activities.AdminLiveCoursesClassesActivity;
-import com.examatlas.activities.DashboardActivity;
 import com.examatlas.adapter.AdminLiveClassesViewerAdapter;
 
 import org.json.JSONObject;

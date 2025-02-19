@@ -190,7 +190,22 @@ public class EbookLibraryFragment extends Fragment {
 
                                     // Convert the book object into a Map to make it dynamic
                                     Map<String, Object> bookData = new Gson().fromJson(jsonObject2.toString(), Map.class);
-                                    AllBooksModel model = new AllBooksModel(bookData); // Pass the map to the model
+                                    // Extract dimensions (assuming they are present in the 'dimensions' field of the book data)
+                                    String length = "";
+                                    String width = "";
+                                    String height = "";
+                                    String weight = "";
+
+                                    if (bookData.containsKey("dimensions")) {
+                                        Map<String, Object> dimensions = (Map<String, Object>) bookData.get("dimensions");
+                                        length = dimensions.containsKey("length") ? dimensions.get("length").toString() : "";
+                                        width = dimensions.containsKey("width") ? dimensions.get("width").toString() : "";
+                                        height = dimensions.containsKey("height") ? dimensions.get("height").toString() : "";
+                                        weight = dimensions.containsKey("weight") ? dimensions.get("weight").toString() : "";
+                                    }
+
+                                    // Pass the data and dimensions to the model constructor
+                                    AllBooksModel model = new AllBooksModel(bookData, length, width, height, weight); // Pass map and dimensions // Pass the map to the model
 
                                     purchasedEbooksModelArrayList.add(model);
                                 }
@@ -268,7 +283,41 @@ public class EbookLibraryFragment extends Fragment {
 
                                     // Convert the book object into a Map to make it dynamic
                                     Map<String, Object> bookData = new Gson().fromJson(jsonObject2.toString(), Map.class);
-                                    AllBooksModel model = new AllBooksModel(bookData); // Pass the map to the model
+                                    // Extract dimensions (assuming they are present in the 'dimensions' field of the book data)
+                                    String length = "";
+                                    String width = "";
+                                    String height = "";
+                                    String weight = "";
+
+
+                                    if (bookData.containsKey("dimensions")) {
+                                        Object dimensionsObj = bookData.get("dimensions");
+
+                                        if (dimensionsObj instanceof Map) {
+                                            // If it's already a Map, we can safely cast
+                                            Map<String, Object> dimensions = (Map<String, Object>) dimensionsObj;
+                                            length = dimensions.containsKey("length") ? dimensions.get("length").toString() : "";
+                                            width = dimensions.containsKey("width") ? dimensions.get("width").toString() : "";
+                                            height = dimensions.containsKey("height") ? dimensions.get("height").toString() : "";
+                                            weight = dimensions.containsKey("weight") ? dimensions.get("weight").toString() : "";
+                                        } else if (dimensionsObj instanceof String) {
+                                            // If it's a String (likely JSON), parse it into a Map
+                                            String dimensionsJson = dimensionsObj.toString();
+                                            try {
+                                                Map<String, Object> dimensions = new Gson().fromJson(dimensionsJson, Map.class);
+                                                length = dimensions.containsKey("length") ? dimensions.get("length").toString() : "";
+                                                width = dimensions.containsKey("width") ? dimensions.get("width").toString() : "";
+                                                height = dimensions.containsKey("height") ? dimensions.get("height").toString() : "";
+                                                weight = dimensions.containsKey("weight") ? dimensions.get("weight").toString() : "";
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                // Handle parsing errors here if necessary
+                                            }
+                                        }
+                                    }
+
+                                    // Pass the data and dimensions to the model constructor
+                                    AllBooksModel model = new AllBooksModel(bookData, length, width, height, weight); // Pass map and dimensions
 
                                     all_E_BooksModelArrayList.add(model);
                                 }

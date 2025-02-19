@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
-import com.examatlas.models.AdminShowAllCategoryModel;
 import com.examatlas.models.Books.CategoryModel;
 
 import java.util.ArrayList;

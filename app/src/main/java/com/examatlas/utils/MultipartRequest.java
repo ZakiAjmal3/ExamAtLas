@@ -126,6 +126,8 @@ public class MultipartRequest extends Request<String> {
             mimeType = "image/png";
         } else if (fileName.endsWith(".gif")) {
             mimeType = "image/gif";
+        } else if (fileName.endsWith(".epub")) {
+            mimeType = "application/epub+zip";  // Set MIME type for EPUB
         }
         return mimeType;
     }

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/nestScrollView">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
         <TextView
             android:id="@+id/txtBlog"
             android:layout_width="wrap_content"
@@ -12,53 +16,39 @@
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
             android:textColor="@color/black"/>
-        <TextView
-            android:id="@+id/txtWelcome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Welcome to Blog Dashboard"
-            android:textSize="14sp"
-            android:layout_below="@id/txtBlog"
-            android:layout_marginLeft="20dp"/>
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCreate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/seed"
-            android:fontFamily="@font/poppins"
-            android:text="Create +"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_alignParentEnd="true"/>
+                <TextView
+                    android:id="@+id/btnCreate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:paddingTop="9dp"
+                    android:paddingBottom="7dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:background="@drawable/rounded_corner_for_rate_product"
+                    android:text="Add +"
+                    android:textColor="@color/blue"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="21dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@id/txtBlog"
+                    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                    />
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_below="@id/txtWelcome"
+            android:layout_below="@id/txtBlog"
             android:background="@drawable/box_layout_with_border"
             android:focusable="true"
             android:clickable="true"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/btnSearch"/>
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/seed"
-            android:fontFamily="@font/poppins"
-            android:text="Search"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="20dp"
-            android:layout_below="@id/txtWelcome"
-            android:layout_alignParentEnd="true"/>
+            android:layout_toLeftOf="@id/btnCreate"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/showBlogRecycler"
             android:layout_width="match_parent"
@@ -83,7 +73,6 @@
             android:translationY="20dp"
             android:layout_marginTop="20dp"
             android:visibility="gone">
-
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -127,8 +116,15 @@
                                     android:textSize="12sp" />
 
                         </LinearLayout>
-
                 </LinearLayout>
-
         </RelativeLayout>
-</RelativeLayout>
+        <ProgressBar
+            android:id="@+id/nextItemLoadingProgressBar"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"/>
+        </RelativeLayout>
+</androidx.core.widget.NestedScrollView>

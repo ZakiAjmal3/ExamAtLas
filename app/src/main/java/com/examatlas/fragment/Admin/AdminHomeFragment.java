@@ -1,15 +1,18 @@
-package com.examatlas.fragment;
+package com.examatlas.fragment.Admin;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,10 +22,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.adapter.AdminHomePage.TopCategoryAdapter;
 import com.examatlas.adapter.AdminHomePage.TopCustomerAdapter;
-import com.examatlas.models.AdminHomePage.RecentOrdersModel;
+import com.examatlas.models.Admin.AdminOrdersSectionModel;
 import com.examatlas.models.AdminHomePage.StockReportModel;
 import com.examatlas.models.AdminHomePage.TopCategoryModel;
 import com.examatlas.models.AdminHomePage.TopCustomersModel;
@@ -60,7 +64,7 @@ public class AdminHomeFragment extends Fragment {
     private TableLayout recentOrderTableLayout,topSellingTableLayout,stockReportTableLayout;
     TextView totalProductsTxt, totalOrdersTxt, totalStudentsTxt, totalRevenueTxt;
     RecyclerView topCategoryRecyclerView, topCustomersRecyclerView;
-    ArrayList<RecentOrdersModel> recentOrdersModelArrayList;
+    ArrayList<AdminOrdersSectionModel> recentOrdersModelArrayList;
     ArrayList<TopCustomersModel> topCustomersModelArrayList;
     ArrayList<TopCategoryModel> topCategoryModelArrayList;
     ArrayList<TopSellingProductModel> topSellingProductModelArrayList;
@@ -138,16 +142,33 @@ public class AdminHomeFragment extends Fragment {
                                 JSONArray rOrderJArray = dataObj.getJSONArray("recentOrders");
                                 for (int i = 0; i<rOrderJArray.length();i++){
                                     JSONObject rorderObj = rOrderJArray.getJSONObject(i);
-                                    String updatedDate = rorderObj.getString("updatedAt");
-                                    String customerName = rorderObj.getJSONObject("customerDetails").getString("firstName") + " " +
-                                            rorderObj.getJSONObject("customerDetails").getString("lastName");
                                     JSONObject orderObj = rorderObj.getJSONObject("orderDetails");
-                                    String orderId = orderObj.getString("orderId");
+                                    JSONArray productArray = orderObj.getJSONArray("items");
+                                    if (productArray == null){
+                                        productArray = orderObj.getJSONArray("items");
+                                        Log.e("book Empty", productArray.toString());
+                                    }
+                                    String bookTitle = "" ,bookPrice = "" ,bookImgURL = "";
+                                    if (productArray.length() > 0) {
+                                        Log.e("book", productArray.toString());
+                                        JSONObject bookItemObj = productArray.getJSONObject(0);
+                                        JSONObject productObj = bookItemObj.getJSONObject("product");
+                                        bookTitle = productObj.getString("title");
+                                        bookPrice = productObj.getString("price");
+                                        JSONArray bookImageArray = productObj.getJSONArray("images");
+                                        if (bookImageArray.length() > 0) {
+                                            bookImgURL = bookImageArray.getJSONObject(0).getString("url");
+                                        }
+                                    }
                                     String orderStatus = orderObj.getString("status");
-                                    String totalAmount = orderObj.getString("totalAmount");
-                                    String productTitle = orderObj.getJSONArray("items").getJSONObject(0).getJSONObject("product").getString("title");
-                                    String paymentStatus = orderStatus.equals("Confirmed") ? "Paid" : "Pending";
-                                    recentOrdersModelArrayList.add(new RecentOrdersModel(orderId,customerName,updatedDate,paymentStatus,totalAmount,productTitle,orderStatus));
+                                    String orderId = orderObj.getString("orderId");
+                                    String date = orderObj.getString("createdAt");
+                                    String totalPrice = orderObj.getString("totalAmount");
+                                    JSONObject updateByObj = orderObj.getJSONObject("customerData");
+                                    String customerName = updateByObj.getString("firstName") + " "
+                                            + updateByObj.getString("lastName");
+                                    String customerEmail = updateByObj.getString("email");
+                                    recentOrdersModelArrayList.add(new AdminOrdersSectionModel(orderId,customerName,customerEmail,date,orderStatus,totalPrice,bookTitle,bookImgURL,bookPrice,orderStatus));
                                 }
 
                                 //Top Customer Data fetching/setting
@@ -249,35 +270,71 @@ public class AdminHomeFragment extends Fragment {
         topCustomersRecyclerView.setVisibility(View.VISIBLE);
 
         for(int i = 0; i<recentOrdersModelArrayList.size();i++){
-            TableRow tableRow = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.admin_home_recent_order_table_item_layout, null);
-            ((TextView) tableRow.findViewById(R.id.orderIdTxt)).setText(recentOrdersModelArrayList.get(i).getOrderId());
-            ((TextView) tableRow.findViewById(R.id.customerNameTxt)).setText(recentOrdersModelArrayList.get(i).getCustomerName());
+            TableRow tableRow = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.admin_orders_section_table_item_layout, null);
+
+            ((TextView) tableRow.findViewById(R.id.orderIdTxt)).setText("# " +recentOrdersModelArrayList.get(i).getOrderId());
+
+            String customerName = recentOrdersModelArrayList.get(i).getCustomerName();
+            Character customerFirstLetter = customerName.charAt(0);
+            ((TextView) tableRow.findViewById(R.id.profileTxt)).setText(customerFirstLetter.toString().toUpperCase());
+            ((TextView) tableRow.findViewById(R.id.customerNameTxt)).setText(customerName);
+            ((TextView) tableRow.findViewById(R.id.customerEmailTxt)).setText(recentOrdersModelArrayList.get(i).getCustomerEmail());
 
             String inputDate = recentOrdersModelArrayList.get(i).getDate();
             // Remove the 'Z' for the time zone (it represents UTC)
             inputDate = inputDate.replace("Z", "");
-
             // Define the input format
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
             Date date = inputFormat.parse(inputDate);
             // Define the desired output format
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yy");
-
             // Format and print the date
             String formattedDate = outputFormat.format(date);
             ((TextView) tableRow.findViewById(R.id.dateTxt)).setText(formattedDate);
 
-            ((TextView) tableRow.findViewById(R.id.paymentTxt)).setText(recentOrdersModelArrayList.get(i).getPayment());
-            ((TextView) tableRow.findViewById(R.id.totalPriceTxt)).setText(recentOrdersModelArrayList.get(i).getTotalPrice());
-            ((TextView) tableRow.findViewById(R.id.productsTxt)).setText(recentOrdersModelArrayList.get(i).getProducts());
-            ((TextView) tableRow.findViewById(R.id.orderStatusTxt)).setText(recentOrdersModelArrayList.get(i).getOrderStatus());
+            String paymentStatus = recentOrdersModelArrayList.get(i).getPayment();
+            TextView paymentTxt = tableRow.findViewById(R.id.paymentTxt);
+            TextView orderStatusTxt = tableRow.findViewById(R.id.orderStatusTxt);
+
+            if (paymentStatus.equalsIgnoreCase("Confirmed")) {
+                paymentTxt.setText("Paid");
+                paymentTxt.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
+                orderStatusTxt.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
+            } else {
+                paymentTxt.setText("Pending");
+                paymentTxt.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red_orange));
+                orderStatusTxt.setTextColor(ContextCompat.getColor(getContext(), R.color.red_orange));
+            }
+            ((TextView) tableRow.findViewById(R.id.totalPriceTxt)).setText("₹ " + recentOrdersModelArrayList.get(i).getTotalPrice());
+
+            String bookTitle = recentOrdersModelArrayList.get(i).getProductsName();
+            String bookPrice = recentOrdersModelArrayList.get(i).getProductsPrice();
+            String bookImg = recentOrdersModelArrayList.get(i).getProductImg();
+            TextView bookTitleTxt,bookPriceTxt;
+            ImageView bookImgView;
+            bookTitleTxt = tableRow.findViewById(R.id.bookTitleTxt);
+            bookPriceTxt = tableRow.findViewById(R.id.bookPriceTxt);
+            bookImgView = tableRow.findViewById(R.id.productImg);
+            bookTitleTxt.setEllipsize(TextUtils.TruncateAt.END);  // Always set ellipsize
+            bookTitleTxt.setMaxWidth(500);  // Constrain width to allow ellipsize
+            bookTitleTxt.setSingleLine(true);
+            bookTitleTxt.setText(bookTitle);
+            bookPriceTxt.setText("₹ " + bookPrice);
+            Glide.with(getContext()).load(bookImg).into(bookImgView);
+
+            orderStatusTxt.setText(recentOrdersModelArrayList.get(i).getOrderStatus());
 
             recentOrderTableLayout.addView(tableRow);
         }
         setupBarChart();
         for(int i = 0; i<topSellingProductModelArrayList.size();i++){
             TableRow tableRow = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.admin_home_top_selling_product_table_item_layout, null);
-            ((TextView) tableRow.findViewById(R.id.itemNameTxt)).setText(topSellingProductModelArrayList.get(i).getItemName());
+            TextView titleTxt = tableRow.findViewById(R.id.itemNameTxt);
+            String titleStr = topSellingProductModelArrayList.get(i).getItemName();
+            titleTxt.setEllipsize(TextUtils.TruncateAt.END);  // Always set ellipsize
+            titleTxt.setMaxWidth(500);  // Constrain width to allow ellipsize
+            titleTxt.setSingleLine(true);  // Ensure it's a single line for ellipsize
+            titleTxt.setText(titleStr);
             ((TextView) tableRow.findViewById(R.id.priceTxt)).setText(topSellingProductModelArrayList.get(i).getPrice());
             ((TextView) tableRow.findViewById(R.id.discountTxt)).setText(topSellingProductModelArrayList.get(i).getDiscount());
             ((TextView) tableRow.findViewById(R.id.soldTxt)).setText(topSellingProductModelArrayList.get(i).getSold());
@@ -286,7 +343,12 @@ public class AdminHomeFragment extends Fragment {
         }
         for(int i = 0; i<stockReportModelArrayList.size();i++){
             TableRow tableRow = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.admin_home_stock_report_table_item_layout, null);
-            ((TextView) tableRow.findViewById(R.id.itemNameTxt)).setText(stockReportModelArrayList.get(i).getItem());
+            TextView titleTxt = tableRow.findViewById(R.id.itemNameTxt);
+            String titleStr = stockReportModelArrayList.get(i).getItem();
+            titleTxt.setEllipsize(TextUtils.TruncateAt.END);  // Always set ellipsize
+            titleTxt.setMaxWidth(500);  // Constrain width to allow ellipsize
+            titleTxt.setSingleLine(true);  // Ensure it's a single line for ellipsize
+            titleTxt.setText(titleStr);
             ((TextView) tableRow.findViewById(R.id.priceTxt)).setText(stockReportModelArrayList.get(i).getPrice());
             ((TextView) tableRow.findViewById(R.id.stockTxt)).setText(stockReportModelArrayList.get(i).getStock());
             stockReportTableLayout.addView(tableRow);
@@ -312,8 +374,8 @@ public class AdminHomeFragment extends Fragment {
 
         // Customize the bar chart
         barDataSet.setColor(getResources().getColor(R.color.seed));
-        barDataSet.setValueTextColors(Collections.singletonList(getResources().getColor(R.color.mat_yellow)));
-        barDataSet.setValueTextSize(10f);
+        barDataSet.setValueTextColors(Collections.singletonList(getResources().getColor(R.color.green)));
+        barDataSet.setValueTextSize(12f);
 
         barChart.getDescription().setEnabled(false);
         barChart.setFitBars(true);

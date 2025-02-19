@@ -1,7 +1,6 @@
 package com.examatlas.activities;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -28,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.chaos.view.PinView;
 import com.examatlas.R;
+import com.examatlas.activities.Admin.AdminDashboardActivity;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
 import com.examatlas.utils.SessionManager;
@@ -251,22 +251,9 @@ public class OtpActivity extends AppCompatActivity {
                                         sessionManager.saveLoginDetails2(user_id, firstName, lastName,null, email, state, city, role, isActive, step, authToken, createdAt, updatedAt, null);
                                         sessionManager.setCartItemQuantity();
                                         sessionManager.addItemsToWishListServer(authToken);
-                                        if (role.equalsIgnoreCase("student")) {
-                                            if (isActive.equals("true")) {
-                                                Intent intent = new Intent(OtpActivity.this, DashboardActivity.class);
-                                                startActivity(intent);
-                                                finish();
-                                            } else if (step.equals("1")) {
-                                                Intent intent = new Intent(OtpActivity.this, DashboardActivity.class);
-                                                intent.putExtra("task", task);
-                                                startActivity(intent);
-                                                finish();
-                                            }
-                                        }else {
-                                            Intent intent = new Intent(OtpActivity.this, AdminDashboardActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        }
+                                        Intent intent = new Intent(OtpActivity.this, DashboardActivity.class);
+                                        startActivity(intent);
+                                        finish();
                                     }
                                 } catch (JSONException e) {
 

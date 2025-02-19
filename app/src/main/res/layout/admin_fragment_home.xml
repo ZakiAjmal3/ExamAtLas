@@ -425,6 +425,7 @@
                                 android:text="View All >"
                                 android:textColor="@color/seed"
                                 android:textSize="11sp"
+                                android:visibility="gone"
                                 />
                         </RelativeLayout>
                         <androidx.recyclerview.widget.RecyclerView
@@ -481,6 +482,7 @@
                                 android:text="View All >"
                                 android:textColor="@color/seed"
                                 android:textSize="11sp"
+                                android:visibility="gone"
                                 />
                         </RelativeLayout>
                         <androidx.recyclerview.widget.RecyclerView
@@ -537,6 +539,7 @@
                                 android:text="View All >"
                                 android:textColor="@color/seed"
                                 android:textSize="11sp"
+                                android:visibility="gone"
                                 />
                         </RelativeLayout>
                         <HorizontalScrollView
@@ -555,7 +558,8 @@
                                 <TableRow
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:background="@color/light_dark_grey2">
+                                    android:background="@color/light_seed"
+                                    android:requiresFadingEdge="horizontal">
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -636,7 +640,7 @@
                                 android:id="@+id/topSellingProductsTxt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Top Customers"
+                                android:text="Top Selling Products"
                                 android:textColor="@color/black"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -649,6 +653,7 @@
                                 android:text="View All >"
                                 android:textColor="@color/seed"
                                 android:textSize="11sp"
+                                android:visibility="gone"
                                 />
                         </RelativeLayout>
                         <HorizontalScrollView
@@ -667,7 +672,8 @@
                                 <TableRow
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:background="@color/light_dark_grey2">
+                                    android:background="@color/light_seed"
+                                    android:requiresFadingEdge="vertical">
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -750,6 +756,7 @@
                                 android:text="View All >"
                                 android:textColor="@color/seed"
                                 android:textSize="11sp"
+                                android:visibility="gone"
                                 />
                         </RelativeLayout>
                         <HorizontalScrollView
@@ -768,7 +775,7 @@
                                 <TableRow
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:background="@color/light_dark_grey2">
+                                    android:background="@color/light_seed">
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -784,7 +791,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Discount"
+                                        android:text="Stock"
                                         android:padding="10dp"
                                         android:textColor="@color/black" />
 

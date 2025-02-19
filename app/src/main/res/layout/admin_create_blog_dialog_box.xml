@@ -95,6 +95,28 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"/>
         <TextView
+            android:id="@+id/txtSlug"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Slug"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/keywordEditText"/>
+        <EditText
+            android:id="@+id/slugEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/box_layout_with_border"
+            android:layout_below="@id/txtSlug"
+            android:hint="Slug"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"/>
+        <TextView
             android:id="@+id/txtContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -104,7 +126,7 @@
             android:textStyle="bold"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
-            android:layout_below="@id/keywordEditText"/>
+            android:layout_below="@id/slugEditText"/>
         <EditText
             android:id="@+id/contentEditText"
             android:layout_width="match_parent"

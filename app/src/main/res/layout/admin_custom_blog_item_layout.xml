@@ -20,7 +20,7 @@
             >
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/imageCardView"
-                android:layout_width="130dp"
+                android:layout_width="110dp"
                 android:layout_height="match_parent"
                 app:cardCornerRadius="0dp"
                 app:cardElevation="2dp"
@@ -42,28 +42,13 @@
                 android:padding="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="5dp"
-                android:src="@drawable/ic_edit"
+                android:src="@drawable/ic_three_dot"
                 android:layout_alignParentEnd="true"
                 android:foreground="?android:attr/selectableItemBackgroundBorderless"/>
-            <ImageView
-                android:id="@+id/deleteBlogBtn"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginBottom="5dp"
-                android:src="@drawable/ic_delete"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                 />
-
             <TextView
                 android:id="@+id/txtBlogTitle"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
                 android:text="Blog Title"
                 android:textColor="@color/black"
@@ -71,45 +56,8 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="33dp"
                 android:layout_marginTop="5dp"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1"
-                android:shadowColor="#000000"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="0.5" />
-<!--            <ScrollView-->
-<!--                android:id="@+id/scrollV"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_below="@id/txtBlogKeyword"-->
-<!--                android:layout_above="@id/deleteBlogBtn"-->
-<!--                android:layout_marginBottom="5dp">-->
-<!--            <WebView-->
-<!--                android:id="@+id/content"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:fontFamily="@font/poppins"-->
-<!--                android:text="CONTENT"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="12sp"-->
-<!--                android:layout_marginTop="5dp"-->
-<!--                android:layout_marginLeft="10dp"-->
-<!--                android:layout_marginRight="10dp"-->
-<!--                android:layout_marginBottom="10dp"-->
-<!--                android:layout_below="@id/txtBlogKeyword"/>-->
-<!--            </ScrollView>-->
-            <LinearLayout
-                android:id="@+id/layout1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:orientation="horizontal"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="33dp"
-                android:layout_above="@id/layout2"
-                android:layout_toRightOf="@id/imageCardView"
-                >
+                android:textSize="16sp"
+                android:textStyle="bold" />
                 <TextView
                     android:id="@+id/txtCategory"
                     android:layout_width="wrap_content"
@@ -117,18 +65,11 @@
                     android:fontFamily="@font/poppins"
                     android:text="Category:"
                     android:textColor="@color/dark_grey"
-                    android:textSize="9sp" />
-
-                <TextView
-                    android:id="@+id/categoryTxt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:fontFamily="@font/poppins"
-                    android:text="Category Text"
-                    android:textColor="#4CAF50"
-                    android:textSize="9sp" />
-            </LinearLayout>
+                    android:textSize="13sp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@id/imageCardView"
+                    android:layout_below="@id/txtBlogTitle"
+                    />
             <LinearLayout
                 android:id="@+id/layout2"
                 android:layout_width="wrap_content"
@@ -146,9 +87,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins"
-                    android:text="Tags:"
+                    android:text="Update at:"
                     android:textColor="@color/dark_grey"
-                    android:textSize="9sp" />
+                    android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/tagTxt"
@@ -158,7 +99,7 @@
                     android:fontFamily="@font/poppins"
                     android:text="Tag Text"
                     android:textColor="#4CAF50"
-                    android:textSize="9sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
         </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

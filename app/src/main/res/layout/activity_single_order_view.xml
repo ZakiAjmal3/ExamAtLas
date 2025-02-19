@@ -273,6 +273,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                    android:visibility="gone"
                     >
                     <ImageView
                         android:layout_width="20dp"
@@ -292,6 +293,36 @@
                         android:textColor="@color/red"
                         android:textSize="14sp" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentEnd="true"
+                        android:background="@color/light_dark_grey" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/viewEBookRL"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                    >
+
+                    <TextView
+                        android:id="@+id/viewEBookTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:text="View EBook"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@id/viewEBookTxt"
+                        android:src="@drawable/arrow"
+                     />
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
@@ -495,10 +526,44 @@
                     android:layout_marginLeft="15dp" />
             </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/writeReviewRL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="5dp"
+                android:background="@color/white"
+                android:layout_marginBottom="10dp"
+                android:layout_below="@id/shippingInfoRL">
+                <TextView
+                    android:id="@+id/writeReviewTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/blue"
+                    android:text="Write a review"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"/>
+                <com.examatlas.activities.Books.CustomRatingBar
+                    android:id="@+id/ratingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/writeReviewTxt"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"/>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/arrow"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"/>
+            </RelativeLayout>
+            <RelativeLayout
                 android:id="@+id/pricingInfoRL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/shippingInfoRL"
+                android:layout_below="@id/writeReviewRL"
                 android:elevation="5dp"
                 android:background="@color/white"
                 android:paddingBottom="20dp">

@@ -15,9 +15,8 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.examatlas.R;
-import com.examatlas.activities.AdminDashboardActivity;
+import com.examatlas.activities.Admin.AdminDashboardActivity;
 import com.examatlas.activities.Books.MyBookOrderHistory;
-import com.examatlas.activities.DashboardActivity;
 import com.examatlas.activities.LoginWithEmailActivity;
 import com.examatlas.activities.MainActivity;
 import com.examatlas.utils.SessionManager;
@@ -39,7 +38,7 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), R.color.seed));
-
+        sessionManager = new  SessionManager(getContext());
         txtName = view.findViewById(R.id.txtName);
         txtEmail = view.findViewById(R.id.txtEmail);
         txtNumber = view.findViewById(R.id.txtNumber);
@@ -55,7 +54,6 @@ public class ProfileFragment extends Fragment {
         }
         imgUser = view.findViewById(R.id.imgUser);
         imgEdit = view.findViewById(R.id.imgEdit);
-        sessionManager = new  SessionManager(getContext());
 
         txtName.setText(sessionManager.getUserData().get("firstName") + " " + sessionManager.getUserData().get("lastName"));
         txtEmail.setText(sessionManager.getUserData().get("email"));

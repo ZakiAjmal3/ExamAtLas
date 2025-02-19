@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.examatlas.R;
+import com.examatlas.activities.Admin.AdminDashboardActivity;
 import com.examatlas.activities.Books.EBooks.EBookSeachingActivity;
 import com.examatlas.activities.Books.MyBookOrderHistory;
 import com.examatlas.fragment.BlogFragment;
@@ -53,7 +54,7 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dasbboard);
-
+        sessionManager = new SessionManager(this);
         bottom_navigation = findViewById(R.id.bottom_navigation);
         imgMenu = findViewById(R.id.imgMenu);
         imgSearch = findViewById(R.id.imgSearch);
@@ -61,7 +62,6 @@ public class DashboardActivity extends AppCompatActivity {
         cardJoin = findViewById(R.id.cardJoin);
         animationView = findViewById(R.id.animationView);
         liveNotificationLayout = findViewById(R.id.liveNotificationLayout);
-        sessionManager = new SessionManager(this);
         currentFragment = new HomeFragment();
         loadFragment(new HomeFragment());
 
@@ -171,7 +171,7 @@ public class DashboardActivity extends AppCompatActivity {
 //    }
 
     Dialog drawerDialog;
-    LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks,layoutCurrentAffairs, layoutLogout,layoutLogin, layoutShare,layoutEbook,layoutAdminDashboard,
+    LinearLayout transLayer, layoutHome, layoutBlogs, layoutPurchaseBooks,layoutCurrentAffairs, layoutLogout,layoutLogin,layoutEbook,layoutAdminDashboard,
              layoutOrderHistory;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
@@ -190,7 +190,6 @@ public class DashboardActivity extends AppCompatActivity {
         layoutCurrentAffairs = drawerDialog.findViewById(R.id.layoutCurrentAffairs);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
         layoutLogin = drawerDialog.findViewById(R.id.layoutLogin);
-        layoutShare = drawerDialog.findViewById(R.id.layoutShare);
         txtUsername = drawerDialog.findViewById(R.id.txtUsername);
         txtUserEmail = drawerDialog.findViewById(R.id.txtUserEmail);
         layoutOrderHistory = drawerDialog.findViewById(R.id.layoutMyOrders);
@@ -313,7 +312,7 @@ public class DashboardActivity extends AppCompatActivity {
         layoutAdminDashboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DashboardActivity.this,AdminDashboardActivity.class));
+                startActivity(new Intent(DashboardActivity.this, AdminDashboardActivity.class));
                 finish();
             }
         });

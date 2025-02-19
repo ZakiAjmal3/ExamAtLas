@@ -1,15 +1,24 @@
-package com.examatlas.models;
+package com.examatlas.models.Admin;
 
 public class AdminShowAllCategoryModel {
-    String id,categoryName, slug,isActive,imageUrl;
+    String id,categoryName, slug,isActive,imageUrl,updatedAt;
 
-    public AdminShowAllCategoryModel(String id, String categoryName, String slug, String isActive, String imageUrl) {
+    public AdminShowAllCategoryModel(String id, String categoryName, String slug, String isActive, String imageUrl, String updatedAt) {
         this.id = id;
         this.categoryName = categoryName;
         this.slug = slug;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
+        this.updatedAt = updatedAt;
 
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getImageUrl() {

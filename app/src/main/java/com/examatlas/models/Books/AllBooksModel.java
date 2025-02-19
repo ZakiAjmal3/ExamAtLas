@@ -9,8 +9,19 @@ public class AllBooksModel {
 
     private Map<String, Object> data;  // Holds dynamic data
 
-    public AllBooksModel(Map<String, Object> data) {
+    // Dimensions fields
+    private String length;
+    private String width;
+    private String height;
+    private String weight;
+
+    // Constructor to initialize data and dimensions
+    public AllBooksModel(Map<String, Object> data, String length, String width, String height, String weight) {
         this.data = data;
+        this.length = length;
+        this.width = width;
+        this.height = height;
+        this.weight = weight;
     }
 
     // Getter and Setter for the map
@@ -22,8 +33,26 @@ public class AllBooksModel {
     public String getString(String key) {
         return data.containsKey(key) ? data.get(key).toString() : "";
     }
+
     public int getInt(String key) {
         return data.containsKey(key) ? Integer.parseInt(data.get(key).toString()) : 0;
+    }
+
+    // Getter for dimensions
+    public String getLength() {
+        return length;
+    }
+
+    public String getWidth() {
+        return width;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public String getWeight() {
+        return weight;
     }
 
     // Parse images (assuming the 'images' field is an array of objects in the JSON)
@@ -44,5 +73,6 @@ public class AllBooksModel {
         }
         return images;
     }
+
     // You can add other methods like getTags(), getAuthor(), etc., as needed
 }

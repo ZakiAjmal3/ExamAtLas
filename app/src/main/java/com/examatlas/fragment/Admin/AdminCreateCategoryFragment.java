@@ -1,4 +1,4 @@
-package com.examatlas.fragment;
+package com.examatlas.fragment.Admin;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -42,6 +43,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,8 +53,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.adapter.AdminShowAllCategoryAdapter;
-import com.examatlas.models.AdminShowAllCategoryModel;
+import com.examatlas.activities.Books.SingleBookDetailsActivity;
+import com.examatlas.adapter.Admin.AdminShowAllCategoryAdapter;
+import com.examatlas.models.Admin.AdminShowAllCategoryModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MultipartRequest;
 import com.examatlas.utils.MySingleton;
@@ -72,7 +75,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AdminCreateCategoryFragment extends Fragment {
-    Button createBtn,searchBtn;
+    TextView createBtn;
     SearchView searchView;
     RecyclerView showCategoryRecycler;
     RelativeLayout noDataLayout;
@@ -80,8 +83,7 @@ public class AdminCreateCategoryFragment extends Fragment {
     AdminShowAllCategoryAdapter categoryAdapter;
     AdminShowAllCategoryModel categoryModel;
     ArrayList<AdminShowAllCategoryModel> categoryModelArrayList;
-    private final String categoryURL = Constant.BASE_URL + "category/getCategory";
-    private final String createCategoryURL = Constant.BASE_URL + "category/createCategory";
+    private final String categoryURL = Constant.BASE_URL + "v1/category";
     SessionManager sessionManager;
     String authToken;
     private String searchQuery = "";
@@ -91,10 +93,10 @@ public class AdminCreateCategoryFragment extends Fragment {
     private ActivityResultLauncher<Intent> galleryLauncher;
     private ActivityResultLauncher<Intent> cameraLauncher;
     private static final int REQUEST_CAMERA_PERMISSION = 1001;
-    private Uri image_uri;
-    private File imageFile;
+    private Uri image_uri = null;
+    private File imageFile = null;
     private NestedScrollView nestedSV;
-
+    Dialog progressDialog;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -102,7 +104,6 @@ public class AdminCreateCategoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.admin_fragment_create_category, container, false);
 
         createBtn = view.findViewById(R.id.btnCreate);
-        searchBtn = view.findViewById(R.id.btnSearch);
         searchView = view.findViewById(R.id.searchView);
         showCategoryRecycler = view.findViewById(R.id.showAllCategoryRecycler);
         noDataLayout = view.findViewById(R.id.noDataLayout);
@@ -113,34 +114,41 @@ public class AdminCreateCategoryFragment extends Fragment {
         sessionManager = new SessionManager(getContext());
         authToken = sessionManager.getUserData().get("authToken");
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        showCategoryRecycler.setLayoutManager(linearLayoutManager);
+        showCategoryRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         getAllCategory();
-
+        initializeDialogBoxContent();
         createBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                imageFile = null;
+                image_uri = null;
+                titleEditTxt.setText(null);
+                slugEditTxt.setText(null);
+                uploadImageBtn.setImageResource(R.drawable.noimage);
                 openDialogBoxCreateSubject();
             }
         });
         nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                // on scroll change we are checking when users scroll as bottom.
-                if (scrollY == v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
-                    // in this method we are incrementing page number,
-                    // making progress bar visible and calling get data method.
+            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // Check if we are near the bottom, but leave a small threshold to avoid issues with small screens
+                Log.e("ScrollDebug", "scrollY: " + scrollY +
+                        " measuredHeight: " + v.getChildAt(0).getMeasuredHeight() +
+                        " scrollHeight: " + v.getMeasuredHeight());
+                int scrollThreshold = 50; // threshold to trigger load more data
+                int diff = (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) - scrollY;
+                Log.e("ScrollDebug", "diff: " + diff);
+                // Check if we have scrolled to the bottom or near bottom
+                if (diff <= scrollThreshold && currentPage <= totalPages) {
+                    // Only increment the page and load more data if there's more data to load
                     currentPage++;
-                    // on below line we are making our progress bar visible.
-                    if (currentPage <= totalPages) {
-                        nextItemLoadingProgressBar.setVisibility(View.VISIBLE);
-                        // on below line we are again calling
-                        // a method to load data in our array list.
-                        getAllCategory();
-                    }
+                    nextItemLoadingProgressBar.setVisibility(View.VISIBLE);
+                    getAllCategory();
+                    Log.e("Scroll","Scroll Happened");
                 }
             }
         });
+
 
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,18 +189,11 @@ public class AdminCreateCategoryFragment extends Fragment {
         });
         // Setup ActivityResultLaunchers
         setupActivityResultLaunchers();
-
+        categoryModelArrayList = new ArrayList<>();
         return view;
     }
 
-    private Dialog createCategoryDialogBox;
-    private EditText titleEditTxt, slugEditTxt;
-    private Button submitBtn;
-    private ImageView crossBtn,uploadImageBtn;
-    private TextView uploadImageName;
-
-    private void openDialogBoxCreateSubject() {
-
+    private void initializeDialogBoxContent() {
         createCategoryDialogBox = new Dialog(requireContext());
         createCategoryDialogBox.setContentView(R.layout.admin_create_category_dialog_box);
 
@@ -202,6 +203,15 @@ public class AdminCreateCategoryFragment extends Fragment {
         crossBtn = createCategoryDialogBox.findViewById(R.id.btnCross);
         uploadImageBtn = createCategoryDialogBox.findViewById(R.id.uploadImage);
         uploadImageName = createCategoryDialogBox.findViewById(R.id.txtNoFileChosen);
+    }
+
+    private Dialog createCategoryDialogBox;
+    private EditText titleEditTxt, slugEditTxt;
+    private Button submitBtn;
+    private ImageView crossBtn,uploadImageBtn;
+    private TextView uploadImageName;
+
+    private void openDialogBoxCreateSubject() {
 
         crossBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -218,6 +228,28 @@ public class AdminCreateCategoryFragment extends Fragment {
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog = new Dialog(getContext());
+                progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                progressDialog.setContentView(R.layout.progress_bar_drawer);
+                progressDialog.setCancelable(false);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                progressDialog.show();
+                if (titleEditTxt.getText().toString().trim().isEmpty()){
+                    titleEditTxt.setError("Title is required");
+                    progressDialog.dismiss();
+                    return;
+                }
+                if (slugEditTxt.getText().toString().trim().isEmpty()){
+                    titleEditTxt.setError("Slug is required");
+                    progressDialog.dismiss();
+                    return;
+                }
+                if (imageFile == null){
+                    progressDialog.dismiss();
+                    return;
+                }
                 sendCategoryDetails(titleEditTxt.getText().toString().trim(), slugEditTxt.getText().toString().trim(),createCategoryDialogBox);
             }
         });
@@ -245,13 +277,14 @@ public class AdminCreateCategoryFragment extends Fragment {
         createCategoryDialogBox.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
     }
-    private void setupActivityResultLaunchers() {
+    public void setupActivityResultLaunchers() {
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK) {
                 Intent data = result.getData();
                 if (data != null) {
                     image_uri = data.getData();
                     handleImageUri(image_uri);
+                    categoryAdapter.setCategoryImage(image_uri,null);
                 }
             }
         });
@@ -261,11 +294,12 @@ public class AdminCreateCategoryFragment extends Fragment {
                 Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
                 if (bitmap != null) {
                     handleBitmap(bitmap);
+                    categoryAdapter.setCategoryImage(null,bitmap);
                 }
             }
         });
     }
-    private void handleImageUri(Uri uri) {
+    public void handleImageUri(Uri uri) {
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
             handleBitmap(bitmap);// Process the Bitmap as you did in handleBitmap()
@@ -278,7 +312,7 @@ public class AdminCreateCategoryFragment extends Fragment {
             e.printStackTrace();
         }
     }
-    private String getFileName(Uri uri) {
+    public String getFileName(Uri uri) {
         String fileName = null;
 
         // If the URI is a content URI (which is usually the case for gallery images)
@@ -300,7 +334,7 @@ public class AdminCreateCategoryFragment extends Fragment {
 
         return fileName != null ? fileName : "Unknown";
     }
-    private void handleBitmap(Bitmap bitmap) {
+    public void handleBitmap(Bitmap bitmap) {
         // Resize image
         bitmap = getResizedBitmap(bitmap, 400);
         uploadImageBtn.setImageBitmap(bitmap);
@@ -319,11 +353,11 @@ public class AdminCreateCategoryFragment extends Fragment {
         uploadImageName.setText(imageName);
 
     }
-    private String getFileNameFromFile(File file) {
+    public String getFileNameFromFile(File file) {
         // Extract the file name from the imageFile (file name is the last segment of the path)
         return file != null ? file.getName() : "Unknown";
     }
-    private File bitmapToFile(Bitmap bitmap) {
+    public File bitmapToFile(Bitmap bitmap) {
         File file = new File(getContext().getCacheDir(), "uploaded_image.jpg");
         try (FileOutputStream out = new FileOutputStream(file)) {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
@@ -332,7 +366,7 @@ public class AdminCreateCategoryFragment extends Fragment {
         }
         return file;
     }
-    private void openGallery() {
+    public void openGallery() {
         final CharSequence[] options = {"Open Camera", "Choose from Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Add RC!");
@@ -396,7 +430,8 @@ public class AdminCreateCategoryFragment extends Fragment {
         }
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
-    private void sendCategoryDetails(String title, String description, Dialog createCategoryDialogBox) {
+    public void sendCategoryDetails(String title, String description, Dialog createCategoryDialogBox) {
+        String createCategoryURL = Constant.BASE_URL + "v1/category";
         // Prepare form data
         Map<String, String> params = new HashMap<>();
         params.put("categoryName", title);   // Send the category name
@@ -417,7 +452,7 @@ public class AdminCreateCategoryFragment extends Fragment {
                     public void onResponse(String response) {
                         try {
                             JSONObject responseObject = new JSONObject(response);
-                            boolean status = responseObject.getBoolean("status");
+                            boolean status = responseObject.getBoolean("success");
                             if (status) {
                                 String message = responseObject.getString("message");
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
@@ -427,23 +462,25 @@ public class AdminCreateCategoryFragment extends Fragment {
                                 String id = data.getString("_id");                     // Category ID
                                 String categoryName = data.getString("categoryName");  // Category name
                                 String slug = data.getString("slug");                  // Category slug
-                                String isActive = data.getString("is_active");         // Category active status
+                                String isActive = data.getString("isActive");         // Category active status
+                                String updatedAt = data.getString("updatedAt");         // Category active status
 
-                                // Image handling
-                                JSONObject imageObj = data.optJSONObject("image");
-                                String imageUrl = (imageObj != null) ? imageObj.optString("url", "") : ""; // Handle image URL
-
+                                String imageUrl = "";
+                                if (data.has("image") && !data.isNull("image")) {
+                                    JSONObject imageObj = data.getJSONObject("image");
+                                    if (imageObj != null && !imageObj.isNull("url")) {
+                                        imageUrl = imageObj.getString("url");
+                                    }
+                                }
+                                int addedPosition = categoryModelArrayList.size();
                                 // Create a new category object and add it to the list
                                 AdminShowAllCategoryModel newCategory = new AdminShowAllCategoryModel(
-                                        id, categoryName, slug, isActive, imageUrl
-                                );
+                                        id, categoryName, slug, isActive, imageUrl,updatedAt);
                                 categoryModelArrayList.add(newCategory); // Add to the existing list
-
-                                // Notify the adapter that the data has changed
-                                categoryAdapter.notifyDataSetChanged();
-
+                                getAllCategory();
                                 // Dismiss the dialog box
                                 createCategoryDialogBox.dismiss();
+                                progressDialog.dismiss();
                             } else {
                                 // Handle error message if status is false
                                 String errorMessage = responseObject.getString("message");
@@ -465,6 +502,7 @@ public class AdminCreateCategoryFragment extends Fragment {
                                 String responseData = new String(error.networkResponse.data, "UTF-8");
                                 errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
                                 errorMessage += "\nResponse Data: " + responseData;
+                                progressDialog.dismiss();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -480,7 +518,7 @@ public class AdminCreateCategoryFragment extends Fragment {
 
 
     public void getAllCategory() {
-        String subjectURLPage = categoryURL  + "?search=" + searchQuery + "&page=" + currentPage + "&per_page=" + itemsPerPage;
+        String subjectURLPage = categoryURL + "?pageNumber=" + currentPage + "&pageSize=" + itemsPerPage;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, subjectURLPage, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -489,46 +527,63 @@ public class AdminCreateCategoryFragment extends Fragment {
                             createBtn.setEnabled(true);
                             showCategoryRecycler.setVisibility(View.VISIBLE);
                             progressBar.setVisibility(View.GONE);
-                            boolean status = response.getBoolean("status");
+
+                            boolean status = response.getBoolean("success");
 
                             if (status) {
-                                categoryModelArrayList = new ArrayList<>();
-                                JSONObject jsonObject = response.getJSONObject("pagination");
-
-                                int totalRows = Integer.parseInt(jsonObject.getString("totalRows"));
-                                totalPages = Integer.parseInt(jsonObject.getString("totalPages"));
-                                currentPage = Integer.parseInt(jsonObject.getString("currentPage"));
-
                                 JSONArray jsonArray = response.getJSONArray("data");
-                                // Parse books directly here
+
+                                // Parse categories here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
+
                                     String id = jsonObject2.getString("_id");
                                     String categoryName = jsonObject2.getString("categoryName");
                                     String description = jsonObject2.getString("slug");
-                                    String is_active = jsonObject2.getString("is_active");
-                                    JSONObject imageObj = jsonObject2.getJSONObject("image");
-                                    String imageUrl = imageObj.getString("url");
+                                    String isActive = jsonObject2.getString("isActive");
+                                    String updatedAt = jsonObject2.getString("updatedAt");
+                                    String imageUrl = "";
 
-                                    categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,imageUrl);
-                                    categoryModelArrayList.add(categoryModel);
+                                    if (jsonObject2.has("image") && !jsonObject2.isNull("image")) {
+                                        JSONObject imageObj = jsonObject2.getJSONObject("image");
+                                        if (imageObj != null && !imageObj.isNull("url")) {
+                                            imageUrl = imageObj.getString("url");
+                                        }
+                                    }
+
+                                    AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(
+                                            id, categoryName, description, isActive, imageUrl, updatedAt);
+                                    boolean isPresent = false;
+                                    for (int j = 0; j < categoryModelArrayList.size(); j++) {
+                                        if (categoryModelArrayList.get(j).getId().equals(categoryModel.getId())) {
+                                            isPresent = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!isPresent) {
+                                        categoryModelArrayList.add(categoryModel);
+                                    }
+                                    // Avoid adding duplicate categories
                                 }
-//                                updateUI();
+                                // Update UI if categories exist
                                 if (categoryModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
                                     showCategoryRecycler.setVisibility(View.GONE);
-                                    progressBar.setVisibility(View.GONE);
                                 } else {
-                                    categoryAdapter = new AdminShowAllCategoryAdapter( categoryModelArrayList,AdminCreateCategoryFragment.this);
+                                    showCategoryRecycler.setVisibility(View.VISIBLE);
+                                    categoryAdapter = new AdminShowAllCategoryAdapter(categoryModelArrayList, AdminCreateCategoryFragment.this);
                                     showCategoryRecycler.setAdapter(categoryAdapter);
                                 }
+
                                 isLoading = false;
                                 nextItemLoadingProgressBar.setVisibility(View.GONE);
                             } else {
                                 Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
+
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                            Toast.makeText(getContext(), "An error occurred while processing the categories.", Toast.LENGTH_LONG).show();
                         }
                     }
                 },
@@ -538,19 +593,19 @@ public class AdminCreateCategoryFragment extends Fragment {
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {
-                                // Parse the error response
-                                String jsonError = new String(error.networkResponse.data);
+                                String jsonError = new String(error.networkResponse.data, "UTF-8");
                                 JSONObject jsonObject = new JSONObject(jsonError);
                                 String message = jsonObject.optString("message", "Unknown error");
-                                // Now you can use the message
                                 Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
+                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
                         Log.e("BlogFetchError", errorMessage);
                     }
                 }) {
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -560,20 +615,25 @@ public class AdminCreateCategoryFragment extends Fragment {
             }
         };
 
+        // Adding the request to the request queue
         MySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
     }
 
-    private void openKeyboard() {
+
+    public void openKeyboard() {
         searchView.setIconified(false); // Expands the search view
         searchView.requestFocus(); // Requests focus
         InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT); // Show the keyboard
     }
 
-    private boolean isPointInsideView(float x, float y, View view) {
+    public boolean isPointInsideView(float x, float y, View view) {
         int[] location = new int[2];
         view.getLocationOnScreen(location);
         return (x >= location[0] && x <= (location[0] + view.getWidth()) &&
                 y >= location[1] && y <= (location[1] + view.getHeight()));
+    }
+    public File getImageFile(){
+        return imageFile;
     }
 }

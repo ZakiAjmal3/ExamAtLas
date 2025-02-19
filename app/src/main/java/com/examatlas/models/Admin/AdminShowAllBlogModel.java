@@ -1,19 +1,37 @@
-package com.examatlas.models;
+package com.examatlas.models.Admin;
 
 public class AdminShowAllBlogModel {
-    String blogID,categoryId,categoryName,imageURL,title,content,tags,totalRows,totalPages,currentPage;
+    String blogID,categoryId,categoryName,imageURL,title,content,keyword,slug,tags,totalRows,totalPages,updateAt;
 
-    public AdminShowAllBlogModel(String blogID,String categoryId,String categoryName,String imageURL, String title, String content, String tags, String totalRows, String totalPages, String currentPage) {
+    public AdminShowAllBlogModel(String blogID,String categoryId,String categoryName,String imageURL, String title, String content, String keyword, String slug, String tags, String totalRows, String totalPages, String updateAt) {
         this.blogID = blogID;
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.imageURL = imageURL;
         this.title = title;
         this.content = content;
+        this.keyword = keyword;
+        this.slug = slug;
         this.tags = tags;
         this.totalRows = totalRows;
         this.totalPages = totalPages;
-        this.currentPage = currentPage;
+        this.updateAt = updateAt;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public String getCategoryId() {
@@ -48,12 +66,12 @@ public class AdminShowAllBlogModel {
         this.totalPages = totalPages;
     }
 
-    public String getCurrentPage() {
-        return currentPage;
+    public String getUpdateAt() {
+        return updateAt;
     }
 
-    public void setCurrentPage(String currentPage) {
-        this.currentPage = currentPage;
+    public void setUpdateAt(String updateAt) {
+        this.updateAt = updateAt;
     }
 
     public String getBlogID() {

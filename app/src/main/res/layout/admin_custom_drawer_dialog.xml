@@ -63,369 +63,186 @@
                         android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackgroundBorderless"
                         android:orientation="horizontal"
-                        android:weightSum="2"
                         android:padding="9dp"
                         android:layout_marginTop="20dp">
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
+                            android:src="@drawable/home"
                             />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Home"
+                            android:text="Dashboard"
                             android:textColor="@color/white"
                             android:textSize="16sp"
                             android:layout_marginStart="10dp"
-                            android:layout_weight="1.8"/>
+                            />
 
                     </LinearLayout>
                     <LinearLayout
-                        android:id="@+id/layoutMaster"
+                        android:id="@+id/layoutCategory"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackgroundBorderless"
                         android:orientation="horizontal"
-                        android:weightSum="3"
-                        android:padding="10dp">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
-                            android:layout_marginLeft="3dp"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Master"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:layout_marginStart="15dp"
-                            android:layout_weight="2.6"/>
-                        <ImageView
-                            android:id="@+id/masterDropDownIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/dropdown"
-                            android:layout_weight="0.2"
-                            />
-
-                    </LinearLayout>
-                    <Spinner
-                        android:id="@+id/masterDropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="60dp"
-                        android:background="@android:color/transparent"
-                        android:visibility="gone"
-                        />
-                    <LinearLayout
-                        android:id="@+id/layoutContent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                        android:orientation="horizontal"
-                        android:weightSum="3"
-                        android:padding="10dp">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
-                            android:layout_marginLeft="3dp"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Content"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:layout_marginStart="15dp"
-                            android:layout_weight="2.6"/>
-                        <ImageView
-                            android:id="@+id/contentDropDownIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/dropdown"
-                            android:layout_weight="0.2"
-                            />
-
-                    </LinearLayout>
-                    <Spinner
-                        android:id="@+id/contentDropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="60dp"
-                        android:background="@android:color/transparent"
-                        android:visibility="gone"
-                        />
-                    <LinearLayout
-                        android:id="@+id/layoutWebsiteApp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                        android:orientation="horizontal"
-                        android:weightSum="3"
-                        android:padding="10dp">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
-                            android:layout_marginLeft="3dp"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Website &amp; App"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:layout_marginStart="15dp"
-                            android:layout_weight="2.6"/>
-                        <ImageView
-                            android:id="@+id/websiteAppDropDownIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/dropdown"
-                            android:layout_weight="0.2"
-                            />
-
-                    </LinearLayout>
-                    <Spinner
-                        android:id="@+id/websiteAppDropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="60dp"
-                        android:background="@android:color/transparent"
-                        android:visibility="gone"
-                        />
-                    <LinearLayout
-                        android:id="@+id/layoutMarketing"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                        android:orientation="horizontal"
-                        android:weightSum="3"
-                        android:padding="10dp">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
-                            android:layout_marginLeft="3dp"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Marketing"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:layout_marginStart="15dp"
-                            android:layout_weight="2.6"/>
-                        <ImageView
-                            android:id="@+id/marketingDropDownIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/dropdown"
-                            android:layout_weight="0.2"
-                            />
-
-                    </LinearLayout>
-                    <Spinner
-                        android:id="@+id/marketingDropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="60dp"
-                        android:background="@android:color/transparent"
-                        android:visibility="gone"
-                        />
-                    <LinearLayout
-                        android:id="@+id/layoutUsers"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                        android:orientation="horizontal"
-                        android:weightSum="3"
-                        android:padding="10dp">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
-                            android:layout_marginLeft="3dp"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Users"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:layout_marginStart="15dp"
-                            android:layout_weight="2.6"/>
-                        <ImageView
-                            android:id="@+id/usersDropDownIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/dropdown"
-                            android:layout_weight="0.2"
-                            />
-
-                    </LinearLayout>
-                    <Spinner
-                        android:id="@+id/usersDropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="60dp"
-                        android:background="@android:color/transparent"
-                        android:visibility="gone"
-                        />
-                    <LinearLayout
-                        android:id="@+id/layoutReports"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                        android:orientation="horizontal"
-                        android:weightSum="3"
-                        android:padding="10dp">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
-                            android:layout_marginLeft="3dp"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Reports"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:layout_marginStart="15dp"
-                            android:layout_weight="2.6"/>
-                        <ImageView
-                            android:id="@+id/reportsDropDownIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/dropdown"
-                            android:layout_weight="0.2"
-                            />
-
-                    </LinearLayout>
-                    <Spinner
-                        android:id="@+id/reportsDropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="60dp"
-                        android:background="@android:color/transparent"
-                        android:visibility="gone"
-                        />
-                     <LinearLayout
-                        android:id="@+id/layoutManage"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                        android:orientation="horizontal"
-                        android:weightSum="3"
-                        android:padding="10dp">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
-                            android:layout_marginLeft="3dp"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Manage"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:layout_marginStart="15dp"
-                            android:layout_weight="2.6"/>
-                        <ImageView
-                            android:id="@+id/manageDropDownIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/dropdown"
-                            android:layout_weight="0.2"
-                            />
-
-                    </LinearLayout>
-                    <Spinner
-                        android:id="@+id/manageDropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="60dp"
-                        android:background="@android:color/transparent"
-                        android:visibility="gone"
-                        />
-                    <LinearLayout
-                        android:id="@+id/layoutShare"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                        android:orientation="horizontal"
-                        android:weightSum="2"
                         android:padding="9dp">
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
+                            android:src="@drawable/home"
                             />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Share"
+                            android:text="Category"
                             android:textColor="@color/white"
                             android:textSize="16sp"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1.8"/>
+                            android:layout_marginStart="10dp" />
 
                     </LinearLayout>
                     <LinearLayout
-                        android:id="@+id/layoutLogout"
+                        android:id="@+id/layoutSubCategory"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackgroundBorderless"
                         android:orientation="horizontal"
-                        android:weightSum="2"
                         android:padding="9dp">
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/call"
-                            android:layout_weight="0.2"
+                            android:src="@drawable/home"
                             />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Logout"
+                            android:text="Sub Category"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:layout_marginStart="10dp" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layoutBlogs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:orientation="horizontal"
+                        android:padding="9dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/home"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Blogs"
                             android:textColor="@color/white"
                             android:textSize="16sp"
                             android:layout_marginStart="10dp"
-                            android:layout_weight="1.8"/>
+                            />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layoutCurrentAffairs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:orientation="horizontal"
+                        android:padding="9dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/home"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Current Affairs"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:layout_marginStart="10dp"
+                            />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layoutBooks"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:orientation="horizontal"
+                        android:padding="9dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/home"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Books"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:layout_marginStart="10dp"
+                            />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layoutOrders"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:orientation="horizontal"
+                        android:padding="9dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/home"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Orders"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:layout_marginStart="10dp"
+                            />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layoutTrashedData"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:orientation="horizontal"
+                        android:padding="9dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/home"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Trashed Data"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:layout_marginStart="10dp"
+                            />
 
                     </LinearLayout>
                 </LinearLayout>

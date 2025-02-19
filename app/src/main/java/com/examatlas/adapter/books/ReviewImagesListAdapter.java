@@ -32,10 +32,12 @@ import java.util.ArrayList;
 
 public class ReviewImagesListAdapter extends RecyclerView.Adapter<ReviewImagesListAdapter.ViewHolder> {
     ArrayList<File> imageFiles;
+    ArrayList<String> imageURLList;
     Context context;
-    public ReviewImagesListAdapter(Context context, ArrayList<File> imageFiles) {
+    public ReviewImagesListAdapter(Context context, ArrayList<File> imageFiles,ArrayList<String> imageURLList) {
         this.context = context;
         this.imageFiles = imageFiles;
+        this.imageURLList = imageURLList;
     }
 
     @NonNull
@@ -47,21 +49,30 @@ public class ReviewImagesListAdapter extends RecyclerView.Adapter<ReviewImagesLi
 
     @Override
     public void onBindViewHolder(@NonNull ReviewImagesListAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        holder.itemView.setTag(imageFiles.get(position));
-
-        if (position < imageFiles.size()) {
-            File imageFile = imageFiles.get(position);
+        if (imageFiles != null) {
+            if (position < imageFiles.size()) {
+                File imageFile = imageFiles.get(position);
+                Glide.with(context)
+                        .load(imageFile) // Load the image from the file
+                        .into(holder.productImg);  // Bind the image to the ImageView
+            }
+        }else {
             Glide.with(context)
-                    .load(imageFile) // Load the image from the file
+                    .load(imageURLList.get(position)) // Load the image from the file
                     .into(holder.productImg);  // Bind the image to the ImageView
         }
         holder.crossBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (imageFiles.size() == 1){
-                    Toast.makeText(context, "Please Add More Images in order to remove this image", Toast.LENGTH_LONG).show();
+                if (imageFiles != null) {
+                    if (imageFiles.size() == 1) {
+                        Toast.makeText(context, "Please Add More Images in order to remove this image", Toast.LENGTH_LONG).show();
+                    } else {
+                        imageFiles.remove(position);
+                        notifyItemRemoved(position);
+                    }
                 }else {
-                    imageFiles.remove(position);
+                    imageURLList.remove(position);
                     notifyItemRemoved(position);
                 }
             }
@@ -69,7 +80,9 @@ public class ReviewImagesListAdapter extends RecyclerView.Adapter<ReviewImagesLi
     }
     @Override
     public int getItemCount() {
-        return imageFiles.size();
+        if (imageFiles != null)
+            return imageFiles.size();
+        else return imageURLList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/blogLayout"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    android:orientation="vertical"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="7dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/imageCardView"
+            android:layout_width="110dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp">
+            <ImageView
+                android:id="@+id/imgBlog"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/image1" />
+
+        </com.google.android.material.card.MaterialCardView>
+        <TextView
+            android:id="@+id/titleTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="Blog Title"
+            android:textColor="@color/black"
+            android:layout_toRightOf="@id/imageCardView"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="10dp"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/txtSubCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="subCategory"
+            android:textColor="@color/dark_grey"
+            android:textSize="12sp"
+            android:layout_toRightOf="@id/imageCardView"
+            android:layout_below="@id/titleTxt"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="5dp"/>
+            <LinearLayout
+                android:id="@+id/layout1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/imageCardView"
+                >
+                <TextView
+                    android:id="@+id/txtAuthor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="Updated at:"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/updatedAtTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/poppins"
+                    android:text="Tag Text"
+                    android:textColor="@color/green"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        <ImageView
+            android:id="@+id/threeDots"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_three_dot"
+            android:layout_alignParentEnd="true"
+            android:padding="7dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            />
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

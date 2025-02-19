@@ -64,7 +64,7 @@
         <EditText
             android:id="@+id/slugEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="@drawable/box_layout_with_border"
             android:layout_below="@id/txtSlug"
             android:inputType="textMultiLine"

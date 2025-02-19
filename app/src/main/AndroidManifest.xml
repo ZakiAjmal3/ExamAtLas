@@ -108,7 +108,7 @@
             android:name=".activities.AdminLoginActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.AdminDashboardActivity"
+            android:name=".activities.Admin.AdminDashboardActivity"
             android:exported="false" />
         <activity
             android:name=".activities.LoginWithEmailActivity"

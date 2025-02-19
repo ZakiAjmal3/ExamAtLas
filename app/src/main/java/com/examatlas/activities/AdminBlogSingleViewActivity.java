@@ -47,8 +47,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.adapter.AdminTagsForDataALLAdapter;
-import com.examatlas.models.AdminShowAllBlogModel;
-import com.examatlas.models.AdminShowAllCategoryModel;
+import com.examatlas.models.Admin.AdminShowAllBlogModel;
+import com.examatlas.models.Admin.AdminShowAllCategoryModel;
 import com.examatlas.models.AdminTagsForDataALLModel;
 import com.examatlas.utils.Constant;
 import com.examatlas.utils.MySingleton;
@@ -346,21 +346,21 @@ public class AdminBlogSingleViewActivity extends AppCompatActivity {
                         try {
                             boolean status = response.getBoolean("status");
                             if (status) {
-                                categoryModelArrayList = new ArrayList<>();
-                                JSONArray jsonArray = response.getJSONArray("data");
-                                // Parse books directly here
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    String id = jsonObject2.getString("_id");
-                                    String categoryName = jsonObject2.getString("categoryName");
-                                    String description = jsonObject2.getString("slug");
-                                    String is_active = jsonObject2.getString("is_active");
-                                    JSONObject imageObj = jsonObject2.getJSONObject("image");
-                                    String imageUrl = imageObj.getString("url");
-
-                                    AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,imageUrl);
-                                    categoryModelArrayList.add(categoryModel);
-                                }
+//                                categoryModelArrayList = new ArrayList<>();
+//                                JSONArray jsonArray = response.getJSONArray("data");
+//                                // Parse books directly here
+//                                for (int i = 0; i < jsonArray.length(); i++) {
+//                                    JSONObject jsonObject2 = jsonArray.getJSONObject(i);
+//                                    String id = jsonObject2.getString("_id");
+//                                    String categoryName = jsonObject2.getString("categoryName");
+//                                    String description = jsonObject2.getString("slug");
+//                                    String is_active = jsonObject2.getString("is_active");
+//                                    JSONObject imageObj = jsonObject2.getJSONObject("image");
+//                                    String imageUrl = imageObj.getString("url");
+//
+//                                    AdminShowAllCategoryModel categoryModel = new AdminShowAllCategoryModel(id,categoryName,description,is_active,imageUrl);
+//                                    categoryModelArrayList.add(categoryModel);
+//                                }
                             }
                         } catch (JSONException e) {
                             Toast.makeText(AdminBlogSingleViewActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
