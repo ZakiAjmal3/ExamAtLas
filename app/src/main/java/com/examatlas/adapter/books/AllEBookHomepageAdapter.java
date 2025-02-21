@@ -148,6 +148,7 @@ public class AllEBookHomepageAdapter extends RecyclerView.Adapter<AllEBookHomepa
         //        .error(R.drawable.book1)
         //        .placeholder(R.drawable.book1)
         //        .into(holder.bookImg);
+        holder.heartWishListIcon.setVisibility(View.GONE);
         if (!heartToggleStates.isEmpty()) {
             holder.heartWishListIcon.setImageResource(heartToggleStates.get(position) ? R.drawable.ic_heart_red : R.drawable.ic_heart_grey);
         }

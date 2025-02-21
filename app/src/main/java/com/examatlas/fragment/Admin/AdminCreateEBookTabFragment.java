@@ -106,7 +106,7 @@ public class AdminCreateEBookTabFragment extends Fragment {
             weightEditTxt, tagsEditTxt, slugEditTxt, totalPagesEditTxt, isbnEditTxt, languageEditTxt, editionEditTxt;
     ArrayList<AdminShowAllCategoryModel> categoryModelArrayList = new ArrayList<>();
     ArrayList<AdminShowAllSubCategoryModel> subCategoryModelArrayList = new ArrayList<>();
-    private final String[] bookTypeArraylist = {"Books", "E-Books"};
+    private final String[] bookTypeArraylist = {"E-Books"};
     String bookTypeStr = "ebook";
     ArrayList<String> categoryNameList;
     ArrayList<String> subCategoryNameList;
@@ -222,6 +222,7 @@ public class AdminCreateEBookTabFragment extends Fragment {
         uploadEBookBtn = createBookDialogBox.findViewById(R.id.addEBookImgView);
         uploadEBookLayout = createBookDialogBox.findViewById(R.id.eBookUpLL);
         uploadEBookNameTxt = createBookDialogBox.findViewById(R.id.uploadEBookNameTxt);
+        uploadEBookLayout.setVisibility(View.VISIBLE);
 
         submitBookBtn = createBookDialogBox.findViewById(R.id.btnSubmit);
 
@@ -288,6 +289,14 @@ public class AdminCreateEBookTabFragment extends Fragment {
         submitBookBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog = new Dialog(AdminCreateEBookTabFragment.this.getContext());
+                progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                progressDialog.setContentView(R.layout.progress_bar_drawer);
+                progressDialog.setCancelable(false);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                progressDialog.show();
                 checkAllFields();
             }
         });
@@ -417,34 +426,42 @@ public class AdminCreateEBookTabFragment extends Fragment {
     private void checkAllFields() {
         if (titleEditTxt.getText().toString().isEmpty()){
             titleEditTxt.setError("Title is required");
+            progressDialog.dismiss();
             return;
         }
         if (authorEditTxt.getText().toString().isEmpty()){
             authorEditTxt.setError("Author is required");
+            progressDialog.dismiss();
             return;
         }
         if (publicationEditTxt.getText().toString().isEmpty()){
             publicationEditTxt.setError("Publication is required");
+            progressDialog.dismiss();
             return;
         }
         if (contentEditTxt.getText().toString().isEmpty()){
             contentEditTxt.setError("Content is required");
+            progressDialog.dismiss();
             return;
         }
         if (priceEditTxt.getText().toString().isEmpty()){
             priceEditTxt.setError("Price is required");
+            progressDialog.dismiss();
             return;
         }
         if (stockEditTxt.getText().toString().isEmpty()){
             stockEditTxt.setError("Stock is required");
+            progressDialog.dismiss();
             return;
         }
         if (sKUEditTxt.getText().toString().isEmpty()){
             sKUEditTxt.setError("SKU is required");
+            progressDialog.dismiss();
             return;
         }
         if (lengthEditTxt.getText().toString().isEmpty()){
             lengthEditTxt.setError("Length is required");
+            progressDialog.dismiss();
             return;
         }
         if (widthEditTxt.getText().toString().isEmpty()){
@@ -453,35 +470,41 @@ public class AdminCreateEBookTabFragment extends Fragment {
         }
         if (heightEditTxt.getText().toString().isEmpty()){
             heightEditTxt.setError("Height is required");
+            progressDialog.dismiss();
             return;
         }
         if (weightEditTxt.getText().toString().isEmpty()){
             weightEditTxt.setError("Weight is required");
+            progressDialog.dismiss();
             return;
         }
         if (slugEditTxt.getText().toString().isEmpty()){
             slugEditTxt.setError("Slug is required");
+            progressDialog.dismiss();
             return;
         }
         if (totalPagesEditTxt.getText().toString().isEmpty()){
             totalPagesEditTxt.setError("Total Pages is required");
+            progressDialog.dismiss();
             return;
         }
         if (isbnEditTxt.getText().toString().isEmpty()){
             isbnEditTxt.setError("ISBN is required");
+            progressDialog.dismiss();
             return;
         }
         if (languageEditTxt.getText().toString().isEmpty()){
             languageEditTxt.setError("Language is required");
+            progressDialog.dismiss();
             return;
         }
         if (editionEditTxt.getText().toString().isEmpty()){
             editionEditTxt.setError("Edition is required");
+            progressDialog.dismiss();
             return;
         }
         createBook();
     }
-
     private void createBook() {
 
         String createBookUrl = Constant.BASE_URL + "v1/book";
@@ -572,6 +595,7 @@ public class AdminCreateEBookTabFragment extends Fragment {
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                                 getAllBooks();
                                 createBookDialogBox.dismiss();
+                                progressDialog.dismiss();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
@@ -581,6 +605,7 @@ public class AdminCreateEBookTabFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        progressDialog.dismiss();
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {
@@ -607,19 +632,12 @@ public class AdminCreateEBookTabFragment extends Fragment {
         bookTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String bookType = bookTypeArraylist[i];
-                if (bookType.equals("E-Book")){
-                    bookTypeStr = "ebook";
-                    uploadEBookLayout.setVisibility(View.VISIBLE);
-                }else {
-                    bookTypeStr = "book";
-                    uploadEBookLayout.setVisibility(View.GONE);
-                }
+                bookTypeStr = "ebook";
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                bookTypeStr = "ebooks";
             }
         });
     }
@@ -638,7 +656,7 @@ public class AdminCreateEBookTabFragment extends Fragment {
         subCategorySpinner.setAdapter(adapter);
         if (subCategoryModel != null) {
             for (int i = 0; i < subCategoryNameList.size(); i++) {
-                if (subCategoryNameList.get(i).equals(subCategoryModel.getString("subCategoryName"))) {
+                if (subCategoryNameList.get(i).equals(subCategoryModel.getSubCategoryName())) {
                     subCategorySpinner.setSelection(i);
                     subCategorySpinner.setEnabled(false);
                 }
@@ -676,7 +694,7 @@ public class AdminCreateEBookTabFragment extends Fragment {
         categorySpinners.setAdapter(adapter);
         if (currentCategory != null) {
             for (int i = 0; i < categoryNameList.size(); i++) {
-                if (categoryNameList.get(i).equals(currentCategory.getString("categoryName"))) {
+                if (categoryNameList.get(i).equals(currentCategory.getCategoryName())) {
                     categorySpinners.setSelection(i);
                     categorySpinners.setEnabled(false);
                 }
@@ -890,6 +908,22 @@ public class AdminCreateEBookTabFragment extends Fragment {
                                     // Convert the book object into a Map to make it dynamic
                                     Map<String, Object> bookData = new Gson().fromJson(jsonObject2.toString(), Map.class);
 
+                                    // Extract category and subCategory names
+                                    String categoryName = "";
+                                    String subCategoryName = "";
+
+                                    // Check if categoryData exists and extract categoryName
+                                    if (bookData.containsKey("categoryData")) {
+                                        Map<String, Object> categoryData = (Map<String, Object>) bookData.get("categoryData");
+                                        categoryName = categoryData.containsKey("categoryName") ? categoryData.get("categoryName").toString() : "";
+                                    }
+
+                                    // Check if subCategoryData exists and extract subCategoryName
+                                    if (bookData.containsKey("subCategoryData")) {
+                                        Map<String, Object> subCategoryData = (Map<String, Object>) bookData.get("subCategoryData");
+                                        subCategoryName = subCategoryData.containsKey("name") ? subCategoryData.get("name").toString() : "";
+                                    }
+
                                     // Extract dimensions (assuming they are present in the 'dimensions' field of the book data)
                                     String length = "";
                                     String width = "";
@@ -924,7 +958,7 @@ public class AdminCreateEBookTabFragment extends Fragment {
                                     }
 
                                     // Pass the data and dimensions to the model constructor
-                                    AllBooksModel model = new AllBooksModel(bookData, length, width, height, weight); // Pass map and dimensions
+                                    AllBooksModel model = new AllBooksModel(bookData, length, width, height, weight,categoryName,subCategoryName); // Pass map and dimensions
 
                                     boolean isPresent = false;
                                     for (int j = 0; j < adminShowAllBooksModelArrayList.size(); j++) {

@@ -17,6 +17,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -72,7 +73,7 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
     String authToken;
     private String currentQuery = "";
     private final String[] threeDotsArray = {"Edit", "Delete"};
-    ProgressDialog progressDialog;
+    Dialog progressDialog;
     File imageFile;
     public AdminShowAllBooksAdapter(Fragment context, ArrayList<AllBooksModel> allBooksModelArrayList) {
         this.allBooksModelArrayList = new ArrayList<>(allBooksModelArrayList);
@@ -195,9 +196,13 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
         if (selectedItems.equals("Edit")) {
             editBooksDialogBox(currentBook, position);
         } else if (selectedItems.equals("Delete")) {
-            progressDialog = new ProgressDialog(context.getContext());
-            progressDialog.setMessage("Deleting Book...");
+            progressDialog = new Dialog(context.getContext());
+            progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            progressDialog.setContentView(R.layout.progress_bar_drawer);
             progressDialog.setCancelable(false);
+            progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+            progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
             progressDialog.show();
             deleteAddress(currentBook, position);
         }
@@ -214,7 +219,7 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
                             if (status) {
                                 Toast.makeText(context.getContext(), "Book Deleted Successfully", Toast.LENGTH_SHORT).show();
                                 allBooksModelArrayList.remove(position);
-                                notifyItemRangeChanged(position, allBooksModelArrayList.size());
+                                notifyItemRemoved(position);
                                 if (context instanceof AdminCreateBookTabFragment){
                                 ((AdminCreateBookTabFragment) context).getAllBooks();
                                 }else {
@@ -229,6 +234,7 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
                 String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {
                     try {
@@ -267,7 +273,7 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
             sellingPriceEditTxt, stockEditTxt, sKUEditTxt, lengthEditTxt, widthEditTxt, heightEditTxt,
             weightEditTxt, tagsEditTxt, slugEditTxt, totalPagesEditTxt, isbnEditTxt, languageEditTxt, editionEditTxt;
     String categoryId,subCategoryId;
-    TextView txtBookType;
+    TextView txtHeader,txtBookType;
     public void initializeDialogContent(){
         editBookDialogBox = new Dialog(context.getContext());
         editBookDialogBox.setContentView(R.layout.admin_create_book_dialog_box);
@@ -283,6 +289,8 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
         uploadImageRecyclerView.setAdapter(imageAdapter);
 
         submitBookBtn = editBookDialogBox.findViewById(R.id.btnSubmit);
+        txtHeader = editBookDialogBox.findViewById(R.id.txtAddData);
+        txtHeader.setText("Edit Book");
         txtBookType = editBookDialogBox.findViewById(R.id.txtBookType);
         bookTypeSpinnerForCreatingBook = editBookDialogBox.findViewById(R.id.bookTypeSpinner);
         txtBookType.setVisibility(View.GONE);
@@ -307,10 +315,12 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
         languageEditTxt = editBookDialogBox.findViewById(R.id.languageEditText);
         editionEditTxt = editBookDialogBox.findViewById(R.id.editionEditText);
         tagsEditTxt = editBookDialogBox.findViewById(R.id.tagsEditText);
-
     }
 
     private void editBooksDialogBox(AllBooksModel currentBook,int position) {
+
+        categorySpinner.setEnabled(true);
+        subCategorySpinner.setEnabled(true);
 
         tagsArrayList = new ArrayList<>();
         tagsRecyclerView = editBookDialogBox.findViewById(R.id.tagsRecycler);
@@ -361,7 +371,7 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
         stockEditTxt.setText(currentBook.getString("stock"));
         sKUEditTxt.setText(currentBook.getString("sku"));
         slugEditTxt.setText(currentBook.getString("slug"));
-        totalPagesEditTxt.setText(currentBook.getString("totalPage"));
+        totalPagesEditTxt.setText(currentBook.getString("totalPages"));
         isbnEditTxt.setText(currentBook.getString("isbn"));
         languageEditTxt.setText(currentBook.getString("language"));
         editionEditTxt.setText(currentBook.getString("edition"));
@@ -389,6 +399,14 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
         submitBookBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog = new Dialog(context.getContext());
+                progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                progressDialog.setContentView(R.layout.progress_bar_drawer);
+                progressDialog.setCancelable(false);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                progressDialog.show();
                 checkAllFields(currentBook);
             }
         });
@@ -424,66 +442,82 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
     private void checkAllFields(AllBooksModel currentBook) {
         if (titleEditTxt.getText().toString().isEmpty()){
             titleEditTxt.setError("Title is required");
+            progressDialog.dismiss();
             return;
         }
         if (authorEditTxt.getText().toString().isEmpty()){
             authorEditTxt.setError("Author is required");
+            progressDialog.dismiss();
             return;
         }
         if (publicationEditTxt.getText().toString().isEmpty()){
             publicationEditTxt.setError("Publication is required");
+            progressDialog.dismiss();
             return;
         }
         if (contentEditTxt.getText().toString().isEmpty()){
             contentEditTxt.setError("Content is required");
+            progressDialog.dismiss();
             return;
         }
         if (priceEditTxt.getText().toString().isEmpty()){
             priceEditTxt.setError("Price is required");
+            progressDialog.dismiss();
             return;
         }
         if (stockEditTxt.getText().toString().isEmpty()){
             stockEditTxt.setError("Stock is required");
+            progressDialog.dismiss();
             return;
         }
         if (sKUEditTxt.getText().toString().isEmpty()){
             sKUEditTxt.setError("SKU is required");
+            progressDialog.dismiss();
             return;
         }
         if (lengthEditTxt.getText().toString().isEmpty()){
             lengthEditTxt.setError("Length is required");
+            progressDialog.dismiss();
             return;
         }
         if (widthEditTxt.getText().toString().isEmpty()){
             widthEditTxt.setError("Width is required");
+            progressDialog.dismiss();
             return;
         }
         if (heightEditTxt.getText().toString().isEmpty()){
             heightEditTxt.setError("Height is required");
+            progressDialog.dismiss();
             return;
         }
         if (weightEditTxt.getText().toString().isEmpty()){
             weightEditTxt.setError("Weight is required");
+            progressDialog.dismiss();
             return;
         }
         if (slugEditTxt.getText().toString().isEmpty()){
             slugEditTxt.setError("Slug is required");
+            progressDialog.dismiss();
             return;
         }
         if (totalPagesEditTxt.getText().toString().isEmpty()){
             totalPagesEditTxt.setError("Total Pages is required");
+            progressDialog.dismiss();
             return;
         }
         if (isbnEditTxt.getText().toString().isEmpty()){
             isbnEditTxt.setError("ISBN is required");
+            progressDialog.dismiss();
             return;
         }
         if (languageEditTxt.getText().toString().isEmpty()){
             languageEditTxt.setError("Language is required");
+            progressDialog.dismiss();
             return;
         }
         if (editionEditTxt.getText().toString().isEmpty()){
             editionEditTxt.setError("Edition is required");
+            progressDialog.dismiss();
             return;
         }
         if (context instanceof AdminCreateBookTabFragment){
@@ -544,7 +578,12 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
         dataObj.put("isbn",isbn);
         dataObj.put("language",language);
         dataObj.put("edition",edition);
-        dataObj.put("type","book");
+        if (context instanceof AdminCreateBookTabFragment){
+            dataObj.put("type","book");
+        }else if (context instanceof AdminCreateEBookTabFragment){
+            dataObj.put("type","ebook");
+        }
+
         dataObj.put("categoryId",categoryId);
         dataObj.put("subCategoryId",subCategoryId);
         JSONArray tagsArray = new JSONArray();
@@ -585,6 +624,7 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
                                     ((AdminCreateEBookTabFragment) context).getAllBooks();
                                 }
                                 editBookDialogBox.dismiss();
+                                progressDialog.dismiss();
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
@@ -594,6 +634,7 @@ public class AdminShowAllBooksAdapter extends RecyclerView.Adapter<AdminShowAllB
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        progressDialog.dismiss();
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {

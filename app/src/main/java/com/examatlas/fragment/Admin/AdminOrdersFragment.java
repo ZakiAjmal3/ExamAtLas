@@ -287,7 +287,7 @@ public class AdminOrdersFragment extends Fragment {
                                     JSONObject bookItemObj = productArray.getJSONObject(0);
                                     JSONObject productObj = bookItemObj.getJSONObject("product");
                                     bookTitle = productObj.getString("title");
-                                    bookPrice = productObj.getString("title");
+                                    bookPrice = productObj.getString("price");
                                     JSONArray bookImageArray = productObj.getJSONArray("images");
                                     if (bookImageArray.length() > 0) {
                                         bookImgURL = bookImageArray.getJSONObject(0).getString("url");

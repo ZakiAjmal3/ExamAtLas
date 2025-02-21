@@ -54,7 +54,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.R;
-import com.examatlas.adapter.Admin.AdminShowAllBlogAdapter;
 import com.examatlas.adapter.Admin.AdminShowAllCAAdapter;
 import com.examatlas.adapter.AdminTagsForDataALLAdapter;
 import com.examatlas.models.Admin.AdminShowAllCategoryModel;
@@ -234,9 +233,8 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
                                     String content = jsonObject2.getString("content");
                                     String keyword = jsonObject2.getString("keyword");
                                     String updatedAt = jsonObject2.getString("updatedAt");
+                                    String slug = jsonObject2.getString("slug");
 
-//                                    String slug = jsonObject2.getString("slug");
-                                    String slug = null;
                                     Log.e("Blog content",content);
                                     String imageUrl = "";
                                     if (jsonObject2.has("image") && !jsonObject2.isNull("image")) {
@@ -246,8 +244,8 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
                                         }
                                     }
                                     String categoryName,categoryId;
-                                    if (jsonObject2.has("category")) {
-                                        JSONObject categoryObj = jsonObject2.getJSONObject("category");
+                                    if (jsonObject2.has("categoryData")) {
+                                        JSONObject categoryObj = jsonObject2.getJSONObject("categoryData");
                                         categoryId = categoryObj.getString("_id");
                                         categoryName = categoryObj.getString("categoryName");
                                     }else {
@@ -364,7 +362,7 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
         setupCategorySpinner(categorySpinner, titleEditTxt,keywordEditTxt,slugEditTxt,contentEditTxt,tagsEditTxt,null);
 
         tagsEditTxt = createBlogDialogBox.findViewById(R.id.tagsEditText);
-
+        uploadImage.setImageResource(R.drawable.noimage);
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -441,9 +439,11 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
                 if (categoryNameList.get(i).equals(currentCategory.getCategoryName())) {
                     categorySpinners.setSelection(i);
                     categoryName = categoryNameList.get(i);
+                    break;
                 }
             }
         }
+
         // Set the OnItemSelectedListener to handle category selection
         categorySpinners.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -776,10 +776,18 @@ public class AdminCreateCurrentAffairFragment extends Fragment {
         };
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-    public String getCategoryName(){
+    public String getCategoryId(){
         return categoryId;
     }
     public File getImageFile(){
         return imageFile;
+    }
+    public String getCategoryName(String categoryId) {
+        for (int i = 0; i < categoryModelArrayList.size(); i++) {
+            if (categoryModelArrayList.get(i).getId().equals(categoryId)) {
+                return categoryModelArrayList.get(i).getCategoryName();
+            }
+        }
+        return  null;
     }
 }

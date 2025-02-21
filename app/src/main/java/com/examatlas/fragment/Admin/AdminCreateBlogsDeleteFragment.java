@@ -231,8 +231,7 @@ public class AdminCreateBlogsDeleteFragment extends Fragment {
                                     String content = jsonObject2.getString("content");
                                     String keyword = jsonObject2.getString("keyword");
                                     String updatedAt = jsonObject2.getString("updatedAt");
-//                                    String slug = jsonObject2.getString("slug");
-                                    String slug = null;
+                                    String slug = jsonObject2.getString("slug");
                                     Log.e("Blog content",content);
                                     String imageUrl = "";
                                     if (jsonObject2.has("image") && !jsonObject2.isNull("image")) {
@@ -242,8 +241,8 @@ public class AdminCreateBlogsDeleteFragment extends Fragment {
                                         }
                                     }
                                     String categoryName,categoryId;
-                                    if (jsonObject2.has("category")) {
-                                        JSONObject categoryObj = jsonObject2.getJSONObject("category");
+                                    if (jsonObject2.has("categoryData")) {
+                                        JSONObject categoryObj = jsonObject2.getJSONObject("categoryData");
                                         categoryId = categoryObj.getString("_id");
                                         categoryName = categoryObj.getString("categoryName");
                                     }else {
@@ -356,7 +355,7 @@ public class AdminCreateBlogsDeleteFragment extends Fragment {
         setupCategorySpinner(categorySpinner, titleEditTxt,keywordEditTxt,slugEditTxt,contentEditTxt,tagsEditTxt,null);
 
         tagsEditTxt = createBlogDialogBox.findViewById(R.id.tagsEditText);
-
+        uploadImage.setImageResource(R.drawable.noimage);
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -413,7 +412,6 @@ public class AdminCreateBlogsDeleteFragment extends Fragment {
         createBlogDialogBox.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
     }
-
     public void setupCategorySpinner(Spinner categorySpinners,EditText titleEditTxt,EditText keywordEditTxt,EditText slugEditTxt,EditText contentEditTxt,EditText tagsEditTxt ,AdminShowAllBlogModel currentCategory) {
         // Assuming `subCategoryModelArrayList` contains the categories data
         ArrayList<String> categoryNameList = new ArrayList<>();
@@ -429,12 +427,16 @@ public class AdminCreateBlogsDeleteFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinners.setAdapter(adapter);
         if (currentCategory != null) {
+            Log.e("Current Category","True");
             for (int i = 0; i < categoryNameList.size(); i++) {
                 if (categoryNameList.get(i).equals(currentCategory.getCategoryName())) {
                     categorySpinners.setSelection(i);
                     categoryName = categoryNameList.get(i);
+                    break;
                 }
             }
+        }else {
+            Log.e("Current Category","False");
         }
         // Set the OnItemSelectedListener to handle category selection
         categorySpinners.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -732,10 +734,18 @@ public class AdminCreateBlogsDeleteFragment extends Fragment {
         };
         MySingletonFragment.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-    public String getCategoryName(){
+    public String getCategoryId(){
         return categoryId;
     }
     public File getImageFile(){
         return imageFile;
+    }
+    public String getCategoryName(String categoryId) {
+        for (int i = 0; i < categoryModelArrayList.size(); i++) {
+            if (categoryModelArrayList.get(i).getId().equals(categoryId)) {
+                return categoryModelArrayList.get(i).getCategoryName();
+            }
+        }
+        return  null;
     }
 }

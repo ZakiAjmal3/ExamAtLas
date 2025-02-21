@@ -211,10 +211,12 @@ public class DashboardActivity extends AppCompatActivity {
         if (sessionManager.IsLoggedIn()){
             layoutLogout.setVisibility(View.VISIBLE);
             layoutOrderHistory.setVisibility(View.VISIBLE);
+            layoutAdminDashboard.setVisibility(View.VISIBLE);
             layoutLogin.setVisibility(View.GONE);
         }else {
             layoutLogout.setVisibility(View.GONE);
             layoutOrderHistory.setVisibility(View.GONE);
+            layoutAdminDashboard.setVisibility(View.GONE);
             layoutLogin.setVisibility(View.VISIBLE);
         }
 

@@ -71,7 +71,7 @@ public class SingleOrderViewActivity extends AppCompatActivity {
     ArrayList<AllBooksModel> allBooksModelArrayList;
     private SessionManager sessionManager;
     private String token,orderId = "",shipment_id = "",orderStatus = "";
-    RelativeLayout trackingRL,writeReviewRL, viewEBookRL, cancelOrderRL,emailUSRL;
+    RelativeLayout trackingRL, viewEBookRL, cancelOrderRL,emailUSRL;
     LinearLayout rsbLinearLayout;
     String finalAmount = "0",costPriceStr = "0",sellingPriceStr = "0",discountStr,shippingChargesStr;
     String addressNameStr, addressRoadStr, addressCityStr, addressStateStr, addressPhoneStr,orderPlacedDate;
@@ -128,7 +128,6 @@ public class SingleOrderViewActivity extends AppCompatActivity {
         bookItemRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         trackingRL = findViewById(R.id.trackingRL);
-        writeReviewRL = findViewById(R.id.writeReviewRL);
         viewEBookRL = findViewById(R.id.viewEBookRL);
         cancelOrderRL = findViewById(R.id.cancelOrderRL);
         emailUSRL = findViewById(R.id.emailUSRL);
@@ -169,16 +168,6 @@ public class SingleOrderViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(SingleOrderViewActivity.this,TrackingSingleActivity.class));
-            }
-        });
-        writeReviewRL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SingleOrderViewActivity.this, CreatingReviewActivity.class);
-                intent.putExtra("bookId", bookId);
-                intent.putExtra("bookTitle", bookTitle);
-                intent.putExtra("bookImg", bookTitle);
-                startActivity(intent);
             }
         });
         copyOrderIdBtn.setOnClickListener(new View.OnClickListener() {
@@ -567,6 +556,22 @@ public class SingleOrderViewActivity extends AppCompatActivity {
                                     // Convert the book object into a Map to make it dynamic
                                     Map<String, Object> bookData = new Gson().fromJson(jsonObject2.toString(), Map.class);
 
+                                    // Extract category and subCategory names
+                                    String categoryName = "";
+                                    String subCategoryName = "";
+
+                                    // Check if categoryData exists and extract categoryName
+                                    if (bookData.containsKey("categoryData")) {
+                                        Map<String, Object> categoryData = (Map<String, Object>) bookData.get("categoryData");
+                                        categoryName = categoryData.containsKey("categoryName") ? categoryData.get("categoryName").toString() : "";
+                                    }
+
+                                    // Check if subCategoryData exists and extract subCategoryName
+                                    if (bookData.containsKey("subCategoryData")) {
+                                        Map<String, Object> subCategoryData = (Map<String, Object>) bookData.get("subCategoryData");
+                                        subCategoryName = subCategoryData.containsKey("name") ? subCategoryData.get("name").toString() : "";
+                                    }
+
                                     // Extract dimensions (assuming they are present in the 'dimensions' field of the book data)
                                     String length = "";
                                     String width = "";
@@ -601,7 +606,7 @@ public class SingleOrderViewActivity extends AppCompatActivity {
                                     }
 
                                     // Pass the data and dimensions to the model constructor
-                                    AllBooksModel model = new AllBooksModel(bookData, length, width, height, weight); // Pass map and dimensions
+                                    AllBooksModel model = new AllBooksModel(bookData, length, width, height, weight,categoryName,subCategoryName); // Pass map and dimensions
 
                                     // Add the model to the list
                                     allBooksModelArrayList.add(model);

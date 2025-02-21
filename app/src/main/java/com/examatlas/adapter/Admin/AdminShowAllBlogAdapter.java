@@ -321,8 +321,7 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
                     keywordEditTxt.getText().toString().trim(),
                     slugEditTxt.getText().toString().trim(),
                     contentEditTxt.getText().toString().trim(),
-                    adminTagsForDataALLModelArrayList,position);
-            editBlogDialogBox.dismiss();
+                    adminTagsForDataALLModelArrayList,position,editBlogDialogBox);;
         });
 
         ImageView btnCross = editBlogDialogBox.findViewById(R.id.btnCross);
@@ -363,9 +362,9 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
         }
     }
     private void sendingBlogDetails(String blogId, String title, String keyword, String slug, String content,
-                                             ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, int position) {
+                                             ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, int position, Dialog editBlogDialogBox) {
         String updateURL = Constant.BASE_URL + "v1/blog";
-        categoryId = ((AdminCreateBlogsDeleteFragment) context).getCategoryName();
+        categoryId = ((AdminCreateBlogsDeleteFragment) context).getCategoryId();
 
         // Prepare form data
         Map<String, String> params = new HashMap<>();
@@ -388,8 +387,10 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
         Map<String, File> files = new HashMap<>();
         if (imageFile != null && imageFile.exists()) {
             files.put("image", imageFile); // Add the image file if exists
+            Log.e("image",files.toString());
         }
-
+        Log.e("url",updateURL);
+        Log.e("param",params.toString());
         // Create and send the multipart request
         MultipartRequest multipartRequest = new MultipartRequest(updateURL, params, files,
                 new Response.Listener<String>() {
@@ -423,10 +424,12 @@ public class AdminShowAllBlogAdapter extends RecyclerView.Adapter<AdminShowAllBl
                                 adminShowAllBlogModelArrayList.get(position).setContent(content);
                                 adminShowAllBlogModelArrayList.get(position).setKeyword(keyword);
                                 adminShowAllBlogModelArrayList.get(position).setCategoryId(categoryId);
+                                adminShowAllBlogModelArrayList.get(position).setCategoryName(((AdminCreateBlogsDeleteFragment) context).getCategoryName(categoryId));
                                 adminShowAllBlogModelArrayList.get(position).setTags(tags.toString());
                                 adminShowAllBlogModelArrayList.get(position).setImageURL(imageUrl);
 
-                                notifyItemChanged(position);  // Update the UI
+                                notifyItemChanged(position);
+                                editBlogDialogBox.dismiss();// Update the UI
                             } else {
                                 Toast.makeText(context.getContext(), "Failed to update blog", Toast.LENGTH_SHORT).show();
                             }

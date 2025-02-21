@@ -270,6 +270,22 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
                                     // Convert the book object into a Map to make it dynamic
                                     Map<String, Object> bookData = new Gson().fromJson(jsonObject2.toString(), Map.class);
 
+                                    // Extract category and subCategory names
+                                    String categoryName = "";
+                                    String subCategoryName = "";
+
+                                    // Check if categoryData exists and extract categoryName
+                                    if (bookData.containsKey("categoryData")) {
+                                        Map<String, Object> categoryData = (Map<String, Object>) bookData.get("categoryData");
+                                        categoryName = categoryData.containsKey("categoryName") ? categoryData.get("categoryName").toString() : "";
+                                    }
+
+                                    // Check if subCategoryData exists and extract subCategoryName
+                                    if (bookData.containsKey("subCategoryData")) {
+                                        Map<String, Object> subCategoryData = (Map<String, Object>) bookData.get("subCategoryData");
+                                        subCategoryName = subCategoryData.containsKey("name") ? subCategoryData.get("name").toString() : "";
+                                    }
+
                                     // Extract dimensions (assuming they are present in the 'dimensions' field of the book data)
                                     String length = "";
                                     String width = "";
@@ -304,7 +320,7 @@ public class FilteringBookWithCategoryActivity extends AppCompatActivity {
                                     }
 
                                     // Pass the data and dimensions to the model constructor
-                                    AllBooksModel model = new AllBooksModel(bookData, length, width, height, weight); // Pass map and dimensions
+                                    AllBooksModel model = new AllBooksModel(bookData, length, width, height, weight,categoryName,subCategoryName); // Pass map and dimensions
 
                                     // Add the model to the list
                                     allBooksModelArrayList.add(model);

@@ -40,6 +40,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.examatlas.R;
 import com.examatlas.adapter.AdminTagsForDataALLAdapter;
+import com.examatlas.fragment.Admin.AdminCreateBlogsDeleteFragment;
 import com.examatlas.fragment.Admin.AdminCreateCurrentAffairFragment;
 import com.examatlas.models.Admin.AdminShowAllCategoryModel;
 import com.examatlas.utils.Constant;
@@ -261,7 +262,7 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         tagsRecyclerView.setAdapter(adminTagsForDataALLAdapter);
 
         TextView headerTxt = editBlogDialogBox.findViewById(R.id.txtAddData);
-        headerTxt.setText("Edit Blog");
+        headerTxt.setText("Edit Current Affairs");
         TextView blogImgTxt = editBlogDialogBox.findViewById(R.id.txtNoFileChosen);
         EditText titleEditTxt = editBlogDialogBox.findViewById(R.id.titleEditTxt);
         EditText keywordEditTxt = editBlogDialogBox.findViewById(R.id.keywordEditText);
@@ -322,8 +323,7 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
                     keywordEditTxt.getText().toString().trim(),
                     slugEditTxt.getText().toString().trim(),
                     contentEditTxt.getText().toString().trim(),
-                    adminTagsForDataALLModelArrayList,position);
-            editBlogDialogBox.dismiss();
+                    adminTagsForDataALLModelArrayList,position,editBlogDialogBox);
         });
 
         ImageView btnCross = editBlogDialogBox.findViewById(R.id.btnCross);
@@ -364,9 +364,9 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         }
     }
     private void sendingBlogDetails(String blogId, String title, String keyword, String slug, String content,
-                                    ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, int position) {
+                                    ArrayList<AdminTagsForDataALLModel> adminTagsForDataALLModelArrayList, int position, Dialog editBlogDialogBox) {
         String updateURL = Constant.BASE_URL + "v1/blog";
-        categoryId = ((AdminCreateCurrentAffairFragment) context).getCategoryName();
+        categoryId = ((AdminCreateCurrentAffairFragment) context).getCategoryId();
 
         // Prepare form data
         Map<String, String> params = new HashMap<>();
@@ -389,8 +389,9 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
         Map<String, File> files = new HashMap<>();
         if (imageFile != null && imageFile.exists()) {
             files.put("image", imageFile); // Add the image file if exists
+            Log.e("image File",imageFile.toString());
         }
-
+        Log.e("params",params.toString());
         // Create and send the multipart request
         MultipartRequest multipartRequest = new MultipartRequest(updateURL, params, files,
                 new Response.Listener<String>() {
@@ -424,10 +425,16 @@ public class AdminShowAllCAAdapter extends RecyclerView.Adapter<AdminShowAllCAAd
                                 adminShowAllBlogModelArrayList.get(position).setContent(content);
                                 adminShowAllBlogModelArrayList.get(position).setKeyword(keyword);
                                 adminShowAllBlogModelArrayList.get(position).setCategoryId(categoryId);
+                                if (context instanceof AdminCreateBlogsDeleteFragment) {
+                                    adminShowAllBlogModelArrayList.get(position).setCategoryName(((AdminCreateBlogsDeleteFragment) context).getCategoryName(categoryId));
+                                }else if (context instanceof AdminCreateCurrentAffairFragment){
+                                    adminShowAllBlogModelArrayList.get(position).setCategoryName(((AdminCreateCurrentAffairFragment) context).getCategoryName(categoryId));
+                                }
                                 adminShowAllBlogModelArrayList.get(position).setTags(tags.toString());
                                 adminShowAllBlogModelArrayList.get(position).setImageURL(imageUrl);
 
                                 notifyItemChanged(position);  // Update the UI
+                                editBlogDialogBox.dismiss();
                             } else {
                                 Toast.makeText(context.getContext(), "Failed to update blog", Toast.LENGTH_SHORT).show();
                             }

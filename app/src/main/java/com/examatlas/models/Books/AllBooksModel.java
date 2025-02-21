@@ -14,14 +14,18 @@ public class AllBooksModel {
     private String width;
     private String height;
     private String weight;
+    private String categoryName;
+    private String subCategoryName;
 
     // Constructor to initialize data and dimensions
-    public AllBooksModel(Map<String, Object> data, String length, String width, String height, String weight) {
+        public AllBooksModel(Map<String, Object> data, String length, String width, String height, String weight, String categoryName, String subCategoryName) {
         this.data = data;
         this.length = length;
         this.width = width;
         this.height = height;
         this.weight = weight;
+        this.categoryName = categoryName;
+        this.subCategoryName = subCategoryName;
     }
 
     // Getter and Setter for the map
@@ -36,6 +40,14 @@ public class AllBooksModel {
 
     public int getInt(String key) {
         return data.containsKey(key) ? Integer.parseInt(data.get(key).toString()) : 0;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public String getSubCategoryName() {
+        return subCategoryName;
     }
 
     // Getter for dimensions
