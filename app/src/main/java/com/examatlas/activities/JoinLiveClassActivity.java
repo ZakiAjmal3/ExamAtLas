@@ -13,13 +13,13 @@ import com.examatlas.R;
 import com.examatlas.fragment.LiveClassesViewerFragment;
 import com.google.android.exoplayer2.util.Log;
 
-import live.videosdk.rtc.android.Meeting;
-import live.videosdk.rtc.android.VideoSDK;
-import live.videosdk.rtc.android.listeners.MeetingEventListener;
+//import live.videosdk.rtc.android.Meeting;
+//import live.videosdk.rtc.android.VideoSDK;
+//import live.videosdk.rtc.android.listeners.MeetingEventListener;
 
 public class JoinLiveClassActivity extends AppCompatActivity {
     String meetingID = "";
-    private Meeting meeting;
+//    private Meeting meeting;
     String token = "";
     private static final int PERMISSION_REQ_ID = 22;
     String courseId;
@@ -57,34 +57,34 @@ public class JoinLiveClassActivity extends AppCompatActivity {
         boolean streamEnable = mode.equals("CONFERENCE");
 
         // initialize VideoSDK
-        VideoSDK.initialize(getApplicationContext());
-
-        // Configuration VideoSDK with Token
-        VideoSDK.config(token);
-
-        // Initialize VideoSDK Meeting
-        meeting = VideoSDK.initMeeting(
-                JoinLiveClassActivity.this, meetingID, localParticipantName,
-                false, false, null, "VIEWER", false, null, null);
-
-        // join Meeting
-        meeting.join();
-        meeting.addEventListener(new MeetingEventListener() {
-            @Override
-            public void onMeetingJoined() {
-                // Check if meeting is successfully joined
-                if (meeting != null) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.main, new LiveClassesViewerFragment(), "viewerFragment")
-                            .commit();
-                }
-            }
-        });
+//        VideoSDK.initialize(getApplicationContext());
+//
+//        // Configuration VideoSDK with Token
+//        VideoSDK.config(token);
+//
+//        // Initialize VideoSDK Meeting
+//        meeting = VideoSDK.initMeeting(
+//                JoinLiveClassActivity.this, meetingID, localParticipantName,
+//                false, false, null, "VIEWER", false, null, null);
+//
+//        // join Meeting
+//        meeting.join();
+//        meeting.addEventListener(new MeetingEventListener() {
+//            @Override
+//            public void onMeetingJoined() {
+//                // Check if meeting is successfully joined
+//                if (meeting != null) {
+//                    getSupportFragmentManager()
+//                            .beginTransaction()
+//                            .replace(R.id.main, new LiveClassesViewerFragment(), "viewerFragment")
+//                            .commit();
+//                }
+//            }
+//        });
     }
-    public Meeting getMeeting() {
-        return meeting;
-    }
+//    public Meeting getMeeting() {
+//        return meeting;
+//    }
     public String getCourseId() {
         return courseId;
     }

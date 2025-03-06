@@ -150,7 +150,7 @@ public class SessionManager {
         return isLoggedIn;
     }
     public void setCartItemQuantity(){
-        String paginatedURL = Constant.BASE_URL + "v1/cart";
+        String paginatedURL = Constant.BASE_URL + "cart";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override

@@ -39,18 +39,24 @@
             android:layout_marginLeft="15dp"
             android:visibility="gone"/>
     </RelativeLayout>
+    <TextView
+        android:id="@+id/errorTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sorry! Error Loading EBook."
+        android:textColor="@color/red"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        />
     <WebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/topBar"
+        android:layout_margin="15dp"
         android:visibility="gone"/>
-
-    <com.github.barteksc.pdfviewer.PDFView
-        android:id="@+id/pdfView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/topBar"
-        />
 
 </RelativeLayout>

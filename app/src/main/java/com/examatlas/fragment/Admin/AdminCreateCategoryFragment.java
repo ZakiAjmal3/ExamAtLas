@@ -89,7 +89,6 @@ public class AdminCreateCategoryFragment extends Fragment {
     private String searchQuery = "";
     private int totalPages = 1,currentPage = 1;
     private final int itemsPerPage = 10;
-    private boolean isLoading = false;
     private ActivityResultLauncher<Intent> galleryLauncher;
     private ActivityResultLauncher<Intent> cameraLauncher;
     private static final int REQUEST_CAMERA_PERMISSION = 1001;
@@ -574,8 +573,6 @@ public class AdminCreateCategoryFragment extends Fragment {
                                     categoryAdapter = new AdminShowAllCategoryAdapter(categoryModelArrayList, AdminCreateCategoryFragment.this);
                                     showCategoryRecycler.setAdapter(categoryAdapter);
                                 }
-
-                                isLoading = false;
                                 nextItemLoadingProgressBar.setVisibility(View.GONE);
                             } else {
                                 Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_SHORT).show();

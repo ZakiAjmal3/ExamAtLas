@@ -24,16 +24,16 @@ import com.examatlas.adapter.AdminLiveClassesViewerAdapter;
 
 import org.json.JSONObject;
 
-import live.videosdk.rtc.android.Meeting;
-import live.videosdk.rtc.android.lib.JsonUtils;
-import live.videosdk.rtc.android.lib.transcription.PostTranscriptionConfig;
-import live.videosdk.rtc.android.lib.transcription.SummaryConfig;
+//import live.videosdk.rtc.android.Meeting;
+//import live.videosdk.rtc.android.lib.JsonUtils;
+//import live.videosdk.rtc.android.lib.transcription.PostTranscriptionConfig;
+//import live.videosdk.rtc.android.lib.transcription.SummaryConfig;
 
 public class AdminLiveClassesViewerFragment extends Fragment {
 
     private static Activity mActivity;
     private static Context mContext;
-    private static Meeting meeting;
+//    private static Meeting meeting;
     private boolean micEnabled = true;
     private boolean webcamEnabled = true;
     private boolean hlsEnabled = false;
@@ -51,7 +51,7 @@ public class AdminLiveClassesViewerFragment extends Fragment {
         if (context instanceof Activity) {
             mActivity = (Activity) context;
             // getting meeting object from Meeting Activity
-            meeting = ((AdminJoinLiveClassActivity) mActivity).getMeeting();
+//            meeting = ((AdminJoinLiveClassActivity) mActivity).getMeeting();
         }
     }
 
@@ -68,23 +68,23 @@ public class AdminLiveClassesViewerFragment extends Fragment {
         tvMeetingId = view.findViewById(R.id.tvMeetingId);
         tvHlsState = view.findViewById(R.id.tvHlsState);
 
-        if (meeting != null) {
-            tvMeetingId.setText("Meeting Id : " + meeting.getMeetingId());
+//        if (meeting != null) {
+//            tvMeetingId.setText("Meeting Id : " + meeting.getMeetingId());
             setActionListeners();
             final RecyclerView rvParticipants = view.findViewById(R.id.rvParticipants);
             rvParticipants.setLayoutManager(new GridLayoutManager(mContext, 2));
-            rvParticipants.setAdapter(new AdminLiveClassesViewerAdapter(meeting));
-        }
+//            rvParticipants.setAdapter(new AdminLiveClassesViewerAdapter(meeting));
+//        }
         return view;
     }
 
     private void setActionListeners() {
         btnMic.setOnClickListener(v -> {
             if (micEnabled) {
-                meeting.muteMic();
+//                meeting.muteMic();
                 Toast.makeText(mContext,"Mic Muted",Toast.LENGTH_SHORT).show();
             } else {
-                meeting.unmuteMic();
+//                meeting.unmuteMic();
                 Toast.makeText(mContext,"Mic Enabled",Toast.LENGTH_SHORT).show();
             }
             micEnabled=!micEnabled;
@@ -92,10 +92,10 @@ public class AdminLiveClassesViewerFragment extends Fragment {
 
         btnWebcam.setOnClickListener(v -> {
             if (webcamEnabled) {
-                meeting.disableWebcam();
+//                meeting.disableWebcam();
                 Toast.makeText(mContext,"Webcam Disabled",Toast.LENGTH_SHORT).show();
             } else {
-                meeting.enableWebcam();
+//                meeting.enableWebcam();
                 Toast.makeText(mContext,"Webcam Enabled",Toast.LENGTH_SHORT).show();
             }
             webcamEnabled=!webcamEnabled;
@@ -104,7 +104,7 @@ public class AdminLiveClassesViewerFragment extends Fragment {
         btnLeave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                meeting.leave();
+//                meeting.leave();
                 startActivity(new Intent(getContext(), AdminDashboardActivity.class));
             }
         });
@@ -114,24 +114,24 @@ public class AdminLiveClassesViewerFragment extends Fragment {
                 try {
                     JSONObject config = new JSONObject();
                     JSONObject layout = new JSONObject();
-                    JsonUtils.jsonPut(layout, "type", "SPOTLIGHT");
-                    JsonUtils.jsonPut(layout, "priority", "PIN");
-                    JsonUtils.jsonPut(layout, "gridSize", 4);
-                    JsonUtils.jsonPut(config, "layout", layout);
-                    JsonUtils.jsonPut(config, "orientation", "portrait");
-                    JsonUtils.jsonPut(config, "theme", "DARK");
-                    JsonUtils.jsonPut(config, "quality", "high");
+//                    JsonUtils.jsonPut(layout, "type", "SPOTLIGHT");
+//                    JsonUtils.jsonPut(layout, "priority", "PIN");
+//                    JsonUtils.jsonPut(layout, "gridSize", 4);
+//                    JsonUtils.jsonPut(config, "layout", layout);
+//                    JsonUtils.jsonPut(config, "orientation", "portrait");
+//                    JsonUtils.jsonPut(config, "theme", "DARK");
+//                    JsonUtils.jsonPut(config, "quality", "high");
 
                     // Create SummaryConfig instance with appropriate parameters
                     boolean someBooleanValue = true; // Adjust as needed
                     String someStringValue = "your_summary_string"; // Replace with an appropriate string
-                    SummaryConfig summaryConfig = new SummaryConfig(someBooleanValue, someStringValue);
+//                    SummaryConfig summaryConfig = new SummaryConfig(someBooleanValue, someStringValue);
 
                     // Create an instance of PostTranscriptionConfig
-                    PostTranscriptionConfig transcriptionConfig = new PostTranscriptionConfig(someBooleanValue, summaryConfig, someStringValue);
+//                    PostTranscriptionConfig transcriptionConfig = new PostTranscriptionConfig(someBooleanValue, summaryConfig, someStringValue);
 
                     // Starting HLS stream
-                    meeting.startHls(config, transcriptionConfig);
+//                    meeting.startHls(config, transcriptionConfig);
                     hlsEnabled = true; // Update the state
                     Toast.makeText(mContext, "HLS Started", Toast.LENGTH_SHORT).show();
                     Log.d("HLS", "HLS stream started with config: " + config.toString());
@@ -141,7 +141,7 @@ public class AdminLiveClassesViewerFragment extends Fragment {
                 }
             } else {
                 try {
-                    meeting.stopHls();
+//                    meeting.stopHls();
                     hlsEnabled = false; // Update the state
                     Toast.makeText(mContext, "HLS Stopped", Toast.LENGTH_SHORT).show();
                     Log.d("HLS", "HLS stream stopped");

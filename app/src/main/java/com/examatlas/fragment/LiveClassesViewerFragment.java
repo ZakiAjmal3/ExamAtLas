@@ -31,12 +31,12 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import live.videosdk.rtc.android.Meeting;
-import live.videosdk.rtc.android.listeners.MeetingEventListener;
+//import live.videosdk.rtc.android.Meeting;
+//import live.videosdk.rtc.android.listeners.MeetingEventListener;
 
 public class LiveClassesViewerFragment extends Fragment {
 
-    private Meeting meeting;
+//    private Meeting meeting;
     protected StyledPlayerView playerView;
     private TextView waitingLayout;
     protected @Nullable ExoPlayer player;
@@ -68,15 +68,15 @@ public class LiveClassesViewerFragment extends Fragment {
         playerView = view.findViewById(R.id.player_view);
         waitingLayout = view.findViewById(R.id.waitingLayout);
 
-        if (meeting != null) {
-            ((TextView) view.findViewById(R.id.meetingId)).setText("Meeting Id : " + meeting.getMeetingId());
+//        if (meeting != null) {
+//            ((TextView) view.findViewById(R.id.meetingId)).setText("Meeting Id : " + meeting.getMeetingId());
             Button leave = view.findViewById(R.id.btnLeave);
             leave.setOnClickListener(v -> {
-                meeting.leave();
+//                meeting.leave();
                 Intent intent = new Intent(getContext(), DashboardActivity.class);
                 startActivity(intent);
             });
-        }
+//        }
 
         // Initialize player if the playback URL is available
         if (!playbackHlsUrl.isEmpty()) {
@@ -92,45 +92,45 @@ public class LiveClassesViewerFragment extends Fragment {
         mContext = context;
         if (context instanceof Activity) {
             mActivity = (Activity) context;
-            meeting = ((JoinLiveClassActivity) mActivity).getMeeting();
+//            meeting = ((JoinLiveClassActivity) mActivity).getMeeting();
         }
     }
 
-    private final MeetingEventListener meetingEventListener = new MeetingEventListener() {
-        @Override
-        public void onMeetingLeft() {
-            if (isAdded()) {
-                Intent intent = new Intent(mContext, LiveCoursesClassesListActivity.class);
-                intent.putExtra("course_id", ((JoinLiveClassActivity) mActivity).getCourseId());
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                mActivity.finish();
-            }
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.P)
-        @Override
-        public void onHlsStateChanged(JSONObject HlsState) {
-            if (HlsState.has("status")) {
-                try {
-                    String status = HlsState.getString("status");
-                    if ("HLS_PLAYABLE".equals(status) && HlsState.has("playbackHlsUrl")) {
-                        playbackHlsUrl = HlsState.getString("playbackHlsUrl");
-                        waitingLayout.setVisibility(View.GONE);
-                        playerView.setVisibility(View.VISIBLE);
-                        initializePlayer();
-                    } else if ("HLS_STOPPED".equals(status)) {
-                        releasePlayer();
-                        waitingLayout.setText("Host has stopped the live streaming");
-                        waitingLayout.setVisibility(View.VISIBLE);
-                        playerView.setVisibility(View.GONE);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    };
+//    private final MeetingEventListener meetingEventListener = new MeetingEventListener() {
+//        @Override
+//        public void onMeetingLeft() {
+//            if (isAdded()) {
+//                Intent intent = new Intent(mContext, LiveCoursesClassesListActivity.class);
+//                intent.putExtra("course_id", ((JoinLiveClassActivity) mActivity).getCourseId());
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                startActivity(intent);
+//                mActivity.finish();
+//            }
+//        }
+//
+//        @RequiresApi(api = Build.VERSION_CODES.P)
+//        @Override
+//        public void onHlsStateChanged(JSONObject HlsState) {
+//            if (HlsState.has("status")) {
+//                try {
+//                    String status = HlsState.getString("status");
+//                    if ("HLS_PLAYABLE".equals(status) && HlsState.has("playbackHlsUrl")) {
+//                        playbackHlsUrl = HlsState.getString("playbackHlsUrl");
+//                        waitingLayout.setVisibility(View.GONE);
+//                        playerView.setVisibility(View.VISIBLE);
+//                        initializePlayer();
+//                    } else if ("HLS_STOPPED".equals(status)) {
+//                        releasePlayer();
+//                        waitingLayout.setText("Host has stopped the live streaming");
+//                        waitingLayout.setVisibility(View.VISIBLE);
+//                        playerView.setVisibility(View.GONE);
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    };
 
     protected void initializePlayer() {
         if (player == null && !playbackHlsUrl.isEmpty()) {
@@ -155,35 +155,35 @@ public class LiveClassesViewerFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (meeting != null) {
-            meeting.addEventListener(meetingEventListener);
-        }
-    }
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        if (meeting != null) {
+//            meeting.addEventListener(meetingEventListener);
+//        }
+//    }
 
-    @Override
-    public void onStop() {
-        if (meeting != null) {
-            meeting.removeEventListener(meetingEventListener);
-        }
-        releasePlayer(); // Release player when stopped
-        super.onStop();
-    }
+//    @Override
+//    public void onStop() {
+////        if (meeting != null) {
+////            meeting.removeEventListener(meetingEventListener);
+//        }
+//        releasePlayer(); // Release player when stopped
+//        super.onStop();
+//    }
 
-    @Override
-    public void onDestroy() {
-        mContext = null;
-        mActivity = null;
-        playbackHlsUrl = null;
-        releasePlayer();
-        if (meeting != null) {
-            meeting.removeAllListeners();
-            meeting = null;
-        }
-        super.onDestroy();
-    }
+//    @Override
+//    public void onDestroy() {
+//        mContext = null;
+//        mActivity = null;
+//        playbackHlsUrl = null;
+//        releasePlayer();
+//        if (meeting != null) {
+//            meeting.removeAllListeners();
+//            meeting = null;
+//        }
+//        super.onDestroy();
+//    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {

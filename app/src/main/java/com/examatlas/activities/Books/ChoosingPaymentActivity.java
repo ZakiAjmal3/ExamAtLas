@@ -232,11 +232,11 @@ public class ChoosingPaymentActivity extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject();
         if (!singleBookProductId.isEmpty()) {
             try {
-                jsonObject.put("totalAmount", 1);
-                jsonObject.put("shippingCharges", 0);
+                jsonObject.put("totalAmount", totalSellingPrice);
+                jsonObject.put("shippingCharges", shippingCharges);
                 jsonObject.put("taxAmount", 0);
                 jsonObject.put("discounts", totalDiscount);
-                jsonObject.put("finalAmount", 1);
+                jsonObject.put("finalAmount", totalSellingPrice);
                 jsonObject.put("paymentMethod", "Razorpay");
                 jsonObject.put("addressId", billingIdStr);
                 jsonObject.put("productId", singleBookProductId);

@@ -83,6 +83,7 @@ public class SingleEBooksDetailActivity extends AppCompatActivity {
 
         getWindow().setStatusBarColor(ContextCompat.getColor(SingleEBooksDetailActivity.this, R.color.black));
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
         bookIdByIntent = getIntent().getStringExtra("bookId");
 
         sessionManager = new SessionManager(this);
