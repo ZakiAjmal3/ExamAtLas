@@ -1,0 +1,1 @@
+ExamAtlas: A comprehensive educational platform featuring e-books, physical books, live classes, current affairs, and blogs. Includes dual admin-user interfaces with integrated payment and delivery systems.
